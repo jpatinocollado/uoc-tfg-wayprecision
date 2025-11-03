@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using WayPrecision.Domain.Data;
 
 namespace WayPrecision
 {
@@ -26,6 +27,11 @@ namespace WayPrecision
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "wayprecision.db3");
+
+            builder.Services.AddSingleton(new DatabaseContext(dbPath));
+            builder.Services.AddSingleton<UnitOfWork>();
 
             return builder.Build();
         }
