@@ -13,10 +13,18 @@ namespace WayPrecision
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                })
+                .ConfigureMauiHandlers(handlers =>
+                {
+#if WINDOWS
+                handlers.AddHandler(typeof(WebView), typeof(CustomWebViewHandler));
+#elif ANDROID
+                    handlers.AddHandler(typeof(WebView), typeof(CustomWebViewHandler));
+#endif
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
