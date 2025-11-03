@@ -7,3 +7,7 @@
 /WayPrecision/bin/Debug
 /WayPrecision/obj
 /WayPrecision/.vs/ProjectEvaluation
+/WayPrecision.Domain/bin/Debug/net9.0
+/WayPrecision.Domain/obj
+/WayPrecision.Test/bin/Debug/net9.0
+/WayPrecision.Test/obj

@@ -8,9 +8,9 @@ namespace WayPrecision.Domain.Services
     /// </summary>
     public class ConfigurationService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ConfigurationService(UnitOfWork unitOfWork)
+        public ConfigurationService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

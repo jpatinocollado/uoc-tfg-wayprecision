@@ -3,7 +3,7 @@ using WayPrecision.Domain.Data.Repositories;
 
 namespace WayPrecision.Domain.Data
 {
-    public class UnitOfWork : IAsyncDisposable
+    public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     {
         private readonly SQLiteAsyncConnection _connection;
         private bool _inTransaction = false;
