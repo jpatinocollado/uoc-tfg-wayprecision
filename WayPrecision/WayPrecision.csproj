@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -66,6 +66,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\WayPrecision.Domain\WayPrecision.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Update="WaypointsPage.xaml.cs">
 	    <DependentUpon>WaypointsPage.xaml</DependentUpon>
 	  </Compile>
@@ -78,10 +82,6 @@
 	  <MauiXaml Update="WaypointsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Domain\Services\" />
 	</ItemGroup>
 
 </Project>
