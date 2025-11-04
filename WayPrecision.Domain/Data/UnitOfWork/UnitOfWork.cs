@@ -2,7 +2,7 @@
 using WayPrecision.Domain.Data.Repositories;
 using WayPrecision.Domain.Models;
 
-namespace WayPrecision.Domain.Data
+namespace WayPrecision.Domain.Data.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork, IAsyncDisposable
     {

@@ -1,6 +1,7 @@
 ﻿using WayPrecision.Domain.Services;
 using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Data.UnitOfWork;
 
 namespace WayPrecision.Test
 {

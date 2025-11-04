@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using WayPrecision.Domain.Data;
+using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision

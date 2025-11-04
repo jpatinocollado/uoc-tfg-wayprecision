@@ -1,7 +1,7 @@
 ﻿using WayPrecision.Domain.Data.Repositories;
 using WayPrecision.Domain.Models;
 
-namespace WayPrecision.Domain.Data
+namespace WayPrecision.Domain.Data.UnitOfWork
 {
     /// <summary>
     /// Define la unidad de trabajo para coordinar operaciones sobre múltiples repositorios

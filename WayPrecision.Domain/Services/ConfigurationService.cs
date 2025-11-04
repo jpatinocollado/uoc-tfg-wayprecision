@@ -1,4 +1,4 @@
-﻿using WayPrecision.Domain.Data;
+﻿using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services

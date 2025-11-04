@@ -1,6 +1,6 @@
-﻿using WayPrecision.Domain.Data;
-using WayPrecision.Domain.Models;
+﻿using WayPrecision.Domain.Models;
 using System.Linq;
+using WayPrecision.Domain.Data.UnitOfWork;
 
 namespace WayPrecision.Domain.Services
 {
