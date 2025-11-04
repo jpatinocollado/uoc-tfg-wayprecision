@@ -79,7 +79,12 @@ namespace WayPrecision.Domain.Services
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
 
-            await _unitOfWork.Waypoints.DeleteAsync(waypoint);
+            //eliminamos el waypoint y su posición asociada
+            _unitOfWork.Waypoints.DeleteDeferred(waypoint);
+            _unitOfWork.Positions.DeleteDeferred(waypoint.Position);
+
+            //guardamos los cambios
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }
