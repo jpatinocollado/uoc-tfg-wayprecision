@@ -16,13 +16,12 @@ public partial class SettingsPage : ContentPage
     private readonly ConfigurationService _configurationService;
     private Configuration _currentConfig;
 
-    public SettingsPage(IUnitOfWork unitOfWork)
+    public SettingsPage(ConfigurationService configurationService)
     {
         InitializeComponent();
 
         // Resolver IUnitOfWork desde el contenedor de dependencias
-        //var unitOfWork = Application.Current.Handler.MauiContext.Services.GetRequiredService<IUnitOfWork>();
-        _configurationService = new ConfigurationService(unitOfWork);
+        _configurationService = configurationService;
 
         // Cargar configuración al iniciar la página
         Loaded += async (s, e) => await LoadConfigurationAsync();

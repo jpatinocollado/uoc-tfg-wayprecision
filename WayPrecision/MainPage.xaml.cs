@@ -1,20 +1,28 @@
 ﻿using System.Globalization;
+using System.Threading.Tasks;
+using WayPrecision.Domain.Data;
+using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Sensors.Location;
+using WayPrecision.Domain.Services;
 
 namespace WayPrecision
 {
     public partial class MainPage : ContentPage
     {
+        private readonly WaypointService _waypointService;
+
         private readonly IGpsManager gpsManager;
-        private Position? _lastPosition = null;
+        private GpsLocation? _lastPosition = null;
 
         private bool isWebViewReady = false;
         private bool _locationEnable = false;
         private bool _locationCenterEnable = false;
 
-        public MainPage()
+        public MainPage(WaypointService waypointService)
         {
             InitializeComponent();
+
+            _waypointService = waypointService;
 
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebView_Loaded;
@@ -35,9 +43,9 @@ namespace WayPrecision
             isWebViewReady = true;
         }
 
-        private void OnPositionChanged(object? sender, PositionEventArgs e)
+        private void OnPositionChanged(object? sender, LocationEventArgs e)
         {
-            _lastPosition = e.Position;
+            _lastPosition = e.Location;
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
@@ -54,16 +62,32 @@ namespace WayPrecision
 
         private void OnCreateWaypointClicked(object sender, EventArgs e)
         {
-            //// Lógica para crear un waypoint
-            //if (_locationEnable && _lastPosition != null)
-            //{
-            //    string msg = $"Waypoint creado en Lat: {_lastPosition.Latitude}, Lng: {_lastPosition.Longitude}";
-            //    DisplayAlert("Crear Waypoint", msg, "OK");
-            //}
-            //else
-            //{
-            //    DisplayAlert("Crear Waypoint", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
-            //}
+            // Lógica para crear un waypoint
+            if (_locationEnable && _lastPosition != null)
+            {
+                Waypoint waypoint = new Waypoint
+                {
+                    Name = "",
+                    Observation = "",
+                    Position = new Position
+                    {
+                        Latitude = _lastPosition.Latitude,
+                        Longitude = _lastPosition.Longitude,
+                        Accuracy = _lastPosition.Accuracy,
+                        Altitude = _lastPosition.Altitude,
+                        Course = _lastPosition.Course,
+                    }
+                };
+
+                _ = _waypointService.AddAsync(waypoint);
+
+                string msg = $"Waypoint creado en Lat: {_lastPosition.Latitude}, Lng: {_lastPosition.Longitude}";
+                DisplayAlert("Crear Waypoint", msg, "OK");
+            }
+            else
+            {
+                DisplayAlert("Crear Waypoint", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+            }
         }
 
         private void OnCreateTrackClicked(object sender, EventArgs e)

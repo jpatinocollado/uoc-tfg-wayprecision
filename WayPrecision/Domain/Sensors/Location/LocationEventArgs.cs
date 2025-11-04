@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace WayPrecision.Domain.Sensors.Location
 {
-    public class PositionEventArgs
+    public class LocationEventArgs
     {
-        public PositionEventArgs(Position position)
+        public LocationEventArgs(GpsLocation location)
         {
-            Position = position;
+            Location = location;
         }
 
-        public Position Position { get; set; }
+        public GpsLocation Location { get; set; }
     }
 }

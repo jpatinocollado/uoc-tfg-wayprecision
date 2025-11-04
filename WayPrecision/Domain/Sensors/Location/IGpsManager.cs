@@ -12,6 +12,6 @@ namespace WayPrecision.Domain.Sensors.Location
 
         Task StopListeningAsync();
 
-        event EventHandler<PositionEventArgs> PositionChanged;
+        event EventHandler<LocationEventArgs> PositionChanged;
     }
 }
