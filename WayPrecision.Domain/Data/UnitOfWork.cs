@@ -20,12 +20,12 @@ namespace WayPrecision.Domain.Data
         {
             _connection = context.Connection;
 
-            Configurations = new ConfigurationRepository(_connection);
-            Units = new UnitsRepository(_connection);
-            Tracks = new TracksRepository(_connection);
-            Positions = new PositionsRepository(_connection);
-            TrackPoints = new TrackPointRepository(_connection);
-            Waypoints = new WaypointsRepository(_connection);
+            Configurations = new Repository<Configuration>(_connection);
+            Units = new Repository<Unit>(_connection);
+            Tracks = new Repository<Track>(_connection);
+            Positions = new Repository<Position>(_connection);
+            TrackPoints = new Repository<TrackPoint>(_connection);
+            Waypoints = new Repository<Waypoint>(_connection);
         }
 
         private async Task BeginTransactionAsync()

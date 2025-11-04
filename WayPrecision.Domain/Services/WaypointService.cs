@@ -1,5 +1,6 @@
 ﻿using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
+using System.Linq;
 
 namespace WayPrecision.Domain.Services
 {
@@ -18,9 +19,14 @@ namespace WayPrecision.Domain.Services
         /// <summary>
         /// Obtiene todos los waypoints almacenados.
         /// </summary>
-        public Task<List<Waypoint>> GetAllAsync()
+        public async Task<List<Waypoint>> GetAllAsync()
         {
-            return _unitOfWork.Waypoints.GetAllAsync();
+            List<Waypoint> waypoints = await _unitOfWork.Waypoints.GetAllAsync();
+
+            foreach (var waypoint in waypoints.Where(waypoint => !string.IsNullOrWhiteSpace(waypoint.PositionGuid)))
+                waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
+
+            return waypoints;
         }
 
         /// <summary>
@@ -61,6 +67,7 @@ namespace WayPrecision.Domain.Services
         {
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
+
             await _unitOfWork.Waypoints.UpdateAsync(waypoint);
         }
 
@@ -71,6 +78,7 @@ namespace WayPrecision.Domain.Services
         {
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
+
             await _unitOfWork.Waypoints.DeleteAsync(waypoint);
         }
     }

@@ -32,7 +32,7 @@ namespace WayPrecision.Domain.Data.Repositories
         /// Obtiene todas las entidades de la tabla.
         /// </summary>
         /// <returns>Lista de todas las entidades.</returns>
-        public Task<List<T>> GetAllAsync() => _connection.Table<T>().ToListAsync();
+        public virtual Task<List<T>> GetAllAsync() => _connection.Table<T>().ToListAsync();
 
         /// <summary>
         /// Obtiene una entidad por su identificador.

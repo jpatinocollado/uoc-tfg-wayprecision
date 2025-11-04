@@ -13,7 +13,8 @@
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                                <Label Text="{Binding Created, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <!--<Label Text="{Binding Created, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />-->
+                                <Label Text="{Binding CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
                                 <Label Text="{Binding Observation, StringFormat='Observaciones: {0}'}"
                                        FontSize="12"
                                        TextColor="{StaticResource Gray400}">

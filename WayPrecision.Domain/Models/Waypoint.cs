@@ -16,5 +16,18 @@ namespace WayPrecision.Domain.Models
 
         [Ignore] // SQLite-net no soporta navegación automática, pero puedes cargarla manualmente
         public virtual Position Position { get; set; }
+
+        [Ignore]
+        public DateTime? CreatedLocal
+        {
+            get
+            {
+                if (DateTime.TryParse(Created, null, System.Globalization.DateTimeStyles.AdjustToUniversal, out var utcDate))
+                {
+                    return utcDate.ToLocalTime();
+                }
+                return null;
+            }
+        }
     }
 }
