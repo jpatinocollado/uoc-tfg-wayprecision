@@ -79,6 +79,9 @@
 	  <MauiXaml Update="SettingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="WaypointDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="WaypointsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -65,10 +65,13 @@ namespace WayPrecision
             // Lógica para crear un waypoint
             if (_locationEnable && _lastPosition != null)
             {
+                DateTime dateTime = DateTime.UtcNow;
+
                 Waypoint waypoint = new Waypoint
                 {
                     Name = "",
                     Observation = "",
+                    Created = dateTime.ToString("o"),
                     Position = new Position
                     {
                         Latitude = _lastPosition.Latitude,
@@ -76,13 +79,11 @@ namespace WayPrecision
                         Accuracy = _lastPosition.Accuracy,
                         Altitude = _lastPosition.Altitude,
                         Course = _lastPosition.Course,
+                        Timestamp = dateTime.ToString("o"),
                     }
                 };
 
-                _ = _waypointService.AddAsync(waypoint);
-
-                string msg = $"Waypoint creado en Lat: {_lastPosition.Latitude}, Lng: {_lastPosition.Longitude}";
-                DisplayAlert("Crear Waypoint", msg, "OK");
+                Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Created));
             }
             else
             {
