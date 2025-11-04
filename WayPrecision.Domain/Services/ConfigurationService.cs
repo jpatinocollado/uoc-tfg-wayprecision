@@ -43,7 +43,9 @@ namespace WayPrecision.Domain.Services
             if (updatedConfig == null)
                 throw new ArgumentNullException(nameof(updatedConfig));
 
-            await _unitOfWork.Configurations.UpdateAsync(updatedConfig);
+            _unitOfWork.Configurations.UpdateDeferred(updatedConfig);
+
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>

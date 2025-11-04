@@ -3,10 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WayPrecision.WaypointsPage"
              Title="Waypoints">
-    <VerticalStackLayout>
-        <Label
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center"
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid RowDefinitions="Auto,*">
+        <CollectionView x:Name="WaypointsList"  Grid.Row="1"
+                 ItemsSource="{Binding data}"
+                 SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame  BackgroundColor="{StaticResource White}" CornerRadius="8">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding CreatedAt, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Observaciones, StringFormat='Observaciones: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Center">
+                                <Button Text="Editar"
+                                 Clicked="OnEditWaypointClicked"
+                                 CommandParameter="{Binding .}"
+                                 FontSize="12"
+                                 Padding="4,0"
+                                 Style="{StaticResource PrimaryButton}" />
+
+                                <Button Text="Ver en mapa"
+                                 Clicked="OnViewOnMapClicked"
+                                 CommandParameter="{Binding .}"
+                                 FontSize="12"
+                                 Padding="4,0"
+                                 Style="{StaticResource TertiaryButton}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>

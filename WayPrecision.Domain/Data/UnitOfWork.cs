@@ -1,5 +1,6 @@
 ﻿using SQLite;
 using WayPrecision.Domain.Data.Repositories;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Data
 {
@@ -8,12 +9,12 @@ namespace WayPrecision.Domain.Data
         private readonly SQLiteAsyncConnection _connection;
         private bool _inTransaction = false;
 
-        public ConfigurationRepository Configurations { get; }
-        public UnitsRepository Units { get; }
-        public TracksRepository Tracks { get; }
-        public PositionsRepository Positions { get; }
-        public TrackPointRepository TrackPoints { get; }
-        public WaypointsRepository Waypoints { get; }
+        public IRepository<Configuration> Configurations { get; }
+        public IRepository<Unit> Units { get; }
+        public IRepository<Track> Tracks { get; }
+        public IRepository<Position> Positions { get; }
+        public IRepository<TrackPoint> TrackPoints { get; }
+        public IRepository<Waypoint> Waypoints { get; }
 
         public UnitOfWork(DatabaseContext context)
         {
@@ -27,21 +28,22 @@ namespace WayPrecision.Domain.Data
             Waypoints = new WaypointsRepository(_connection);
         }
 
-        public async Task BeginTransactionAsync()
+        private async Task BeginTransactionAsync()
         {
             if (_inTransaction) throw new InvalidOperationException("Ya existe una transacción activa.");
+
             await _connection.ExecuteAsync("BEGIN TRANSACTION;");
             _inTransaction = true;
         }
 
-        public async Task CommitTransactionAsync()
+        private async Task CommitTransactionAsync()
         {
             if (!_inTransaction) throw new InvalidOperationException("No hay transacción activa.");
             await _connection.ExecuteAsync("COMMIT;");
             _inTransaction = false;
         }
 
-        public async Task RollbackTransactionAsync()
+        private async Task RollbackTransactionAsync()
         {
             if (_inTransaction)
             {
