@@ -11,7 +11,7 @@ namespace WayPrecision.Test
 
         public WaypointServiceIntegrationTest()
         {
-            var dbContext = new DatabaseContext(":memory:");
+            var dbContext = new DatabaseContext("C:\\Users\\jpatinoc.INDRA\\AppData\\Local\\User Name\\com.companyname.wayprecision\\Data\\wayprecision.db3");
             _unitOfWork = new UnitOfWork(dbContext);
             _service = new WaypointService(_unitOfWork);
         }
@@ -20,19 +20,22 @@ namespace WayPrecision.Test
         public async Task AddAsync_ShouldAddWaypointAndPosition()
         {
             // Arrange
+
+            var position = new Position
+            {
+                Guid = Guid.NewGuid().ToString(),
+                Latitude = 41.660651600484606,
+                Longitude = 0.55507296355237346,
+                Accuracy = 5.0,
+                Altitude = null,
+                Course = null,
+                Timestamp = DateTime.UtcNow.ToString("o")
+            };
             var waypoint = new Waypoint
             {
                 Name = "Test Waypoint",
-                Observation = "Obs 1"
-            };
-            var position = new Position
-            {
-                Latitude = 10.1,
-                Longitude = 20.2,
-                Altitude = 100,
-                Accuracy = 5,
-                Course = 90,
-                Timestamp = DateTime.UtcNow.ToString("o")
+                Position = position.Guid,
+                Created = position.Timestamp
             };
 
             // Act

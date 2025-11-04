@@ -8,7 +8,7 @@ namespace WayPrecision.Domain.Sensors.Location
 {
     public class InternalGpsManager : IGpsManager
     {
-        public event EventHandler<PositionEventArgs>? PositionChanged;
+        public event EventHandler<LocationEventArgs>? PositionChanged;
 
         private CancellationTokenSource _cts;
         private bool _isListening;
@@ -36,7 +36,7 @@ namespace WayPrecision.Domain.Sensors.Location
 
                     if (location != null)
                     {
-                        PositionChanged?.Invoke(this, new PositionEventArgs(new Position()
+                        PositionChanged?.Invoke(this, new LocationEventArgs(new GpsLocation()
                         {
                             Guid = Guid.NewGuid(),
                             Latitude = location.Latitude,

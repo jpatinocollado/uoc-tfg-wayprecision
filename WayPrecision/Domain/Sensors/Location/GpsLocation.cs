@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WayPrecision.Domain.Sensors.Location
 {
-    public class Position
+    public class GpsLocation
     {
         public Guid Guid { get; set; }
         public double Latitude { get; set; }

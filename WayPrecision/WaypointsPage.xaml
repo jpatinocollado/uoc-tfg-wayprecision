@@ -5,7 +5,7 @@
              Title="Waypoints">
     <Grid RowDefinitions="Auto,*">
         <CollectionView x:Name="WaypointsList"  Grid.Row="1"
-                 ItemsSource="{Binding data}"
+                 ItemsSource="{Binding Waypoints}"
                  SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -13,8 +13,23 @@
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
-                                <Label Text="{Binding CreatedAt, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding Observaciones, StringFormat='Observaciones: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Created, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Observation, StringFormat='Observaciones: {0}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray400}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding Observation}"
+                                                     Value="">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding Observation}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
                             </VerticalStackLayout>
                             <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Center">
                                 <Button Text="Editar"

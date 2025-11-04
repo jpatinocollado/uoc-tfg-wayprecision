@@ -30,7 +30,8 @@ namespace WayPrecision.Domain.Data
 
         private async Task BeginTransactionAsync()
         {
-            if (_inTransaction) throw new InvalidOperationException("Ya existe una transacción activa.");
+            if (_inTransaction)
+                throw new InvalidOperationException("Ya existe una transacción activa.");
 
             await _connection.ExecuteAsync("BEGIN TRANSACTION;");
             _inTransaction = true;

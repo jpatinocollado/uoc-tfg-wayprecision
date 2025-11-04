@@ -26,27 +26,32 @@ namespace WayPrecision.Domain.Services
         /// <summary>
         /// Añade un nuevo waypoint y su posición asociada obligatoriamente.
         /// </summary>
-        public async Task AddAsync(Waypoint waypoint, Position position)
+        public async Task AddAsync(Waypoint waypoint)
         {
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
-            if (position == null)
-                throw new ArgumentNullException(nameof(position));
+            else if (waypoint.Position == null)
+                throw new ArgumentNullException(nameof(waypoint.Position));
 
-            if (string.IsNullOrEmpty(position.Guid))
-                position.Guid = Guid.NewGuid().ToString();
+            DateTime utcNow = DateTime.UtcNow;
 
-            // Guardar la posición primero
-            await _unitOfWork.Positions.InsertAsync(position);
+            if (string.IsNullOrEmpty(waypoint.Position.Guid))
+                waypoint.Position.Guid = Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(waypoint.Position.Timestamp))
+                waypoint.Position.Timestamp = utcNow.ToString("o");
+
+            _unitOfWork.Positions.AddDeferred(waypoint.Position);
 
             if (string.IsNullOrEmpty(waypoint.Guid))
                 waypoint.Guid = Guid.NewGuid().ToString();
             if (string.IsNullOrEmpty(waypoint.Created))
-                waypoint.Created = DateTime.UtcNow.ToString("o");
-            // Asociar el Guid de la posición
-            waypoint.Position = position.Guid;
+                waypoint.Created = utcNow.ToString("o");
 
-            await _unitOfWork.Waypoints.InsertAsync(waypoint);
+            waypoint.PositionGuid = waypoint.Position.Guid;
+
+            _unitOfWork.Waypoints.AddDeferred(waypoint);
+
+            await _unitOfWork.SaveChangesAsync();
         }
 
         /// <summary>

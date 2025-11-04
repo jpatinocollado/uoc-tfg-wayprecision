@@ -1,22 +1,40 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Services;
 
 namespace WayPrecision;
 
 public partial class WaypointsPage : ContentPage
 {
-    //public ObservableCollection<Waypoint> data { get; set; } = new();
+    private readonly WaypointService service;
+    public ObservableCollection<Waypoint> Waypoints { get; set; } = [];
 
-    public WaypointsPage()
+    public WaypointsPage(IUnitOfWork unitOfWork)
     {
         InitializeComponent();
 
-        //BindingContext = this;
-        LoadWaypoints();
+        service = new WaypointService(unitOfWork);
+
+        BindingContext = this;
+
+        _ = LoadWaypoints();
     }
 
-    private void LoadWaypoints()
+    protected override void OnAppearing()
     {
+        base.OnAppearing();
+
+        _ = LoadWaypoints();
+    }
+
+    private async Task LoadWaypoints()
+    {
+        var waypoints = await service.GetAllAsync();
+        Waypoints.Clear();
+        foreach (var waypoint in waypoints)
+            Waypoints.Add(waypoint);
     }
 
     private async void OnEditWaypointClicked(object sender, EventArgs e)
@@ -31,10 +49,10 @@ public partial class WaypointsPage : ContentPage
 
     private async void OnViewOnMapClicked(object sender, EventArgs e)
     {
-        //if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
-        //{
-        //    // TODO: Navega o muestra el waypoint en el mapa
-        //    await DisplayAlert("Mapa", $"Visualizar {waypoint.Name} en el mapa", "OK");
-        //}
+        if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
+        {
+            // TODO: Navega o muestra el waypoint en el mapa
+            await DisplayAlert("Mapa", $"Visualizar {waypoint.Name} en el mapa", "OK");
+        }
     }
 }
