@@ -20,48 +20,51 @@ namespace WayPrecision.Test
         public async Task AddAsync_ShouldAddWaypointAndPosition()
         {
             // Arrange
-
-            var position = new Position
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Latitude = 41.660651600484606,
-                Longitude = 0.55507296355237346,
-                Accuracy = 5.0,
-                Altitude = null,
-                Course = null,
-                Timestamp = DateTime.UtcNow.ToString("o")
-            };
             var waypoint = new Waypoint
             {
                 Name = "Test Waypoint",
-                Position = position.Guid,
-                Created = position.Timestamp
+                Position = new Position
+                {
+                    Latitude = 41.660651600484606,
+                    Longitude = 0.55507296355237346,
+                    Accuracy = 5.0,
+                    Altitude = null,
+                    Course = null,
+                }
             };
 
             // Act
-            await _service.AddAsync(waypoint, position);
+            await _service.AddAsync(waypoint);
             var allWaypoints = await _service.GetAllAsync();
             var storedWaypoint = allWaypoints.FirstOrDefault(w => w.Name == "Test Waypoint");
 
             // Assert
             Assert.NotNull(storedWaypoint);
-            Assert.False(string.IsNullOrEmpty(storedWaypoint.Position));
-            var storedPosition = await _unitOfWork.Positions.GetByIdAsync(storedWaypoint.Position);
-            Assert.NotNull(storedPosition);
-            Assert.Equal(position.Latitude, storedPosition.Latitude);
-            Assert.Equal(position.Longitude, storedPosition.Longitude);
+            Assert.False(string.IsNullOrEmpty(storedWaypoint.PositionGuid));
+
+            Assert.NotNull(storedWaypoint.Position);
+            Assert.Equal(waypoint.Position.Latitude, storedWaypoint.Position.Latitude);
+            Assert.Equal(waypoint.Position.Longitude, storedWaypoint.Position.Longitude);
         }
 
         [Fact]
         public async Task GetAllAsync_ShouldReturnAllWaypoints()
         {
             // Arrange
-            var waypoint1 = new Waypoint { Name = "WP1", Observation = "O1" };
-            var position1 = new Position { Latitude = 1, Longitude = 2, Timestamp = DateTime.UtcNow.ToString("o") };
-            var waypoint2 = new Waypoint { Name = "WP2", Observation = "O2" };
-            var position2 = new Position { Latitude = 3, Longitude = 4, Timestamp = DateTime.UtcNow.ToString("o") };
-            await _service.AddAsync(waypoint1, position1);
-            await _service.AddAsync(waypoint2, position2);
+            var waypoint1 = new Waypoint
+            {
+                Name = "WP1",
+                Observation = "O1",
+                Position = new Position { Latitude = 1, Longitude = 2, }
+            };
+            var waypoint2 = new Waypoint
+            {
+                Name = "WP2",
+                Observation = "O2",
+                Position = new Position { Latitude = 3, Longitude = 4 }
+            };
+            await _service.AddAsync(waypoint1);
+            await _service.AddAsync(waypoint2);
 
             // Act
             var all = await _service.GetAllAsync();
@@ -76,9 +79,14 @@ namespace WayPrecision.Test
         public async Task UpdateAsync_ShouldUpdateWaypoint()
         {
             // Arrange
-            var waypoint = new Waypoint { Name = "ToUpdate", Observation = "Old" };
-            var position = new Position { Latitude = 5, Longitude = 6, Timestamp = DateTime.UtcNow.ToString("o") };
-            await _service.AddAsync(waypoint, position);
+            var waypoint = new Waypoint
+            {
+                Name = "ToUpdate",
+                Observation = "Old",
+                Position = new Position { Latitude = 1, Longitude = 2 }
+            };
+
+            await _service.AddAsync(waypoint);
             var all = await _service.GetAllAsync();
             var stored = all.First(w => w.Name == "ToUpdate");
             stored.Observation = "Updated";
@@ -95,9 +103,14 @@ namespace WayPrecision.Test
         public async Task DeleteAsync_ShouldRemoveWaypoint()
         {
             // Arrange
-            var waypoint = new Waypoint { Name = "ToDelete", Observation = "Obs" };
-            var position = new Position { Latitude = 7, Longitude = 8, Timestamp = DateTime.UtcNow.ToString("o") };
-            await _service.AddAsync(waypoint, position);
+            var waypoint = new Waypoint
+            {
+                Name = "ToDelete",
+                Observation = "Obs",
+                Position = new Position { Latitude = 7, Longitude = 8 }
+            };
+
+            await _service.AddAsync(waypoint);
             var all = await _service.GetAllAsync();
             var stored = all.First(w => w.Name == "ToDelete");
 
