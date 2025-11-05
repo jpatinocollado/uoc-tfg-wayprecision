@@ -182,5 +182,29 @@ namespace WayPrecision
                 lbZoom.Text = $"Zoom: {(!string.IsNullOrWhiteSpace(zoom) ? zoom : "-")}";
             });
         }
+
+        internal void CreateWaypoint(double lat, double lng, double? alt)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                DateTime dateTime = DateTime.UtcNow;
+
+                Waypoint waypoint = new Waypoint
+                {
+                    Name = "",
+                    Observation = "",
+                    Created = dateTime.ToString("o"),
+                    Position = new Position
+                    {
+                        Latitude = lat,
+                        Longitude = lng,
+                        Altitude = alt,
+                        Timestamp = dateTime.ToString("o"),
+                    }
+                };
+
+                Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Created));
+            });
+        }
     }
 }

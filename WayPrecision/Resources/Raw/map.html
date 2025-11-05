@@ -578,7 +578,7 @@
                 //map.on('zoomstart', onMapZoomStart);
                 map.on('zoomend', onMapZoomEnd);
                 //map.on('move', onMapMove);
-                //map.on('dblclick', onMapDblClick);
+                map.on('dblclick', onMapDblClick);
                 //map.on('baselayerchange', onMapBaseLayerChange);
                 //map.on('draw:created', onMapDrawCreated);
 
@@ -670,11 +670,6 @@
                 console.log('[onMapZoomEnd] Layer:', e);
 
                 postMessageToBackend('setZoom;' + map.getZoom());
-
-                //updateZoom(map.getZoom());
-
-                //MapLayersManagerService.ChangeLayerIfZoomIsOverflow();
-                //BackendManagerService.SetLastZoom('zoomend', map.getZoom());
             }
 
             var onMapMove = function (e)
@@ -686,11 +681,13 @@
 
             var onMapDblClick = function (e)
             {
-                if (!MapLayersManagerService.GetModeEdicio())
-                {
-                    var evtArgs = { lat: e.latlng.lat, lng: e.latlng.lng, alt: e.latlng.alt };
-                    window['mapEventHandler']['raiseEvent']('dblclick', evtArgs);
-                }
+                postMessageToBackend('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng + ';' + e.latlng.alt);
+
+                //if (!MapLayersManagerService.GetModeEdicio())
+                //{
+                //    var evtArgs = { lat: e.latlng.lat, lng: e.latlng.lng, alt: e.latlng.alt };
+                //    window['mapEventHandler']['raiseEvent']('dblclick', evtArgs);
+                //}
             }
 
             var onMapClick = function (e)
