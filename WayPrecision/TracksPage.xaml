@@ -22,13 +22,8 @@
                                        TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding Area}"
-                                                     Value="">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label"
-                                                     Binding="{Binding Area}"
-                                                     Value="{x:Null}">
+                                                     Binding="{Binding IsOpened}"
+                                                     Value="True">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                     </Label.Triggers>
@@ -37,15 +32,10 @@
                                        FontSize="12"
                                        TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
-                                        <!--<DataTrigger TargetType="Label"
-                                                     Binding="{Binding Area}"
-                                                     Value="">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>-->
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding Length}"
-                                                     Value="{x:Null}">
-                                            <Setter Property="IsVisible" Value="False" />
+                                                     Binding="{Binding IsOpened}"
+                                                     Value="True">
+                                            <Setter Property="IsVisible" Value="True" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>

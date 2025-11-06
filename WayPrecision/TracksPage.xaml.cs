@@ -42,7 +42,7 @@ public partial class TracksPage : ContentPage
                 Finalized = DateTime.UtcNow.ToString("o"),
                 Length = 1234.5,
                 Area = null,
-                IsOpened = true.ToString(),
+                IsOpened = true,
                 TotalPoints = 3,
                 LengthUnits = UnitEnum.Metros.ToString(),
             });

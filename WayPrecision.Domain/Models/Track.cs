@@ -11,7 +11,7 @@ namespace WayPrecision.Domain.Models
         public string Observation { get; set; }
         public string Created { get; set; }
         public string Finalized { get; set; }
-        public string IsOpened { get; set; }
+        public bool IsOpened { get; set; }
 
         public int TotalPoints { get; set; }
         public string AreaUnits { get; set; }
