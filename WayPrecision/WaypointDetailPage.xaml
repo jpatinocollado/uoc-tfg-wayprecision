@@ -51,7 +51,8 @@
 
             <Button x:Name="ViewOnMapButton"
             Text="Ver en el Mapa"
-            Style="{StaticResource SecondaryButton}" />
+            Style="{StaticResource SecondaryButton}"
+                    Clicked="ViewOnMapClicked" />
 
             <Button x:Name="DeleteButton"
             Text="Eliminar Waypoint"

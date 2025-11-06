@@ -51,8 +51,8 @@ public partial class WaypointsPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
         {
-            // TODO: Navega o muestra el waypoint en el mapa
-            await DisplayAlert("Mapa", $"Visualizar {waypoint.Name} en el mapa", "OK");
+            //navega a la página del mapa y muestra el waypoint
+            await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
         }
     }
 }

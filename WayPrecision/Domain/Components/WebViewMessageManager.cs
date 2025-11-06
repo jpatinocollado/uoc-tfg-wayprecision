@@ -18,6 +18,10 @@ namespace WayPrecision.Domain.Components
             {
                 switch (evento)
                 {
+                    case "mapLoaded":
+                        mainPage.PaintWaypoints();
+                        break;
+
                     case "enableLocation":
                         mainPage.SetEnableLocation(true);
                         break;
@@ -39,14 +43,17 @@ namespace WayPrecision.Domain.Components
                         mainPage.SetZoom(zoom);
                         break;
 
+                    case "editWaypoint":
+                        string idWaypoint = messages.Length > 1 ? messages[1] : string.Empty;
+                        mainPage.EditWaypoint(idWaypoint);
+                        break;
+
                     case "createWaypoint":
                         string lat = messages.Length > 1 ? messages[1] : string.Empty;
                         string lng = messages.Length > 2 ? messages[2] : string.Empty;
-                        string alt = messages.Length > 3 ? messages[3] : string.Empty;
 
                         double latDouble = 0;
                         double lngDouble = 0;
-                        double? altDouble = null;
 
                         if (double.TryParse(lat, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double latParsed))
                             latDouble = latParsed;
@@ -54,10 +61,7 @@ namespace WayPrecision.Domain.Components
                         if (double.TryParse(lng, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double lngParsed))
                             lngDouble = lngParsed;
 
-                        if (double.TryParse(alt, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double altParsed))
-                            altDouble = altParsed;
-
-                        mainPage.CreateWaypoint(latDouble, lngDouble, altDouble);
+                        mainPage.CreateWaypoint(latDouble, lngDouble);
                         break;
 
                     default:

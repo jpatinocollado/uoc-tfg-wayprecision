@@ -29,6 +29,18 @@ namespace WayPrecision.Domain.Services
             return waypoints;
         }
 
+
+        public async Task<Waypoint> GetByIdAsync(string guid)
+        {
+            Waypoint waypoint = await _unitOfWork.Waypoints.GetByIdAsync(guid);
+
+            if( !string.IsNullOrWhiteSpace(waypoint.PositionGuid))
+                waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
+
+            return waypoint;
+        }
+
+
         /// <summary>
         /// Añade un nuevo waypoint y su posición asociada obligatoriamente.
         /// </summary>

@@ -5,6 +5,11 @@
     <title>GPS Map</title>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <link rel='stylesheet' href='https://unpkg.com/leaflet/dist/leaflet.css' />
+
+    <!--MarkerCluster-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
     <style>
         #map {
             position: absolute;
@@ -24,6 +29,9 @@
 
     <!--leaflet-->
     <script src='https://unpkg.com/leaflet/dist/leaflet.js'></script>
+
+    <!--MarkerCluster-->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
 
     <!--Backend comunication-->
     <script>
@@ -539,7 +547,7 @@
                     icon = gps;
 
                 var markerPosition = L.marker(latLang, { icon: icon, rotationAngle: angle })
-                    .bindPopup('<b>Hola,</b><br> tu ets aquí.');
+                    .bindPopup('<b>Hola,</b><br>Este eres tú.');
                 actualPosition.clearLayers();
                 actualPosition.addLayer(markerPosition);
                 if (center)
@@ -681,13 +689,7 @@
 
             var onMapDblClick = function (e)
             {
-                postMessageToBackend('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng + ';' + e.latlng.alt);
-
-                //if (!MapLayersManagerService.GetModeEdicio())
-                //{
-                //    var evtArgs = { lat: e.latlng.lat, lng: e.latlng.lng, alt: e.latlng.alt };
-                //    window['mapEventHandler']['raiseEvent']('dblclick', evtArgs);
-                //}
+                postMessageToBackend('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng);
             }
 
             var onMapClick = function (e)
@@ -705,6 +707,440 @@
             //return plublic methods of service
             return {
                 Register: register,
+            };
+        })();
+    </script>
+
+    <!--Map Waypoints-->
+    <script>
+        var WaypointManagerService = (function ()
+        {
+            var waypoints = L.markerClusterGroup({
+                spiderfyOnMaxZoom: false,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true
+            });
+            var waypointsList = {};
+
+            var getLayer = function ()
+            {
+                return waypoints;
+            }
+
+            var clearWaypoints = function ()
+            {
+                console.log("Clear Layer Waypoints");
+                waypoints.clearLayers();
+                waypointsList = {};
+            }
+
+            var addWaypoint = function (waypoint)
+            {
+                console.log("Add Waypoint in Layer", waypoint);
+
+                var latLang = L.latLng(waypoint.lat, waypoint.lng);
+                waypointsList[waypoint.id] = L.marker(latLang).on('click', function ()
+                {
+                    waypointOnClick(waypoint);
+                }).bindTooltip(waypoint.name).addTo(waypoints);
+
+                console.log("layer waypoints", waypoints);
+            }
+
+            var waypointOnClick = function (waypoint)
+            {
+                postMessageToBackend('editWaypoint;' + waypoint.id);
+            }
+
+            var fitWaypoint = function (id)
+            {
+                console.log("Fit Waypoint", id);
+                var latlng = waypointsList[id].getLatLng();
+                var map = MapManagerService.GetMap();
+                map.setView(latlng, map.getMaxZoom());
+            }
+
+            var removeLayer = function ()
+            {
+                waypoints.remove();
+            }
+
+            //return plublic methods of service
+            return {
+                //Waypoints
+                GetLayer: getLayer,
+                RemoveLayer: removeLayer,
+                ClearWaypoints: clearWaypoints,
+                AddWaypoint: addWaypoint,
+                FitWaypoint: fitWaypoint,
+                //Waypoints
+            };
+        })();
+    </script>
+
+    <!--Map Layers-->
+    <script>
+        var MapLayersManagerService = (function ()
+        {
+            var baseMapsArr;
+            var baseMaps;
+            var overlayMaps;
+            var layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+            var IsModeEdicio = false;
+            var currentLayer;
+            var layerControlsAdicionals;
+            var layerControlsWms;
+            var layerControlsWmsProject;
+
+            var chkRecintes = true;
+            var chkWaypoints = true;
+            var chkTracks = true;
+            var chkGPX = false;
+
+            var projectId = "";
+
+            var baseLayerName = "OpenStreetMap";
+            var baseLayerOpacity = 1;
+
+            var addLayers = function (idLayer)
+            {
+                baseMaps = new Object();
+                baseMapsArr = [];
+
+                console.log("creando capa open street maps");
+                addOpenStreetMaps();
+
+                console.log("creando controles de vista");
+                createControlsView();
+            }
+
+            var changeLayerIfZoomIsOverflow = function ()
+            {
+                var map = MapManagerService.GetMap();
+                var currentZoom = map.getZoom();
+                if (currentLayer)
+                {
+                    if (currentLayer.options.Name == "Topogràfic - (off-line)" && currentZoom > 16)
+                    {
+                        if (baseMaps["Ortofoto - (off-line)"])
+                        {
+                            map.removeLayer(currentLayer);
+                            currentLayer = baseMaps["Ortofoto - (off-line)"];
+                            map.addLayer(currentLayer);
+                        }
+                    }
+                }
+            }
+
+            var addOpenStreetMaps = function ()
+            {
+                var openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                });
+
+                baseMaps["OpenStreetMap"] = openStreetMaps;
+                baseMapsArr.push(openStreetMaps);
+            }
+
+            var createControlsView = function ()
+            {
+                var map = MapManagerService.GetMap();
+
+                //DrawLayerManagerService.RemoveLayer();
+
+                //var layerTracks = TrackManagerService.GetLayer();
+                //layerTracks.options.className = "OVLY#Tracks";
+
+                var layerWaypoints = WaypointManagerService.GetLayer();
+                layerWaypoints.options.className = "OVLY#Waypoints";
+
+                //var layerKmlGpxExterns = ExternosManagerService.GetLayer();
+                //layerKmlGpxExterns.options.className = "OVLY#GPX";
+
+                var layerActualPosition = MapGpsManagerService.GetLayer();
+
+                //var layerRecintes = RecintesManagerService.GetLayer();
+                //layerRecintes.options.className = "OVLY#Recintes";
+
+                //overlayMaps = { 'Recintes': layerRecintes, 'Waypoints': layerWaypoints, 'Tracks': layerTracks, 'GPX/KML Externs': layerKmlGpxExterns };
+
+                overlayMaps = { 'Waypoints': layerWaypoints };
+
+                layerControls.remove();
+                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+                layerControls.addTo(map);
+
+                //if (chkTracks)
+                //    layerTracks.addTo(map);
+                //else
+                //    layerTracks.removeFrom(map);
+
+                if (chkWaypoints)
+                    layerWaypoints.addTo(map);
+                else
+                    layerWaypoints.removeFrom(map);
+
+                layerActualPosition.addTo(map);         // --> punto azul del GPS
+
+                //if (chkGPX)
+                //    layerKmlGpxExterns.addTo(map);
+                //else
+                //    layerKmlGpxExterns.removeFrom(map);
+
+                //if (chkRecintes)
+                //    layerRecintes.addTo(map);
+                //else
+                //    layerRecintes.removeFrom(map);
+
+                //console.log("añadiendo mbtiles adicionales");
+                //addMbTilesAdicionals();
+
+                //console.log("añadiendo servicios wms");
+                //addProjectWms();        //addWms();
+
+                setBaseLayer(baseLayerName);
+                updateOpacity(baseLayerOpacity);
+            }
+
+            var createControlsEdit = function ()
+            {
+                setModeEdicio(true);
+                var map = MapManagerService.GetMap();
+                var layerDraws = DrawLayerManagerService.GetLayer();
+
+                overlayMaps = {};
+                layerControls.remove();
+
+                if (layerControlsWms != null)
+                    layerControlsWms.remove();
+
+                if (layerControlsWmsProject != null)
+                    layerControlsWmsProject.remove();
+
+                if (layerControlsAdicionals != null)
+                    layerControlsAdicionals.remove();
+
+                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+                layerControls.addTo(map);
+
+                layerDraws.addTo(map);
+            }
+
+            var addMbTilesAdicionals = function ()
+            {
+                LoadingManagerService.Show('Carregant els MBTiles del projecte, esperi si us plau...');
+                layerControlsAdicionals = null;
+                var LeafletMBTilesAdicionalsLayerService = window['LeafletMBTilesAdicionalsLayerService'];
+                console.log('LeafletMBTilesAdicionalsLayerService: ', LeafletMBTilesAdicionalsLayerService);
+                LeafletMBTilesAdicionalsLayerService.getMBTilesAdicionals(MapManagerService.GetIdProyecto()).then(function (mbTilesAdicionals)
+                {
+                    console.log("mbTilesAdicionals: ", mbTilesAdicionals);
+                    if (mbTilesAdicionals != null && mbTilesAdicionals.length > 0)
+                    {
+                        var map = MapManagerService.GetMap();
+                        layerControlsAdicionals = L.control.mbTilesAdicionals({ position: 'topright' }, mbTilesAdicionals);
+                        layerControlsAdicionals.addTo(map);
+                    }
+                    LoadingManagerService.Hide();
+                });
+            }
+
+            var addWms = function ()
+            {
+                LoadingManagerService.Show('Carregant serveis WMS, esperi si us plau...');
+                layerControlsWms = null;
+                var LeafletWmsLayerService = window['LeafletWmsLayerService'];
+                LeafletWmsLayerService.getWmsServices().then(function (serveisWms)
+                {
+                    if (serveisWms != null && serveisWms.length > 0)
+                    {
+                        var map = MapManagerService.GetMap();
+                        layerControlsWms = L.control.serviciosWms({ position: 'topright' }, serveisWms);
+                        layerControlsWms.addTo(map);
+                    }
+                    LoadingManagerService.Hide();
+                });
+            }
+
+            var addProjectWms = function ()
+            {
+                LoadingManagerService.Show('Carregant les Capes de Serveis WMS del projecte, esperi si us plau...');
+                layerControlsWmsProject = null;
+                var LeafletWmsLayerService = window['LeafletWmsLayerService'];
+                LeafletWmsLayerService.getProjectWmsServices(projectId).then(function (serveisWms)
+                {
+                    if (serveisWms != null && serveisWms.length > 0)
+                    {
+                        var map = MapManagerService.GetMap();
+                        layerControlsWmsProject = L.control.serviciosWms({ position: 'topright' }, serveisWms);
+                        layerControlsWmsProject.addTo(map);
+                    }
+                    LoadingManagerService.Hide();
+                });
+            }
+
+            var getModeEdicio = function ()
+            {
+                return IsModeEdicio;
+            }
+
+            var setModeEdicio = function (isModeEdicio)
+            {
+                IsModeEdicio = isModeEdicio;
+            }
+
+            var setCurrentLayer = function (layer)
+            {
+                currentLayer = layer;
+            }
+
+            //gestión de opacidad, layers, ...
+            var updateOpacity = function (value)
+            {
+                if (currentLayer != null)
+                {
+                    currentLayer.setOpacity(value);
+                }
+            }
+            var setLayerOpacity = function (className, value)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.setOpacity(value);
+                    }
+                });
+            }
+            var setLayerzIndex = function (className, value)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.setZIndex(value);
+                    }
+                });
+            }
+            var removeLayer = function (className)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.removeFrom(map);
+                    }
+                });
+            }
+            var setBaseLayer = function (className)
+            {
+                var map = MapManagerService.GetMap();
+                var activeLayer = className;
+                switch (className)
+                {
+                    case "BASE#CB_Topo":
+                        activeLayer = "Topogràfic - (off-line)";
+                        break;
+                    case "BASE#CB_Orto":
+                        activeLayer = "Ortofoto - (off-line)";
+                        break;
+                }
+                var otherLayer = "Topogràfic - (off-line)";
+                if (otherLayer == activeLayer)
+                {
+                    otherLayer = "Ortofoto - (off-line)";
+                }
+                if (currentLayer)
+                {
+                    if (currentLayer.options.Name == otherLayer)
+                    {
+                        if (baseMaps[activeLayer])
+                        {
+                            map.removeLayer(currentLayer);
+                            currentLayer = baseMaps[activeLayer];
+                            map.addLayer(currentLayer);
+                        }
+                    }
+                }
+                else
+                {
+                    if (baseMaps[activeLayer])
+                    {
+                        currentLayer = baseMaps[activeLayer];
+                        map.addLayer(currentLayer);
+                    }
+                }
+            }
+            var setProjectId = function (ProjectId)
+            {
+                projectId = ProjectId;
+            }
+            var setChecks = function (ShowRecintes, ShowWaypoints, ShowTracks, ShowGPX)
+            {
+                chkRecintes = ShowRecintes;
+                chkWaypoints = ShowWaypoints;
+                chkTracks = ShowTracks;
+                chkGPX = ShowGPX;
+            }
+            var setInitLayer = function (BaseLayerName, BaseLayerOpacity)
+            {
+                baseLayerName = BaseLayerName;
+                baseLayerOpacity = BaseLayerOpacity;
+            }
+            var addLayerWMS = function (layerName, layerUrl, layerOpacity)
+            {
+                var map = MapManagerService.GetMap();
+                var capaWms = L.tileLayer.wms(layerUrl, {
+                    layers: layerName,
+                    zIndex: 20,
+                    opacity: layerOpacity.replace(",", "."),
+                    maxZoom: 22,
+                    maxNativeZoom: 18,
+                    className: "WMS#" + layerName
+                });
+                map.addLayer(capaWms);
+            }
+            var addLayerMBTile = function (idProyecto, layerName, layerOpacity)
+            {
+                var map = MapManagerService.GetMap();
+                var optionsOrtofoto = {
+                    minZoom: 8,
+                    maxZoom: 22,
+                    maxNativeZoom: 18,
+                    opacity: layerOpacity.replace(",", "."),
+                    zIndex: 20,
+                    Name: layerName,
+                    imageFormat: 'png',
+                    className: "MBTILES#" + layerName
+                };
+                var ortofotoLayer = L.tileLayer.mbTilesAdicionals(idProyecto, layerName, optionsOrtofoto);
+                map.addLayer(ortofotoLayer);
+            }
+
+            //return plublic methods of service
+            return {
+                AddLayers: addLayers,
+                CreateControlsView: createControlsView,
+                CreateControlsEdit: createControlsEdit,
+                GetModeEdicio: getModeEdicio,
+                SetModeEdicio: setModeEdicio,
+                ChangeLayerIfZoomIsOverflow: changeLayerIfZoomIsOverflow,
+                SetCurrentLayer: setCurrentLayer,
+
+                UpdateOpacity: updateOpacity,
+                SetLayerOpacity: setLayerOpacity,
+                SetLayerzIndex: setLayerzIndex,
+                SetBaseLayer: setBaseLayer,
+                RemoveLayer: removeLayer,
+                SetChecks: setChecks,
+                SetInitLayer: setInitLayer,
+                SetProjectId: setProjectId,
+                AddLayerWMS: addLayerWMS,
+                AddLayerMBTile: addLayerMBTile,
             };
         })();
     </script>
@@ -753,16 +1189,22 @@
 
                 //add layers
                 console.log("añadiendo capas");
-                //MapLayersManagerService.AddLayers(idLastLayer);
-                //añadimos la capa de OpenStreetMap
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© OpenStreetMap'
-                }).addTo(LeafletMap);
+                MapLayersManagerService.AddLayers(idLastLayer);
 
-                //layer position
-                var positionLayer = MapGpsManagerService.GetLayer();
-                positionLayer.addTo(LeafletMap);
+                ////añadimos la capa de OpenStreetMap
+                //L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                //    maxZoom: 19,
+                //    attribution: '© OpenStreetMap'
+                //}).addTo(LeafletMap);
+
+                ////layer position
+                //var positionLayer = MapGpsManagerService.GetLayer();
+                //positionLayer.addTo(LeafletMap);
+
+                ////layer Waypoints
+                //var layerWaypoints = WaypointManagerService.GetLayer();
+                //layerWaypoints.options.className = "OVLY#Waypoints";
+                //layerWaypoints.addTo(LeafletMap);
 
                 //Custom Buttons to edit
                 console.log("añadiendo botones laterales");
@@ -831,6 +1273,7 @@
                 //console.log("cargando ficheros externos");
                 //ExternosManagerService.LoadFitxers();
 
+                postMessageToBackend('mapLoaded');
                 console.log("ocultando loader");
                 LoadingManagerService.Hide();
             }
