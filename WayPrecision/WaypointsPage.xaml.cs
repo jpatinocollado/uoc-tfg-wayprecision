@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using Microsoft.Extensions.DependencyInjection;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;

@@ -29,11 +29,11 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Waypoints" Icon="waypoint32x32.png">
-        <ShellContent ContentTemplate="{DataTemplate local:WaypointsPage}" />
+        <ShellContent Route="WaypointsPage" ContentTemplate="{DataTemplate local:WaypointsPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Tracks" Icon="track32x32.png">
-        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
+        <ShellContent Route="TracksPage" ContentTemplate="{DataTemplate local:TracksPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Configuración" Icon="config32x32.png">

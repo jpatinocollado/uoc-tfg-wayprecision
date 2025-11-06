@@ -1,6 +1,6 @@
 # WayPrecision
 
-**WayPrecision** es una aplicación móvil multiplataforma diseñada para facilitar el trabajo en campo mediante el uso de geolocalización, mapas interactivos y cálculo de áreas. Está pensada para perfiles como técnicos agrícolas, medioambientales y aficionados a la micología que necesitan registrar ubicaciones, recorridos y superficies de forma precisa y sencilla.
+**WayPrecision** es una aplicación móvil multiplataforma diseñada para facilitar el trabajo en campo mediante el uso de geolocalización, mapas interactivos y cálculo de áreas. Está pensada para perfiles como agricultores, ganaderos, ingenieros, técnicos y aficionados con uso esporádico que necesitan registrar ubicaciones, recorridos y superficies de forma precisa y sencilla.
 
 ## 🚀 Funcionalidades principales
 
@@ -13,16 +13,16 @@
 
 ## 👥 Perfiles de usuario
 
-- **Agricultores**: medición de parcelas, registro de cultivos y recorridos
-- **Técnicos medioambientales**: inspección de zonas naturales, registro de observaciones
-- **Buscadores de setas**: marcación de puntos de hallazgo y rutas de exploración
+- **Agricultor/Ganadero**: medición de parcelas, registro de cultivos y recorridos
+- **Ingenieros y Técnicos**: inspección de zonas naturales, registro de observaciones
+- **Amateurs y uso esporádico**: marcación de puntos de hallazgo y rutas de exploración
 
 ## 🛠️ Tecnologías utilizadas
 
 - [.NET MAUI](https://learn.microsoft.com/es-es/dotnet/maui/) para desarrollo multiplataforma
 - [Leaflet](https://leafletjs.com/) para mapas interactivos
 - [OpenStreetMap](https://www.openstreetmap.org/) como proveedor de cartografía
-- SQLite para almacenamiento local
+- [SQLite](https://sqlite.org/) para almacenamiento local
 - MVVM como patrón de arquitectura
 
 ## 📄 Licencia
