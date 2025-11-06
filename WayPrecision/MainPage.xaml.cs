@@ -1,13 +1,14 @@
 ﻿using System.Globalization;
 using System.Threading.Tasks;
 using WayPrecision.Domain.Data;
+using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, IQueryAttributable
     {
         private readonly WaypointService _waypointService;
 
@@ -17,6 +18,9 @@ namespace WayPrecision
         private bool isWebViewReady = false;
         private bool _locationEnable = false;
         private bool _locationCenterEnable = false;
+
+        private string? _pendingWaypointGuid;
+        private bool _isAppeared;
 
         public MainPage(WaypointService waypointService)
         {
@@ -31,6 +35,33 @@ namespace WayPrecision
 
             gpsManager = new InternalGpsManager();
             gpsManager.PositionChanged += OnPositionChanged;
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            //Navigate to waypoint if guid is provided
+            if (query.TryGetValue("waypointGuid", out var guidObj) && guidObj is string guid)
+            {
+                _pendingWaypointGuid = guid;
+                TryFitWaypoint();
+
+                WaypointScriptBuilder script = new WaypointScriptBuilder();
+                string js = script.FitWaypoint(guid).Render();
+                MapWebView.EvaluateJavaScriptAsync(js);
+            }
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (isWebViewReady)
+            {
+                PaintWaypoints();
+
+                _isAppeared = true;
+                TryFitWaypoint();
+            }
         }
 
         private void OnMapWebView_Loaded(object? sender, EventArgs e)
@@ -65,10 +96,13 @@ namespace WayPrecision
             // Lógica para crear un waypoint
             if (_locationEnable && _lastPosition != null)
             {
+                DateTime dateTime = DateTime.UtcNow;
+
                 Waypoint waypoint = new Waypoint
                 {
                     Name = "",
                     Observation = "",
+                    Created = dateTime.ToString("o"),
                     Position = new Position
                     {
                         Latitude = _lastPosition.Latitude,
@@ -76,13 +110,11 @@ namespace WayPrecision
                         Accuracy = _lastPosition.Accuracy,
                         Altitude = _lastPosition.Altitude,
                         Course = _lastPosition.Course,
+                        Timestamp = dateTime.ToString("o"),
                     }
                 };
 
-                _ = _waypointService.AddAsync(waypoint);
-
-                string msg = $"Waypoint creado en Lat: {_lastPosition.Latitude}, Lng: {_lastPosition.Longitude}";
-                DisplayAlert("Crear Waypoint", msg, "OK");
+                Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Created));
             }
             else
             {
@@ -181,5 +213,67 @@ namespace WayPrecision
                 lbZoom.Text = $"Zoom: {(!string.IsNullOrWhiteSpace(zoom) ? zoom : "-")}";
             });
         }
+
+        #region Waypoints
+
+        public void CreateWaypoint(double lat, double lng)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                DateTime dateTime = DateTime.UtcNow;
+
+                Waypoint waypoint = new Waypoint
+                {
+                    Name = "",
+                    Observation = "",
+                    Created = dateTime.ToString("o"),
+                    Position = new Position
+                    {
+                        Latitude = lat,
+                        Longitude = lng,
+                        Timestamp = dateTime.ToString("o"),
+                    }
+                };
+
+                Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Created));
+            });
+        }
+
+        public void EditWaypoint(string id)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Waypoint waypoint = await _waypointService.GetByIdAsync(id);
+                await Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Edited));
+            });
+        }
+
+        public void PaintWaypoints()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                var waypoints = await _waypointService.GetAllAsync();
+
+                WaypointScriptBuilder script = new WaypointScriptBuilder();
+                string js = script.ClearWaypoints()
+                                .UpdateWaypoints(waypoints)
+                                .Render();
+
+                await MapWebView.EvaluateJavaScriptAsync(js);
+            });
+        }
+
+        private void TryFitWaypoint()
+        {
+            if (_isAppeared && !string.IsNullOrEmpty(_pendingWaypointGuid))
+            {
+                WaypointScriptBuilder script = new WaypointScriptBuilder();
+                string js = script.FitWaypoint(_pendingWaypointGuid).Render();
+                MapWebView.EvaluateJavaScriptAsync(js);
+                _pendingWaypointGuid = null; // Solo una vez
+            }
+        }
+
+        #endregion Waypoints
     }
 }

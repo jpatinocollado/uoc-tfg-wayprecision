@@ -8,6 +8,8 @@
         {
             InitializeComponent();
 
+            //Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+
             OpenEmailCommand = new Command(async () =>
             {
                 await Launcher.OpenAsync("mailto:jpcollado@uoc.edu");
@@ -18,8 +20,7 @@
 
         private static async void OnLinkedInTapped(object sender, EventArgs e)
         {
-            var url = "https://www.linkedin.com/in/jesuspatinocollado/";
-            await Launcher.Default.OpenAsync(url);
+            await Launcher.Default.OpenAsync("https://www.linkedin.com/in/jesuspatinocollado/");
         }
     }
 }

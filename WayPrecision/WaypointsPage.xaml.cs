@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Microsoft.Extensions.DependencyInjection;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
@@ -34,24 +35,24 @@ public partial class WaypointsPage : ContentPage
         Waypoints.Clear();
         foreach (var waypoint in waypoints)
             Waypoints.Add(waypoint);
+
+        Title = $"Waypoints ({waypoints.Count})";
     }
 
     private async void OnEditWaypointClicked(object sender, EventArgs e)
     {
-        //if (sender is Button button && button.CommandParameter is object waypoint)
-        //{
-        //    //await Navigation.PushAsync(new WaypointDetailPage(waypoint));
-
-        //    LoadWaypoints();
-        //}
+        if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+        {
+            await Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Edited));
+        }
     }
 
     private async void OnViewOnMapClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
         {
-            // TODO: Navega o muestra el waypoint en el mapa
-            await DisplayAlert("Mapa", $"Visualizar {waypoint.Name} en el mapa", "OK");
+            //navega a la página del mapa y muestra el waypoint
+            await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
         }
     }
 }
