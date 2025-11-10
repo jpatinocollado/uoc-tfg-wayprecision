@@ -12,6 +12,7 @@ namespace WayPrecision
 {
     public partial class MainPage : ContentPage, IQueryAttributable
     {
+        private readonly ConfigurationService _configurationService;
         private readonly IService<Track> _trackService;
         private readonly WaypointService _waypointService;
 
@@ -26,12 +27,13 @@ namespace WayPrecision
         private string? _pendingTrackGuid;
         private bool _isAppeared;
 
-        public MainPage(WaypointService waypointService, IService<Track> trackService)
+        public MainPage(WaypointService waypointService, IService<Track> trackService, ConfigurationService configurationService)
         {
             InitializeComponent();
 
             _waypointService = waypointService;
             _trackService = trackService;
+            _configurationService = configurationService;
 
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebView_Loaded;
@@ -55,7 +57,7 @@ namespace WayPrecision
             }
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
@@ -66,6 +68,9 @@ namespace WayPrecision
                 _isAppeared = true;
                 TryFitElement();
             }
+
+            Configuration configuration = await _configurationService.GetOrCreateAsync();
+            await gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
         }
 
         private void OnMapWebView_Loaded(object? sender, EventArgs e)
@@ -193,12 +198,15 @@ namespace WayPrecision
             }
         }
 
-        public void SetEnableLocation(bool value)
+        public async Task SetEnableLocation(bool value)
         {
             _locationEnable = value;
 
             if (value)
-                _ = gpsManager.StartListeningAsync();
+            {
+                Configuration configuration = await _configurationService.GetOrCreateAsync();
+                _ = gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
+            }
             else
                 _ = gpsManager.StopListeningAsync();
 
