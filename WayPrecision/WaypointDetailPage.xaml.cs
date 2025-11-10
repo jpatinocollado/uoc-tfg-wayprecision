@@ -57,6 +57,10 @@ public partial class WaypointDetailPage : ContentPage
             await service.DeleteAsync((Waypoint)BindingContext);
 
             await DisplayAlert("Eliminado", "El waypoint ha sido eliminado.", "OK");
+
+            //Cerramos la pantalla actual sacandola de la pila de navegación
+            await Navigation.PopAsync();
+
             //await Navigation.PopAsync();
 
             //// Actualizar waypoints en MainPage si está en la pila de navegación
@@ -66,7 +70,7 @@ public partial class WaypointDetailPage : ContentPage
             //    mainPage?.PaintWaypoints();
             //}
 
-            await Shell.Current.GoToAsync($"//MainPage");
+            //await Shell.Current.GoToAsync($"//MainPage");
         }
     }
 
@@ -95,6 +99,9 @@ public partial class WaypointDetailPage : ContentPage
             await DisplayAlert("Guardado", "El waypoint ha sido actualizado.", "OK");
         }
 
+        //Cerramos la pantalla actual sacandola de la pila de navegación
+        await Navigation.PopAsync();
+
         //await Navigation.PopAsync();
 
         //// Actualizar waypoints en MainPage si está en la pila de navegación
@@ -103,7 +110,7 @@ public partial class WaypointDetailPage : ContentPage
         //                    shell.CurrentPage is MainPage mainPage)
         //    mainPage?.PaintWaypoints();
 
-        await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+        //await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)

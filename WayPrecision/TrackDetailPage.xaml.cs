@@ -48,7 +48,8 @@ public partial class TrackDetailPage : ContentPage
 
             await DisplayAlert("Eliminado", "El track ha sido eliminado.", "OK");
 
-            await Shell.Current.GoToAsync($"//MainPage");
+            //Cerramos la pantalla actual sacandola de la pila de navegación
+            await Navigation.PopAsync();
         }
     }
 
@@ -77,7 +78,8 @@ public partial class TrackDetailPage : ContentPage
             await DisplayAlert("Guardado", "El track ha sido actualizado.", "OK");
         }
 
-        await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+        //Cerramos la pantalla actual sacandola de la pila de navegación
+        await Navigation.PopAsync();
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)
