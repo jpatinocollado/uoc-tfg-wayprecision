@@ -66,6 +66,8 @@ namespace WayPrecision.Domain.Map.Scripting
                                "id: '" + track.Guid + "', " +
                                "name: '" + track.Name + "', " +
                                "description: '" + track.Observation + "', " +
+                               "length: '" + track.LengthLocal + "', " +
+                               "area: '" + track.AreaLocal + "', " +
                                "color: '#31882A', " +
                                "fillColor: '#2AAD27', " +
                                "opacity: 1.0, " +

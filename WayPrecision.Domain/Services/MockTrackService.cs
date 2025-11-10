@@ -142,6 +142,48 @@ namespace WayPrecision.Domain.Services
                     }
                 }
             });
+
+            string t3 = Guid.NewGuid().ToString();
+            string t3p1 = Guid.NewGuid().ToString();
+            string t3p2 = Guid.NewGuid().ToString();
+
+            Tracks.Add(new Track()
+            {
+                Guid = t3,
+                Name = "Demo Track 3",
+                Observation = "This is a 3 demo track.",
+                Created = DateTime.UtcNow.AddMinutes(-1).ToString("o"),
+                Finalized = DateTime.UtcNow.ToString("o"),
+                IsOpened = true,
+                TotalPoints = 2,
+                TypeGeometry = TypeGeometry.LineString,
+                TrackPoints = new List<TrackPoint>() {
+                    new TrackPoint(){
+                         Guid = Guid.NewGuid().ToString(),
+                         TrackGuid = t3,
+                         PositionGuid = t3p1,
+                         Position = new Position(){
+                            Guid = t3p1,
+                            Latitude = 41.66244477347461,
+                            Longitude = 0.5539968609809877,
+                            Timestamp = DateTime.UtcNow.ToString("o"),
+                            Accuracy = 20
+                         }
+                    },
+                    new TrackPoint(){
+                         Guid = Guid.NewGuid().ToString(),
+                         TrackGuid = t3,
+                         PositionGuid = t3p2,
+                         Position = new Position(){
+                            Guid = t3p2,
+                            Latitude = 41.661637233478324,
+                            Longitude = 0.5542570352554322,
+                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
+                            Accuracy = 20
+                         }
+                    }
+                }
+            });
         }
 
         public Task<Track> CreateAsync(Track entity)

@@ -39,8 +39,8 @@
 
                 <VerticalStackLayout x:Name="AreaGroup" Grid.Column="0" Grid.Row="2">
                     <VerticalStackLayout.Triggers>
-                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsOpened}" Value="False">
-                            <Setter Property="IsVisible" Value="True" />
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsOpened}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
                         </DataTrigger>
                     </VerticalStackLayout.Triggers>
                     <Label Text="Área" FontAttributes="Bold" />

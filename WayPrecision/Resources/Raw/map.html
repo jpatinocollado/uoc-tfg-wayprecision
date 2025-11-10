@@ -818,15 +818,19 @@
                 {
                     type = track.lineString;
                     lineLength = turf.length(track.lineString, { units: 'meters' });
-                    alt += '<br /> Longitud: ' + lineLength.toFixed(2) + ' m';
+
+                    if (track.length)
+                        alt += '<br /> Longitud: ' + track.length;
                 } else
                 {
                     type = track.polygon;
                     polygonArea = turf.area(track.polygon);
                     polygonLength = turf.length(track.polygon, { units: 'meters' });
 
-                    alt += '<br /> Área: ' + polygonArea.toFixed(2) + ' m2';
-                    alt += '<br /> Perímetro: ' + polygonLength.toFixed(2) + ' m';
+                    if (track.area)
+                        alt += '<br /> Área: ' + track.area;
+                    if (track.length)
+                        alt += '<br /> Perímetro: ' + track.length;
                 }
 
                 trackList[track.id] = L.geoJSON(type, {

@@ -34,14 +34,14 @@ public partial class SettingsPage : ContentPage
     {
         var areaOptions = new List<UnitOption>
     {
-        new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "m²" },
-        new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "km²" },
-        new() { Key = UnitEnum.Hectareas.ToString(), Display = "ha" }
+        new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "Metros Cuadrados (m²)" },
+        new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "Kilómetros Cuadrados (km²)" },
+        new() { Key = UnitEnum.Hectareas.ToString(), Display = "Hectáreas (ha)" }
     };
         var lengthOptions = new List<UnitOption>
     {
-        new() { Key = UnitEnum.Metros.ToString(), Display = "m" },
-        new() { Key = UnitEnum.Kilometros.ToString(), Display = "km" }
+        new() { Key = UnitEnum.Metros.ToString(), Display = "Metros (m)" },
+        new() { Key = UnitEnum.Kilometros.ToString(), Display = "Kilómetros (km)" }
     };
 
         AreaUnitsPicker.ItemsSource = areaOptions;
