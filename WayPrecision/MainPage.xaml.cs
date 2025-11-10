@@ -36,7 +36,8 @@ namespace WayPrecision
             _configurationService = configurationService;
 
             MapWebView.Navigated += OnMapWebViewNavigated;
-            MapWebView.Loaded += OnMapWebView_Loaded;
+            MapWebView.Loaded += OnMapWebViewLoaded;
+            MapWebView.Navigating += MapWebViewNavigating;
 
             LoadOnlineOpenStreetMaps();
 
@@ -44,8 +45,11 @@ namespace WayPrecision
             gpsManager.PositionChanged += OnPositionChanged;
         }
 
+       
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
+            
+
             //Navigate to waypoint if guid is provided
             if (query.TryGetValue("waypointGuid", out var guidWaypointObj) && guidWaypointObj is string guidWaypoint)
             {
@@ -75,7 +79,13 @@ namespace WayPrecision
             await gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
         }
 
-        private void OnMapWebView_Loaded(object? sender, EventArgs e)
+        private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+
+        private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
             isWebViewReady = true;
         }
