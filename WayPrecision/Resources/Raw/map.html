@@ -817,7 +817,7 @@
                 if (track.type == "LineString")
                 {
                     type = track.lineString;
-                    var lineLength = turf.length(track.lineString, { units: 'meters' });
+                    lineLength = turf.length(track.lineString, { units: 'meters' });
                     alt += '<br /> Longitud: ' + lineLength.toFixed(2) + ' m';
                 } else
                 {
@@ -839,6 +839,8 @@
                         });
                     }
                 }).bindTooltip(alt).addTo(tracks);
+
+                postMessageToBackend('updateTrack;' + track.id + ';' + lineLength + ';' + polygonArea + ';' + polygonLength);
             }
 
             var clearTracks = function ()

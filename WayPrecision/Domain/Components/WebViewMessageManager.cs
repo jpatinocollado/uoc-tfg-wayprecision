@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,13 @@ namespace WayPrecision.Domain.Components
         {
             string[] messages = message.Split(';');
             string evento = messages[0];
+            //if (Application.Current != null &&
+            //    Application.Current.MainPage is Shell shell &&
+            //                shell.CurrentPage is MainPage mainPage)
+            //{
             if (Application.Current != null &&
-                Application.Current.MainPage is Shell shell &&
-                            shell.CurrentPage is MainPage mainPage)
+                Application.Current.Windows.FirstOrDefault()?.Page is Shell shell &&
+                shell.CurrentPage is MainPage mainPage)
             {
                 switch (evento)
                 {
@@ -69,9 +74,32 @@ namespace WayPrecision.Domain.Components
                         mainPage.EditTrack(idTrack);
                         break;
 
+                    case "updateTrack":
+                        string idUpdatedTrack = messages.Length > 1 ? messages[1] : string.Empty;
+                        double? trackLength = null;
+                        double? trackArea = null;
+                        double? trackPerimeter = null;
+
+                        if (messages.Length > 2 && double.TryParse(messages[2],
+                            NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out double lengthParsed))
+                            trackLength = lengthParsed;
+
+                        if (messages.Length > 3 && double.TryParse(messages[3],
+                            NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out double areaParsed))
+                            trackArea = areaParsed;
+
+                        if (messages.Length > 4 && double.TryParse(messages[4],
+                            NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out double perimeterParsed))
+                            trackPerimeter = perimeterParsed;
+
+                        mainPage.UpdateTrackDataGeometry(idUpdatedTrack, trackLength, trackArea, trackPerimeter);
+                        break;
 
                     default:
-                        Application.Current.MainPage.DisplayAlert("JS -> C#", message, "Aceptar");
+                        mainPage.DisplayAlert("JS -> C#", message, "Aceptar");
                         break;
                 }
             }

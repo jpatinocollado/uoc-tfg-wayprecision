@@ -1,31 +1,35 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System.Collections.Concurrent;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services
 {
     public class MockTrackService : IService<Track>
     {
-        private List<Track> Tracks = new List<Track>();
+        private readonly ConfigurationService _configurationService;
+        private ConcurrentBag<Track> Tracks = new ConcurrentBag<Track>();
 
-        public MockTrackService()
+        public MockTrackService(ConfigurationService configurationService)
         {
+            _configurationService = configurationService;
+
             // Initialize with some mock data
             string trackId = Guid.NewGuid().ToString();
             string position1 = Guid.NewGuid().ToString();
             string position2 = Guid.NewGuid().ToString();
             string position3 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track
+            Tracks.Add(new Track()
             {
                 Guid = trackId,
                 Name = "Demo Track",
                 Observation = "This is a demo track.",
                 Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
                 Finalized = DateTime.UtcNow.ToString("o"),
-                Length = 1234.5,
-                Area = null,
+                //Length = 1234.5,
+                //Area = null,
                 IsOpened = false,
                 TotalPoints = 3,
-                LengthUnits = UnitEnum.Metros.ToString(),
+                //LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
                 TrackPoints = new List<TrackPoint>() {
                     new TrackPoint(){
@@ -73,18 +77,18 @@ namespace WayPrecision.Domain.Services
             string t2p3 = Guid.NewGuid().ToString();
             string t2p4 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track
+            Tracks.Add(new Track()
             {
                 Guid = t2,
                 Name = "Demo Track 2",
                 Observation = "This is a 2 demo track.",
                 Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
                 Finalized = DateTime.UtcNow.ToString("o"),
-                Length = 1234.5,
-                Area = null,
+                //Length = 1234.5,
+                //Area = null,
                 IsOpened = false,
                 TotalPoints = 3,
-                LengthUnits = UnitEnum.Metros.ToString(),
+                //LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
                 TrackPoints = new List<TrackPoint>() {
                     new TrackPoint(){
@@ -143,39 +147,51 @@ namespace WayPrecision.Domain.Services
         public Task<Track> CreateAsync(Track entity)
         {
             Tracks.Add(entity);
-
             return Task.FromResult(entity);
         }
 
         public Task<bool> DeleteAsync(string guid)
         {
-            var track = Tracks.FirstOrDefault(t => t.Guid == guid);
+            var trackList = Tracks.ToList();
+            var track = trackList.FirstOrDefault(t => t.Guid == guid);
             if (track != null)
             {
-                Tracks.Remove(track);
+                // ConcurrentBag no soporta Remove, así que hay que reconstruir la colección
+                var newBag = new ConcurrentBag<Track>(trackList.Where(t => t.Guid != guid));
+                Tracks = newBag;
                 return Task.FromResult(true);
             }
             return Task.FromResult(false);
         }
 
-        public Task<List<Track>> GetAllAsync()
+        public async Task<List<Track>> GetAllAsync()
         {
-            return Task.FromResult(Tracks);
+            Configuration configuration = await _configurationService.GetOrCreateAsync();
+            foreach (var track in Tracks)
+                track.SetConfiguration(configuration);
+
+            return await Task.FromResult(Tracks.ToList());
         }
 
-        public Task<Track> GetByIdAsync(string guid)
+        public async Task<Track> GetByIdAsync(string guid)
         {
             var track = Tracks.FirstOrDefault(t => t.Guid == guid);
-            return Task.FromResult(track);
+
+            Configuration configuration = await _configurationService.GetOrCreateAsync();
+            track.SetConfiguration(configuration);
+
+            return await Task.FromResult(track);
         }
 
         public Task<Track> UpdateAsync(Track entity)
         {
-            var existingTrack = Tracks.FirstOrDefault(t => t.Guid == entity.Guid);
+            var trackList = Tracks.ToList();
+            var existingTrack = trackList.FirstOrDefault(t => t.Guid == entity.Guid);
             if (existingTrack != null)
             {
-                Tracks.Remove(existingTrack);
-                Tracks.Add(entity);
+                var newBag = new ConcurrentBag<Track>(trackList.Where(t => t.Guid != entity.Guid));
+                newBag.Add(entity);
+                Tracks = newBag;
                 return Task.FromResult(entity);
             }
             return Task.FromResult<Track>(null);

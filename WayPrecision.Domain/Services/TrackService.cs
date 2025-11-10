@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Data.UnitOfWork;
+﻿using System.Diagnostics;
+using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services
@@ -9,15 +10,17 @@ namespace WayPrecision.Domain.Services
     /// </summary>
     public class TrackService : IService<Track>
     {
+        private readonly ConfigurationService _configurationService;
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="TrackService"/>.
         /// </summary>
         /// <param name="unitOfWork">Unidad de trabajo para coordinar operaciones sobre repositorios.</param>
-        public TrackService(IUnitOfWork unitOfWork)
+        public TrackService(IUnitOfWork unitOfWork, ConfigurationService configurationService)
         {
             _unitOfWork = unitOfWork;
+            _configurationService = configurationService;
         }
 
         /// <summary>
@@ -36,18 +39,15 @@ namespace WayPrecision.Domain.Services
             string position2 = Guid.NewGuid().ToString();
             string position3 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track
+            Tracks.Add(new Track()
             {
                 Guid = trackId,
                 Name = "Demo Track",
                 Observation = "This is a demo track.",
                 Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
                 Finalized = DateTime.UtcNow.ToString("o"),
-                Length = 1234.5,
-                Area = null,
                 IsOpened = false,
                 TotalPoints = 3,
-                LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
                 TrackPoints = new List<TrackPoint>() {
                     new TrackPoint(){
@@ -95,18 +95,15 @@ namespace WayPrecision.Domain.Services
             string t2p3 = Guid.NewGuid().ToString();
             string t2p4 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track
+            Tracks.Add(new Track()
             {
                 Guid = t2,
                 Name = "Demo Track 2",
                 Observation = "This is a 2 demo track.",
                 Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
                 Finalized = DateTime.UtcNow.ToString("o"),
-                Length = 1234.5,
-                Area = null,
                 IsOpened = false,
                 TotalPoints = 3,
-                LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
                 TrackPoints = new List<TrackPoint>() {
                     new TrackPoint(){
@@ -161,6 +158,10 @@ namespace WayPrecision.Domain.Services
                 }
             });
 
+            Configuration configuration = await _configurationService.GetOrCreateAsync();
+            foreach (var track in Tracks)
+                track.SetConfiguration(configuration);
+
             return Tracks;
         }
 
@@ -175,6 +176,9 @@ namespace WayPrecision.Domain.Services
         {
             Track Track = await _unitOfWork.Tracks.GetByIdAsync(guid);
 
+            Configuration configuration = await _configurationService.GetOrCreateAsync();
+            Track.SetConfiguration(configuration);
+            
             //if (!string.IsNullOrWhiteSpace(Track.PositionGuid))
             //    Track.Position = await _unitOfWork.Positions.GetByIdAsync(Track.PositionGuid);
 

@@ -338,6 +338,23 @@ namespace WayPrecision
             });
         }
 
+        internal async Task UpdateTrackDataGeometry(string idUpdatedTrack, double? trackLength, double? trackArea, double? trackPerimeter)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Track track = await _trackService.GetByIdAsync(idUpdatedTrack);
+
+                if (track.IsOpened)
+                    track.Length = trackLength;
+                else
+                {
+                    track.Length = trackPerimeter;
+                    track.Area = trackArea;
+                }
+                await _trackService.UpdateAsync(track);
+            });
+        }
+
         #endregion Elements
     }
 }
