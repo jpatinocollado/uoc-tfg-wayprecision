@@ -212,7 +212,7 @@ namespace WayPrecision.Domain.Services
             foreach (var track in Tracks)
                 track.SetConfiguration(configuration);
 
-            return await Task.FromResult(Tracks.ToList());
+            return await Task.FromResult(Tracks.OrderByDescending(a => a.Created).ToList());
         }
 
         public async Task<Track> GetByIdAsync(string guid)

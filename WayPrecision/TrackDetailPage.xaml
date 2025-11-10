@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WayPrecision.TrackDetailPage"
-             Title="TrackDetailPage">
+             Title="Detalle del Track">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
             <Label Text="Nombre" FontAttributes="Bold" />
@@ -12,14 +12,14 @@
 
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0">
                     <Label Text="Creado" FontAttributes="Bold" />
-                    <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                    <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                          IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
                          BackgroundColor="{DynamicResource Gray200}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Grid.Row="0">
                     <Label Text="Finalizado" FontAttributes="Bold" />
-                    <Editor Text="{Binding FinalizedLocal, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+                    <Editor Text="{Binding FinalizedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                      IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
                      BackgroundColor="{DynamicResource Gray200}" />
                 </VerticalStackLayout>

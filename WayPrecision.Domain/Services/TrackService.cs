@@ -162,7 +162,7 @@ namespace WayPrecision.Domain.Services
             foreach (var track in Tracks)
                 track.SetConfiguration(configuration);
 
-            return Tracks;
+            return Tracks.OrderByDescending(a => a.Created).ToList();
         }
 
         /// <summary>

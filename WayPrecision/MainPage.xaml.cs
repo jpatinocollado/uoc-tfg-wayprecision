@@ -50,10 +50,12 @@ namespace WayPrecision
             if (query.TryGetValue("waypointGuid", out var guidWaypointObj) && guidWaypointObj is string guidWaypoint)
             {
                 _pendingWaypointGuid = guidWaypoint;
+                 Shell.Current.GoToAsync("//MainPage");
             }
             else if (query.TryGetValue("trackGuid", out var guidTrackObj) && guidTrackObj is string guidTrack)
             {
                 _pendingTrackGuid = guidTrack;
+                 Shell.Current.GoToAsync("//MainPage");
             }
         }
 

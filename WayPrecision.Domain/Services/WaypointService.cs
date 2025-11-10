@@ -26,7 +26,7 @@ namespace WayPrecision.Domain.Services
             foreach (var waypoint in waypoints.Where(waypoint => !string.IsNullOrWhiteSpace(waypoint.PositionGuid)))
                 waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
 
-            return waypoints;
+            return waypoints.OrderByDescending(a=> a.Created).ToList();
         }
 
 
