@@ -778,6 +778,123 @@
         })();
     </script>
 
+    <!--Map Tracks-->
+    <script>
+        var TrackManagerService = (function ()
+        {
+            //Layer group for all tracks
+            var tracks = L.layerGroup();
+            var trackList = {};
+
+            var getLayer = function ()
+            {
+                return tracks;
+            }
+
+            const setStyleTrack = (weight, color, fillColor, opacity, fillopacity) =>
+            {
+                return {
+                    "opacity": opacity,     //1
+                    "weight": weight,
+                    "fillColor": fillColor,
+                    "color": color,
+                    "fillOpacity": fillopacity  //0.5
+                }
+            }
+
+            var addTrack = function (track)
+            {
+                console.log('Add Track', track);
+
+                var type;
+                if (track.type == "LineString")
+                {
+                    type = track.lineString;
+                } else
+                {
+                    type = track.polygon;
+                }
+                
+                trackList[track.id] = L.geoJSON(type, {
+                    style: setStyleTrack(track.weight, track.color, track.fillColor, track.opacity, track.fillopacity),
+                    onEachFeature: function onEachFeature(feature, layer)
+                    {
+                        layer.on('click', function (e)
+                        {
+                            postMessageToBackend('editTrack;' + track.id);
+                        });
+                    }
+                }).bindTooltip(track.name + ' - ' + track.description).addTo(tracks);
+                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
+                var polygonArea = turf.area(track.polygon);
+                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
+                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
+                //window['mapEventHandler']['raiseEvent']('turfDistance', evtArgs);
+            }
+
+            var clearTracks = function ()
+            {
+                tracks.clearLayers();
+                trackList = {};
+            }
+
+            var fitTrack = function (id)
+            {
+                console.log('Fit Track', id);
+                //Esperamos 1 segundo, ya que la pantalla del menu, borra y actualiza los elementos del mapa
+                //setTimeout(function ()
+                //{
+                    let bounds = trackList[id].getBounds();
+                var map = MapManagerService.GetMap();
+                map.setZoom(map.getMaxZoom());
+                    map.fitBounds(bounds);
+
+                console.log('bounds', bounds);
+                    //Se oculta el resto de traks para identificarlo
+                    //var keys = Object.keys(trackList);
+                    //for (var i = 0; i < keys.length; i++)
+                    //{
+                    //    if (keys[i] != id)
+                    //        trackList[keys[i]].remove();
+                    //}
+                    //Se vuelven a mostrar todos los traks
+                    //setTimeout(function ()
+                    //{
+                        //var keys = Object.keys(trackList);
+                        //for (var i = 0; i < keys.length; i++)
+                        //{
+                        //    if (keys[i] != id)
+                        //        trackList[keys[i]].addTo(tracks);
+                        //}
+                    /*}, 2000);*/
+                /*}, 1000);*/
+            }
+
+            var removeLayer = function ()
+            {
+                tracks.remove();
+            }
+
+            var calcularTrack = function (track)
+            {
+                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
+                var polygonArea = turf.area(track.polygon);
+                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
+                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
+                //window['mapEventHandler']['raiseEvent']('closeTrack', evtArgs);
+            }
+            //return plublic methods of service
+            return {
+                GetLayer: getLayer,
+                RemoveLayer: removeLayer,
+                ClearTracks: clearTracks,
+                AddTrack: addTrack,
+                FitTrack: fitTrack,
+                CalcularTrack: calcularTrack
+            };
+        })();
+    </script>
+    
     <!--Map Layers-->
     <script>
         var MapLayersManagerService = (function ()
@@ -792,12 +909,8 @@
             var layerControlsWms;
             var layerControlsWmsProject;
 
-            var chkRecintes = true;
             var chkWaypoints = true;
             var chkTracks = true;
-            var chkGPX = false;
-
-            var projectId = "";
 
             var baseLayerName = "OpenStreetMap";
             var baseLayerOpacity = 1;
@@ -812,24 +925,6 @@
 
                 console.log("creando controles de vista");
                 createControlsView();
-            }
-
-            var changeLayerIfZoomIsOverflow = function ()
-            {
-                var map = MapManagerService.GetMap();
-                var currentZoom = map.getZoom();
-                if (currentLayer)
-                {
-                    if (currentLayer.options.Name == "Topogràfic - (off-line)" && currentZoom > 16)
-                    {
-                        if (baseMaps["Ortofoto - (off-line)"])
-                        {
-                            map.removeLayer(currentLayer);
-                            currentLayer = baseMaps["Ortofoto - (off-line)"];
-                            map.addLayer(currentLayer);
-                        }
-                    }
-                }
             }
 
             var addOpenStreetMaps = function ()
@@ -849,55 +944,31 @@
 
                 //DrawLayerManagerService.RemoveLayer();
 
-                //var layerTracks = TrackManagerService.GetLayer();
-                //layerTracks.options.className = "OVLY#Tracks";
+                var layerTracks = TrackManagerService.GetLayer();
+                layerTracks.options.className = "OVLY#Tracks";
 
                 var layerWaypoints = WaypointManagerService.GetLayer();
                 layerWaypoints.options.className = "OVLY#Waypoints";
 
-                //var layerKmlGpxExterns = ExternosManagerService.GetLayer();
-                //layerKmlGpxExterns.options.className = "OVLY#GPX";
-
                 var layerActualPosition = MapGpsManagerService.GetLayer();
 
-                //var layerRecintes = RecintesManagerService.GetLayer();
-                //layerRecintes.options.className = "OVLY#Recintes";
-
-                //overlayMaps = { 'Recintes': layerRecintes, 'Waypoints': layerWaypoints, 'Tracks': layerTracks, 'GPX/KML Externs': layerKmlGpxExterns };
-
-                overlayMaps = { 'Waypoints': layerWaypoints };
+                overlayMaps = { 'Waypoints': layerWaypoints, 'Tracks': layerTracks, };
 
                 layerControls.remove();
                 layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
                 layerControls.addTo(map);
 
-                //if (chkTracks)
-                //    layerTracks.addTo(map);
-                //else
-                //    layerTracks.removeFrom(map);
+                if (chkTracks)
+                    layerTracks.addTo(map);
+                else
+                    layerTracks.removeFrom(map);
 
                 if (chkWaypoints)
                     layerWaypoints.addTo(map);
                 else
                     layerWaypoints.removeFrom(map);
 
-                layerActualPosition.addTo(map);         // --> punto azul del GPS
-
-                //if (chkGPX)
-                //    layerKmlGpxExterns.addTo(map);
-                //else
-                //    layerKmlGpxExterns.removeFrom(map);
-
-                //if (chkRecintes)
-                //    layerRecintes.addTo(map);
-                //else
-                //    layerRecintes.removeFrom(map);
-
-                //console.log("añadiendo mbtiles adicionales");
-                //addMbTilesAdicionals();
-
-                //console.log("añadiendo servicios wms");
-                //addProjectWms();        //addWms();
+                layerActualPosition.addTo(map);
 
                 setBaseLayer(baseLayerName);
                 updateOpacity(baseLayerOpacity);
@@ -925,59 +996,6 @@
                 layerControls.addTo(map);
 
                 layerDraws.addTo(map);
-            }
-
-            var addMbTilesAdicionals = function ()
-            {
-                LoadingManagerService.Show('Carregant els MBTiles del projecte, esperi si us plau...');
-                layerControlsAdicionals = null;
-                var LeafletMBTilesAdicionalsLayerService = window['LeafletMBTilesAdicionalsLayerService'];
-                console.log('LeafletMBTilesAdicionalsLayerService: ', LeafletMBTilesAdicionalsLayerService);
-                LeafletMBTilesAdicionalsLayerService.getMBTilesAdicionals(MapManagerService.GetIdProyecto()).then(function (mbTilesAdicionals)
-                {
-                    console.log("mbTilesAdicionals: ", mbTilesAdicionals);
-                    if (mbTilesAdicionals != null && mbTilesAdicionals.length > 0)
-                    {
-                        var map = MapManagerService.GetMap();
-                        layerControlsAdicionals = L.control.mbTilesAdicionals({ position: 'topright' }, mbTilesAdicionals);
-                        layerControlsAdicionals.addTo(map);
-                    }
-                    LoadingManagerService.Hide();
-                });
-            }
-
-            var addWms = function ()
-            {
-                LoadingManagerService.Show('Carregant serveis WMS, esperi si us plau...');
-                layerControlsWms = null;
-                var LeafletWmsLayerService = window['LeafletWmsLayerService'];
-                LeafletWmsLayerService.getWmsServices().then(function (serveisWms)
-                {
-                    if (serveisWms != null && serveisWms.length > 0)
-                    {
-                        var map = MapManagerService.GetMap();
-                        layerControlsWms = L.control.serviciosWms({ position: 'topright' }, serveisWms);
-                        layerControlsWms.addTo(map);
-                    }
-                    LoadingManagerService.Hide();
-                });
-            }
-
-            var addProjectWms = function ()
-            {
-                LoadingManagerService.Show('Carregant les Capes de Serveis WMS del projecte, esperi si us plau...');
-                layerControlsWmsProject = null;
-                var LeafletWmsLayerService = window['LeafletWmsLayerService'];
-                LeafletWmsLayerService.getProjectWmsServices(projectId).then(function (serveisWms)
-                {
-                    if (serveisWms != null && serveisWms.length > 0)
-                    {
-                        var map = MapManagerService.GetMap();
-                        layerControlsWmsProject = L.control.serviciosWms({ position: 'topright' }, serveisWms);
-                        layerControlsWmsProject.addTo(map);
-                    }
-                    LoadingManagerService.Hide();
-                });
             }
 
             var getModeEdicio = function ()
@@ -1040,85 +1058,22 @@
             {
                 var map = MapManagerService.GetMap();
                 var activeLayer = className;
-                switch (className)
+                if (baseMaps[activeLayer])
                 {
-                    case "BASE#CB_Topo":
-                        activeLayer = "Topogràfic - (off-line)";
-                        break;
-                    case "BASE#CB_Orto":
-                        activeLayer = "Ortofoto - (off-line)";
-                        break;
-                }
-                var otherLayer = "Topogràfic - (off-line)";
-                if (otherLayer == activeLayer)
-                {
-                    otherLayer = "Ortofoto - (off-line)";
-                }
-                if (currentLayer)
-                {
-                    if (currentLayer.options.Name == otherLayer)
-                    {
-                        if (baseMaps[activeLayer])
-                        {
-                            map.removeLayer(currentLayer);
-                            currentLayer = baseMaps[activeLayer];
-                            map.addLayer(currentLayer);
-                        }
-                    }
-                }
-                else
-                {
-                    if (baseMaps[activeLayer])
-                    {
-                        currentLayer = baseMaps[activeLayer];
-                        map.addLayer(currentLayer);
-                    }
+                    currentLayer = baseMaps[activeLayer];
+                    map.addLayer(currentLayer);
                 }
             }
-            var setProjectId = function (ProjectId)
+           
+            var setChecks = function (ShowWaypoints, ShowTracks)
             {
-                projectId = ProjectId;
-            }
-            var setChecks = function (ShowRecintes, ShowWaypoints, ShowTracks, ShowGPX)
-            {
-                chkRecintes = ShowRecintes;
                 chkWaypoints = ShowWaypoints;
                 chkTracks = ShowTracks;
-                chkGPX = ShowGPX;
             }
             var setInitLayer = function (BaseLayerName, BaseLayerOpacity)
             {
                 baseLayerName = BaseLayerName;
                 baseLayerOpacity = BaseLayerOpacity;
-            }
-            var addLayerWMS = function (layerName, layerUrl, layerOpacity)
-            {
-                var map = MapManagerService.GetMap();
-                var capaWms = L.tileLayer.wms(layerUrl, {
-                    layers: layerName,
-                    zIndex: 20,
-                    opacity: layerOpacity.replace(",", "."),
-                    maxZoom: 22,
-                    maxNativeZoom: 18,
-                    className: "WMS#" + layerName
-                });
-                map.addLayer(capaWms);
-            }
-            var addLayerMBTile = function (idProyecto, layerName, layerOpacity)
-            {
-                var map = MapManagerService.GetMap();
-                var optionsOrtofoto = {
-                    minZoom: 8,
-                    maxZoom: 22,
-                    maxNativeZoom: 18,
-                    opacity: layerOpacity.replace(",", "."),
-                    zIndex: 20,
-                    Name: layerName,
-                    imageFormat: 'png',
-                    className: "MBTILES#" + layerName
-                };
-                var ortofotoLayer = L.tileLayer.mbTilesAdicionals(idProyecto, layerName, optionsOrtofoto);
-                map.addLayer(ortofotoLayer);
             }
 
             //return plublic methods of service
@@ -1128,7 +1083,6 @@
                 CreateControlsEdit: createControlsEdit,
                 GetModeEdicio: getModeEdicio,
                 SetModeEdicio: setModeEdicio,
-                ChangeLayerIfZoomIsOverflow: changeLayerIfZoomIsOverflow,
                 SetCurrentLayer: setCurrentLayer,
 
                 UpdateOpacity: updateOpacity,
@@ -1137,10 +1091,7 @@
                 SetBaseLayer: setBaseLayer,
                 RemoveLayer: removeLayer,
                 SetChecks: setChecks,
-                SetInitLayer: setInitLayer,
-                SetProjectId: setProjectId,
-                AddLayerWMS: addLayerWMS,
-                AddLayerMBTile: addLayerMBTile,
+                SetInitLayer: setInitLayer
             };
         })();
     </script>
@@ -1190,21 +1141,6 @@
                 //add layers
                 console.log("añadiendo capas");
                 MapLayersManagerService.AddLayers(idLastLayer);
-
-                ////añadimos la capa de OpenStreetMap
-                //L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                //    maxZoom: 19,
-                //    attribution: '© OpenStreetMap'
-                //}).addTo(LeafletMap);
-
-                ////layer position
-                //var positionLayer = MapGpsManagerService.GetLayer();
-                //positionLayer.addTo(LeafletMap);
-
-                ////layer Waypoints
-                //var layerWaypoints = WaypointManagerService.GetLayer();
-                //layerWaypoints.options.className = "OVLY#Waypoints";
-                //layerWaypoints.addTo(LeafletMap);
 
                 //Custom Buttons to edit
                 console.log("añadiendo botones laterales");
@@ -1269,9 +1205,6 @@
                     imperial: false
                 }
                 ).addTo(LeafletMap);
-
-                //console.log("cargando ficheros externos");
-                //ExternosManagerService.LoadFitxers();
 
                 postMessageToBackend('mapLoaded');
                 console.log("ocultando loader");

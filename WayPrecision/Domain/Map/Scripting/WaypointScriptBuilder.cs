@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WayPrecision.Domain.Models;
+﻿using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Map.Scripting
 {
@@ -15,14 +10,14 @@ namespace WayPrecision.Domain.Map.Scripting
 
         public WaypointScriptBuilder ClearWaypoints()
         {
-            Script.Append("WaypointManagerService.ClearWaypoints();");
+            Script.Append(GetClearWaypoints());
 
             return this;
         }
 
         public MapScriptBuilder FitWaypoint(string id)
         {
-            Script.Append($"WaypointManagerService.FitWaypoint('{id}');");
+            Script.Append(GetFitWaypoint(id));
 
             return this;
         }
@@ -31,20 +26,32 @@ namespace WayPrecision.Domain.Map.Scripting
         {
             waypoints.ForEach(waypoint =>
             {
-                string lat = waypoint.Position.Latitude.ToString().Replace(',', '.');
-                string lng = waypoint.Position.Longitude.ToString().Replace(',', '.');
-
-                Script.Append("WaypointManagerService.AddWaypoint({ " +
-                              $"id: '{waypoint.Guid}', " +
-                              $"name: '{waypoint.Name }', " +
-                              $"description: '{waypoint.Observation}', " +
-                              $"lat: {lat}, " +
-                              $"lng: {lng} " +
-                              " });");
-
+                Script.Append(GetWaypoint(waypoint));
             });
 
             return this;
+        }
+
+        public string GetClearWaypoints()
+        {
+            return "WaypointManagerService.ClearWaypoints();";
+        }
+        public string GetFitWaypoint(string id)
+        {
+            return $"WaypointManagerService.FitWaypoint('{id}');";
+        }
+        public string GetWaypoint(Waypoint waypoint)
+        {
+            string lat = waypoint.Position.Latitude.ToString().Replace(',', '.');
+            string lng = waypoint.Position.Longitude.ToString().Replace(',', '.');
+
+            return "WaypointManagerService.AddWaypoint({ " +
+                              $"id: '{waypoint.Guid}', " +
+                              $"name: '{waypoint.Name}', " +
+                              $"description: '{waypoint.Observation}', " +
+                              $"lat: {lat}, " +
+                              $"lng: {lng} " +
+                              " });";
         }
     }
 }

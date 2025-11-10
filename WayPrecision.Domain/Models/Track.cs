@@ -20,6 +20,8 @@ namespace WayPrecision.Domain.Models
         public double? Area { get; set; }
         public double? Length { get; set; }
 
+        public TypeGeometry TypeGeometry { get; set; }
+
         [Ignore]
         public DateTime? CreatedLocal
         {
@@ -58,5 +60,8 @@ namespace WayPrecision.Domain.Models
                 return TimeSpan.Zero;
             }
         }
+
+        [Ignore]
+        public virtual List<TrackPoint> TrackPoints { get; set; } = new List<TrackPoint>();
     }
 }

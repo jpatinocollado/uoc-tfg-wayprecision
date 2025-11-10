@@ -7,14 +7,14 @@ namespace WayPrecision;
 
 public partial class TracksPage : ContentPage
 {
-    private readonly TrackService service;
+    private readonly IService<Track> service;
     public ObservableCollection<Track> Tracks { get; set; } = [];
 
-    public TracksPage(IUnitOfWork unitOfWork)
+    public TracksPage(IService<Track> serviceTrack)
     {
         InitializeComponent();
 
-        service = new TrackService(unitOfWork);
+        service = serviceTrack;
 
         BindingContext = this;
 
@@ -31,21 +31,6 @@ public partial class TracksPage : ContentPage
     private async Task LoadTracks()
     {
         var tracks = await service.GetAllAsync();
-
-        if (tracks.Count == 0)
-            tracks.Add(new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Demo Track",
-                Observation = "This is a demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                Length = 1234.5,
-                Area = null,
-                IsOpened = true,
-                TotalPoints = 3,
-                LengthUnits = UnitEnum.Metros.ToString(),
-            });
 
         Tracks.Clear();
         foreach (var track in tracks)

@@ -12,5 +12,8 @@ namespace WayPrecision.Domain.Models
 
         [Indexed]
         public string PositionGuid { get; set; }
+
+        [Ignore]
+        public virtual Position Position { get; set; }
     }
 }

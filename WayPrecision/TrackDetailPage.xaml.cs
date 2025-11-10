@@ -15,7 +15,7 @@ public partial class TrackDetailPage : ContentPage
     /// <summary>
     /// Servicio para gestionar operaciones sobre tracks.
     /// </summary>
-    private readonly TrackService service;
+    private readonly IService<Track> service;
 
     /// <summary>
     /// Indica el modo de la página: creación o edición.
@@ -26,8 +26,7 @@ public partial class TrackDetailPage : ContentPage
     {
         InitializeComponent();
 
-        IUnitOfWork _unitOfWork = ((App)Application.Current).Services.GetRequiredService<IUnitOfWork>();
-        service = new TrackService(_unitOfWork);
+        service = ((App)Application.Current).Services.GetRequiredService<IService<Track>>();
 
         BindingContext = track;
         PageMode = pageMode;
@@ -50,7 +49,8 @@ public partial class TrackDetailPage : ContentPage
         if (confirm)
         {
             // Lógica para eliminar el track usando _unitOfWork, por ejemplo:
-            await service.DeleteAsync((Track)BindingContext);
+            Track track = (Track)BindingContext;
+            await service.DeleteAsync(track.Guid);
 
             await DisplayAlert("Eliminado", "El track ha sido eliminado.", "OK");
 
@@ -74,7 +74,7 @@ public partial class TrackDetailPage : ContentPage
 
         if (PageMode == TrackDetailPageMode.Created)
         {
-            await service.AddAsync(track);
+            await service.CreateAsync(track);
             await DisplayAlert("Guardado", "El track ha sido creado.", "OK");
         }
         else if (PageMode == TrackDetailPageMode.Edited)
