@@ -37,12 +37,24 @@
                             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Grid.Column="0" Grid.Row="2">
+                <VerticalStackLayout x:Name="AreaGroup" Grid.Column="0" Grid.Row="2">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsOpened}" Value="False">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </VerticalStackLayout.Triggers>
                     <Label Text="Área" FontAttributes="Bold" />
                     <Editor Text="{Binding Area}" BackgroundColor="{DynamicResource Gray200}"
                         IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
                 </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Grid.Row="2">
+                <VerticalStackLayout x:Name="LengthGroup" Grid.Column="1" Grid.Row="2">
+                    <VerticalStackLayout.Triggers>
+                        <DataTrigger TargetType="VerticalStackLayout"
+                                     Binding="{Binding IsOpened}"
+                                     Value="False">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </VerticalStackLayout.Triggers>
                     <Label Text="Longitud" FontAttributes="Bold" />
                     <Editor Text="{Binding Length}" BackgroundColor="{DynamicResource Gray200}"
                             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
