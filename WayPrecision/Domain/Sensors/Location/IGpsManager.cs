@@ -8,9 +8,11 @@ namespace WayPrecision.Domain.Sensors.Location
 {
     public interface IGpsManager
     {
-        Task StartListeningAsync();
+        Task StartListeningAsync(TimeSpan gpsInterval);
 
         Task StopListeningAsync();
+
+        Task ChangeGpsInterval(TimeSpan gpsInterval);
 
         event EventHandler<LocationEventArgs> PositionChanged;
     }

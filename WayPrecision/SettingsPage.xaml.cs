@@ -84,5 +84,7 @@ public partial class SettingsPage : ContentPage
         await _configurationService.SaveAsync(_currentConfig);
 
         await DisplayAlert("Configuración", "Configuración guardada correctamente.", "OK");
+
+        await Shell.Current.GoToAsync($"//MainPage");
     }
 }

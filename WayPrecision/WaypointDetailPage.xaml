@@ -33,7 +33,7 @@
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Grid.Row="1">
                     <Label Text="Precisión" FontAttributes="Bold" />
-                    <Editor Text="{Binding Position.Accuracy, StringFormat='{0} m'}" BackgroundColor="{DynamicResource Gray200}"
+                    <Editor Text="{Binding Position.Accuracy}" BackgroundColor="{DynamicResource Gray200}"
              IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
                 </VerticalStackLayout>
             </Grid>

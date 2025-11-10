@@ -12,14 +12,18 @@ namespace WayPrecision.Domain.Sensors.Location
 
         private CancellationTokenSource _cts;
         private bool _isListening;
+        private TimeSpan GpsInterval;
 
         public InternalGpsManager()
         {
             _cts = new CancellationTokenSource();
+            GpsInterval = new TimeSpan(0, 0, 2);
         }
 
-        public async Task StartListeningAsync()
+        public async Task StartListeningAsync(TimeSpan gpsInterval)
         {
+            GpsInterval = gpsInterval;
+
             if (_cts is null || _cts.IsCancellationRequested)
                 _cts = new CancellationTokenSource();
 
@@ -48,7 +52,7 @@ namespace WayPrecision.Domain.Sensors.Location
                         }));
                     }
 
-                    await Task.Delay(2000, _cts.Token); // Actualiza cada 2 segundos
+                    await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
                 }
             }, _cts.Token);
         }
@@ -61,6 +65,12 @@ namespace WayPrecision.Domain.Sensors.Location
             _cts?.Cancel();
             _cts?.Dispose();
             _isListening = false;
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeGpsInterval(TimeSpan gpsInterval)
+        {
+            GpsInterval = gpsInterval;
             return Task.CompletedTask;
         }
     }

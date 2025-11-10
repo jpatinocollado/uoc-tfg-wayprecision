@@ -19,7 +19,7 @@ namespace WayPrecision.Domain.Components
                 switch (evento)
                 {
                     case "mapLoaded":
-                        mainPage.PaintWaypoints();
+                        mainPage.PaintElements();
                         break;
 
                     case "enableLocation":
@@ -63,6 +63,12 @@ namespace WayPrecision.Domain.Components
 
                         mainPage.CreateWaypoint(latDouble, lngDouble);
                         break;
+
+                    case "editTrack":
+                        string idTrack = messages.Length > 1 ? messages[1] : string.Empty;
+                        mainPage.EditTrack(idTrack);
+                        break;
+
 
                     default:
                         Application.Current.MainPage.DisplayAlert("JS -> C#", message, "Aceptar");

@@ -1,14 +1,9 @@
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision;
-
-public enum WaypointDetailPageMode
-{
-    Created,
-    Edited
-}
 
 /// <summary>
 /// Página de detalle para crear o editar un waypoint.
@@ -24,14 +19,14 @@ public partial class WaypointDetailPage : ContentPage
     /// <summary>
     /// Indica el modo de la página: creación o edición.
     /// </summary>
-    private readonly WaypointDetailPageMode PageMode;
+    private readonly DetailPageMode PageMode;
 
     /// <summary>
     /// Inicializa una nueva instancia de <see cref="WaypointDetailPage"/>.
     /// </summary>
     /// <param name="waypoint">El waypoint a mostrar o editar.</param>
     /// <param name="pageMode">Modo de la página: creación o edición.</param>
-    public WaypointDetailPage(Waypoint waypoint, WaypointDetailPageMode pageMode)
+    public WaypointDetailPage(Waypoint waypoint, DetailPageMode pageMode)
     {
         InitializeComponent();
 
@@ -41,7 +36,7 @@ public partial class WaypointDetailPage : ContentPage
         BindingContext = waypoint;
         PageMode = pageMode;
 
-        if (PageMode == WaypointDetailPageMode.Created)
+        if (PageMode == DetailPageMode.Created)
         {
             DeleteButton.IsVisible = false;
             ViewOnMapButton.IsVisible = false;
@@ -89,12 +84,12 @@ public partial class WaypointDetailPage : ContentPage
             return;
         }
 
-        if (PageMode == WaypointDetailPageMode.Created)
+        if (PageMode == DetailPageMode.Created)
         {
             await service.AddAsync(waypoint);
             await DisplayAlert("Guardado", "El waypoint ha sido creado.", "OK");
         }
-        else if (PageMode == WaypointDetailPageMode.Edited)
+        else if (PageMode == DetailPageMode.Edited)
         {
             await service.UpdateAsync(waypoint);
             await DisplayAlert("Guardado", "El waypoint ha sido actualizado.", "OK");

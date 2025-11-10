@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision
@@ -36,6 +37,7 @@ namespace WayPrecision
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ConfigurationService>();
             builder.Services.AddScoped<WaypointService>();
+            builder.Services.AddScoped<IService<Track>, MockTrackService>();
 
             return builder.Build();
         }
