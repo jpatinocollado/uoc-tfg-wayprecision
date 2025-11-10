@@ -45,21 +45,18 @@ namespace WayPrecision
             gpsManager.PositionChanged += OnPositionChanged;
         }
 
-       
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            
-
             //Navigate to waypoint if guid is provided
             if (query.TryGetValue("waypointGuid", out var guidWaypointObj) && guidWaypointObj is string guidWaypoint)
             {
                 _pendingWaypointGuid = guidWaypoint;
-                 Shell.Current.GoToAsync("//MainPage");
+                Shell.Current.GoToAsync("//MainPage");
             }
             else if (query.TryGetValue("trackGuid", out var guidTrackObj) && guidTrackObj is string guidTrack)
             {
                 _pendingTrackGuid = guidTrack;
-                 Shell.Current.GoToAsync("//MainPage");
+                Shell.Current.GoToAsync("//MainPage");
             }
         }
 
@@ -72,7 +69,7 @@ namespace WayPrecision
                 PaintElements();
 
                 _isAppeared = true;
-                TryFitElement();
+                await TryFitElement();
             }
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
@@ -83,7 +80,6 @@ namespace WayPrecision
         {
             e.Cancel = true;
         }
-
 
         private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
