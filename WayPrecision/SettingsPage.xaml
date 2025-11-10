@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WayPrecision.SettingsPage"
+             Title="Configuración">
+    <Grid RowDefinitions="*,Auto" Padding="20">
+        <!-- Contenido principal en la parte superior -->
+        <VerticalStackLayout Grid.Row="0" Spacing="24">
+
+            <Label Text="Intervalo de posición GPS (segundos):" FontAttributes="Bold" />
+            <Entry x:Name="GpsIntervalEntry"
+               Keyboard="Numeric"
+               Placeholder="Introduce el intervalo en segundos" />
+
+            <Label Text="Unidad de área:" FontAttributes="Bold" />
+            <Picker x:Name="AreaUnitsPicker" />
+
+            <Label Text="Unidad de longitud:" FontAttributes="Bold" />
+            <Picker x:Name="LengthUnitsPicker" />
+        </VerticalStackLayout>
+
+        <!-- Botón anclado abajo -->
+        <Button Grid.Row="1"
+            Text="Guardar"
+            x:Name="SaveButton"
+            Style="{StaticResource PrimaryButton}"
+            Margin="0,24,0,0" />
+    </Grid>
+</ContentPage>

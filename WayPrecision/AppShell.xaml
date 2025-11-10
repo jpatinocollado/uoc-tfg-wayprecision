@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="WayPrecision.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:WayPrecision"
+    Shell.FlyoutBehavior="Flyout"
+    Title="WayPrecision">
+
+    <Shell.FlyoutHeader>
+        <Grid Padding="15"
+      BackgroundColor="{AppThemeBinding Light=#f5f5f5, Dark=#f5f5f5}">
+            <HorizontalStackLayout VerticalOptions="Center">
+                <Image Source="icon32x32.png"
+               HeightRequest="32"
+               WidthRequest="32"
+               Margin="0,0,10,0" />
+                <Label Text="WayPrecision"
+               FontSize="24"
+               FontAttributes="Bold"
+               VerticalOptions="Center"
+               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            </HorizontalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Mapa" Icon="mapa32x32.png">
+        <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Waypoints" Icon="waypoint32x32.png">
+        <ShellContent Route="WaypointsPage" ContentTemplate="{DataTemplate local:WaypointsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Tracks" Icon="track32x32.png">
+        <ShellContent Route="TracksPage" ContentTemplate="{DataTemplate local:TracksPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Configuración" Icon="config32x32.png">
+        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
+    </FlyoutItem>
+
+    <!-- Pie del menú lateral -->
+    <Shell.FlyoutFooter>
+        <Grid Padding="15" RowDefinitions="Auto,Auto,Auto"
+          BackgroundColor="{AppThemeBinding Light=#f5f5f5, Dark=#222}">
+            <HorizontalStackLayout Grid.Row="0" Spacing="8" VerticalOptions="Center">
+                <Label Text="Jesús Patiño Collado"
+       FontSize="16"
+       FontAttributes="Bold"
+       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+
+                <Image Source="link32x32.png"
+       HeightRequest="20"
+       WidthRequest="20"
+       VerticalOptions="Center">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnLinkedInTapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+            </HorizontalStackLayout>
+
+            <Label Text="jpcollado@uoc.edu"
+           FontSize="14"
+           Grid.Row="1"
+           TextColor="CornflowerBlue">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer
+                Command="{Binding OpenEmailCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label Text="Versión 0.0.1"
+               FontSize="12"
+               Grid.Row="2"
+               TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+        </Grid>
+    </Shell.FlyoutFooter>
+</Shell>
+
+<!--<a href="https://www.flaticon.com/free-icons/stop-icon" title="stop icon icons">Stop icon icons created by Creative Squad - Flaticon</a>-->
+<!--<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by Debi Alpa Nugraha - Flaticon</a>-->
+<!--<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by IYAHICON - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/pin-de-ubicacion" title="pin de ubicación iconos">Pin de ubicación iconos creados por -Artist - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/mapas-y-ubicacion" title="mapas y ubicación iconos">Mapas y ubicación iconos creados por -Artist - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/pin-de-ubicacion" title="pin de ubicación iconos">Pin de ubicación iconos creados por -Artist - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/durable" title="durable iconos">Durable iconos creados por Icon Hubs - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/engranaje" title="engranaje iconos">Engranaje iconos creados por Freepik - Flaticon</a>-->
+<!--<a href="https://www.flaticon.es/iconos-gratis/turismo" title="turismo iconos">Turismo iconos creados por -Artist - Flaticon</a>-->

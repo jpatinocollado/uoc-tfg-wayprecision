@@ -1,0 +1,1306 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>GPS Map</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='https://unpkg.com/leaflet/dist/leaflet.css' />
+
+    <!--MarkerCluster-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <!--background-color: #333333;-->
+    <div id='map' style="background-color: white; position: absolute; width: 100%; height: 100%;"></div>
+
+    <!--Jquery-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!--leaflet-->
+    <script src='https://unpkg.com/leaflet/dist/leaflet.js'></script>
+
+    <!--MarkerCluster-->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
+
+    <!--Backend comunication-->
+    <script>
+        var postMessageToBackend = function (message)
+        {
+            if (window.chrome && window.chrome.webview)
+            {
+                // Windows
+                console.log("Windows");
+                window.chrome.webview.postMessage(message);
+            } else if (window.external && window.external.notify)
+            {
+                // Android
+                console.log("Android");
+                window.external.notify(message);
+            } else if (typeof jsBridge !== "undefined")
+            {
+                // Android con AddJavascriptInterface
+                // Android
+                console.log("Android");
+                jsBridge.postMessage(message);
+            } else
+            {
+                alert("No se encontró un canal de comunicación con .NET");
+            }
+
+            console.log(message);
+        }
+    </script>
+
+    <!--L.easyButton`s-->
+    <script>
+        (function ()
+        {
+
+            // This is for grouping buttons into a bar
+            // takes an array of `L.easyButton`s and
+            // then the usual `.addTo(map)`
+            L.Control.EasyBar = L.Control.extend({
+
+                options: {
+                    position: 'topleft',  // part of leaflet's defaults
+                    id: null,       // an id to tag the Bar with
+                    leafletClasses: true        // use leaflet classes?
+                },
+
+                initialize: function (buttons, options)
+                {
+
+                    if (options)
+                    {
+                        L.Util.setOptions(this, options);
+                    }
+
+                    this._buildContainer();
+                    this._buttons = [];
+
+                    for (var i = 0; i < buttons.length; i++)
+                    {
+                        buttons[i]._bar = this;
+                        buttons[i]._container = buttons[i].button;
+                        this._buttons.push(buttons[i]);
+                        this.container.appendChild(buttons[i].button);
+                    }
+
+                },
+
+                _buildContainer: function ()
+                {
+                    this._container = this.container = L.DomUtil.create('div', '');
+                    this.options.leafletClasses && L.DomUtil.addClass(this.container, 'leaflet-bar easy-button-container leaflet-control');
+                    this.options.id && (this.container.id = this.options.id);
+                },
+
+                enable: function ()
+                {
+                    L.DomUtil.addClass(this.container, 'enabled');
+                    L.DomUtil.removeClass(this.container, 'disabled');
+                    this.container.setAttribute('aria-hidden', 'false');
+                    return this;
+                },
+
+                disable: function ()
+                {
+                    L.DomUtil.addClass(this.container, 'disabled');
+                    L.DomUtil.removeClass(this.container, 'enabled');
+                    this.container.setAttribute('aria-hidden', 'true');
+                    return this;
+                },
+
+                onAdd: function ()
+                {
+                    return this.container;
+                },
+
+                addTo: function (map)
+                {
+                    this._map = map;
+
+                    for (var i = 0; i < this._buttons.length; i++)
+                    {
+                        this._buttons[i]._map = map;
+                    }
+
+                    var container = this._container = this.onAdd(map),
+                        pos = this.getPosition(),
+                        corner = map._controlCorners[pos];
+
+                    L.DomUtil.addClass(container, 'leaflet-control');
+
+                    if (pos.indexOf('bottom') !== -1)
+                    {
+                        corner.insertBefore(container, corner.firstChild);
+                    } else
+                    {
+                        corner.appendChild(container);
+                    }
+
+                    return this;
+                }
+
+            });
+
+            L.easyBar = function ()
+            {
+                var args = [L.Control.EasyBar];
+                for (var i = 0; i < arguments.length; i++)
+                {
+                    args.push(arguments[i]);
+                }
+                return new (Function.prototype.bind.apply(L.Control.EasyBar, args));
+            };
+
+            // L.EasyButton is the actual buttons
+            // can be called without being grouped into a bar
+            L.Control.EasyButton = L.Control.extend({
+
+                options: {
+                    position: 'topleft',       // part of leaflet's defaults
+
+                    id: null,            // an id to tag the button with
+
+                    type: 'replace',       // [(replace|animate)]
+                    // replace swaps out elements
+                    // animate changes classes with all elements inserted
+
+                    states: [],              // state names look like this
+                    // {
+                    //   stateName: 'untracked',
+                    //   onClick: function(){ handle_nav_manually(); };
+                    //   title: 'click to make inactive',
+                    //   icon: 'fa-circle',    // wrapped with <a>
+                    // }
+
+                    leafletClasses: true,     // use leaflet styles for the button
+                    tagName: 'button',
+                },
+
+                initialize: function (icon, onClick, title, id)
+                {
+
+                    // clear the states manually
+                    this.options.states = [];
+
+                    // add id to options
+                    if (id != null)
+                    {
+                        this.options.id = id;
+                    }
+
+                    // storage between state functions
+                    this.storage = {};
+
+                    // is the last item an object?
+                    if (typeof arguments[arguments.length - 1] === 'object')
+                    {
+
+                        // if so, it should be the options
+                        L.Util.setOptions(this, arguments[arguments.length - 1]);
+                    }
+
+                    // if there aren't any states in options
+                    // use the early params
+                    if (this.options.states.length === 0 &&
+                        typeof icon === 'string' &&
+                        typeof onClick === 'function')
+                    {
+
+                        // turn the options object into a state
+                        this.options.states.push({
+                            icon: icon,
+                            onClick: onClick,
+                            title: typeof title === 'string' ? title : ''
+                        });
+                    }
+
+                    // curate and move user's states into
+                    // the _states for internal use
+                    this._states = [];
+
+                    for (var i = 0; i < this.options.states.length; i++)
+                    {
+                        this._states.push(new State(this.options.states[i], this));
+                    }
+
+                    this._buildButton();
+
+                    this._activateState(this._states[0]);
+
+                },
+
+                _buildButton: function ()
+                {
+
+                    this.button = L.DomUtil.create(this.options.tagName, '');
+
+                    if (this.options.tagName === 'button')
+                    {
+                        this.button.setAttribute('type', 'button');
+                    }
+
+                    if (this.options.id)
+                    {
+                        this.button.id = this.options.id;
+                    }
+
+                    if (this.options.leafletClasses)
+                    {
+                        L.DomUtil.addClass(this.button, 'easy-button-button leaflet-bar-part leaflet-interactive');
+                    }
+
+                    // don't let double clicks and mousedown get to the map
+                    L.DomEvent.addListener(this.button, 'dblclick', L.DomEvent.stop);
+                    L.DomEvent.addListener(this.button, 'mousedown', L.DomEvent.stop);
+                    L.DomEvent.addListener(this.button, 'mouseup', L.DomEvent.stop);
+
+                    // take care of normal clicks
+                    L.DomEvent.addListener(this.button, 'click', function (e)
+                    {
+                        L.DomEvent.stop(e);
+                        this._currentState.onClick(this, this._map ? this._map : null);
+                        this._map && this._map.getContainer().focus();
+                    }, this);
+
+                    // prep the contents of the control
+                    if (this.options.type == 'replace')
+                    {
+                        this.button.appendChild(this._currentState.icon);
+                    } else
+                    {
+                        for (var i = 0; i < this._states.length; i++)
+                        {
+                            this.button.appendChild(this._states[i].icon);
+                        }
+                    }
+                },
+
+                _currentState: {
+                    // placeholder content
+                    stateName: 'unnamed',
+                    icon: (function () { return document.createElement('span'); })()
+                },
+
+                _states: null, // populated on init
+
+                state: function (newState)
+                {
+
+                    // when called with no args, it's a getter
+                    if (arguments.length === 0)
+                    {
+                        return this._currentState.stateName;
+                    }
+
+                    // activate by name
+                    if (typeof newState == 'string')
+                    {
+
+                        this._activateStateNamed(newState);
+
+                        // activate by index
+                    } else if (typeof newState == 'number')
+                    {
+
+                        this._activateState(this._states[newState]);
+                    }
+
+                    return this;
+                },
+
+                _activateStateNamed: function (stateName)
+                {
+                    for (var i = 0; i < this._states.length; i++)
+                    {
+                        if (this._states[i].stateName == stateName)
+                        {
+                            this._activateState(this._states[i]);
+                        }
+                    }
+                },
+
+                _activateState: function (newState)
+                {
+
+                    if (newState === this._currentState)
+                    {
+
+                        // don't touch the dom if it'll just be the same after
+                        return;
+
+                    } else
+                    {
+
+                        // swap out elements... if you're into that kind of thing
+                        if (this.options.type == 'replace')
+                        {
+                            this.button.appendChild(newState.icon);
+                            this.button.removeChild(this._currentState.icon);
+                        }
+
+                        if (newState.title)
+                        {
+                            this.button.title = newState.title;
+                        } else
+                        {
+                            this.button.removeAttribute('title');
+                        }
+
+                        // update classes for animations
+                        for (var i = 0; i < this._states.length; i++)
+                        {
+                            L.DomUtil.removeClass(this._states[i].icon, this._currentState.stateName + '-active');
+                            L.DomUtil.addClass(this._states[i].icon, newState.stateName + '-active');
+                        }
+
+                        // update classes for animations
+                        L.DomUtil.removeClass(this.button, this._currentState.stateName + '-active');
+                        L.DomUtil.addClass(this.button, newState.stateName + '-active');
+
+                        // update the record
+                        this._currentState = newState;
+
+                    }
+                },
+
+                enable: function ()
+                {
+                    L.DomUtil.addClass(this.button, 'enabled');
+                    L.DomUtil.removeClass(this.button, 'disabled');
+                    this.button.setAttribute('aria-hidden', 'false');
+                    return this;
+                },
+
+                disable: function ()
+                {
+                    L.DomUtil.addClass(this.button, 'disabled');
+                    L.DomUtil.removeClass(this.button, 'enabled');
+                    this.button.setAttribute('aria-hidden', 'true');
+                    return this;
+                },
+
+                onAdd: function (map)
+                {
+                    var bar = L.easyBar([this], {
+                        position: this.options.position,
+                        leafletClasses: this.options.leafletClasses
+                    });
+                    this._anonymousBar = bar;
+                    this._container = bar.container;
+                    return this._anonymousBar.container;
+                },
+
+                removeFrom: function (map)
+                {
+                    if (this._map === map)
+                        this.remove();
+                    return this;
+                },
+
+            });
+
+            L.easyButton = function (/* args will pass automatically */)
+            {
+                var args = Array.prototype.concat.apply([L.Control.EasyButton], arguments);
+                return new (Function.prototype.bind.apply(L.Control.EasyButton, args));
+            };
+
+            /*************************
+             *
+             * util functions
+             *
+             *************************/
+
+            // constructor for states so only curated
+            // states end up getting called
+            function State(template, easyButton)
+            {
+
+                this.title = template.title;
+                this.stateName = template.stateName ? template.stateName : 'unnamed-state';
+
+                // build the wrapper
+                this.icon = L.DomUtil.create('span', '');
+
+                L.DomUtil.addClass(this.icon, 'button-state state-' + this.stateName.replace(/(^\s*|\s*$)/g, ''));
+                this.icon.innerHTML = buildIcon(template.icon);
+                this.onClick = L.Util.bind(template.onClick ? template.onClick : function () { }, easyButton);
+            }
+
+            function buildIcon(ambiguousIconString)
+            {
+
+                var tmpIcon;
+
+                // does this look like html? (i.e. not a class)
+                if (ambiguousIconString.match(/[&;=<>"']/))
+                {
+
+                    // if so, the user should have put in html
+                    // so move forward as such
+                    tmpIcon = ambiguousIconString;
+
+                    // then it wasn't html, so
+                    // it's a class list, figure out what kind
+                } else
+                {
+                    ambiguousIconString = ambiguousIconString.replace(/(^\s*|\s*$)/g, '');
+                    tmpIcon = L.DomUtil.create('span', '');
+
+                    if (ambiguousIconString.indexOf('fa-') === 0)
+                    {
+                        L.DomUtil.addClass(tmpIcon, 'fa ' + ambiguousIconString)
+                    } else if (ambiguousIconString.indexOf('glyphicon-') === 0)
+                    {
+                        L.DomUtil.addClass(tmpIcon, 'glyphicon ' + ambiguousIconString)
+                    } else
+                    {
+                        L.DomUtil.addClass(tmpIcon, /*rollwithit*/ ambiguousIconString)
+                    }
+
+                    // make this a string so that it's easy to set innerHTML below
+                    tmpIcon = tmpIcon.outerHTML;
+                }
+
+                return tmpIcon;
+            }
+
+        })();
+    </script>
+
+    <!--Loading-->
+    <script>
+        !function (t, e) { if ("object" == typeof exports && "object" == typeof module) module.exports = e(require("jquery")); else if ("function" == typeof define && define.amd) define(["jquery"], e); else { var n = "object" == typeof exports ? e(require("jquery")) : e(t.jQuery); for (var i in n) ("object" == typeof exports ? exports : t)[i] = n[i] } }(window, function (t) { return function (t) { var e = {}; function n(i) { if (e[i]) return e[i].exports; var o = e[i] = { i: i, l: !1, exports: {} }; return t[i].call(o.exports, o, o.exports, n), o.l = !0, o.exports } return n.m = t, n.c = e, n.d = function (t, e, i) { n.o(t, e) || Object.defineProperty(t, e, { enumerable: !0, get: i }) }, n.r = function (t) { "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(t, "__esModule", { value: !0 }) }, n.t = function (t, e) { if (1 & e && (t = n(t)), 8 & e) return t; if (4 & e && "object" == typeof t && t && t.__esModule) return t; var i = Object.create(null); if (n.r(i), Object.defineProperty(i, "default", { enumerable: !0, value: t }), 2 & e && "string" != typeof t) for (var o in t) n.d(i, o, function (e) { return t[e] }.bind(null, o)); return i }, n.n = function (t) { var e = t && t.__esModule ? function () { return t.default } : function () { return t }; return n.d(e, "a", e), e }, n.o = function (t, e) { return Object.prototype.hasOwnProperty.call(t, e) }, n.p = "", n(n.s = 1) }([function (e, n) { e.exports = t }, function (t, e, n) { "use strict"; n.r(e); var i = n(0), o = n.n(i); n(2); const r = function (t, e) { this.element = t, this.settings = o.a.extend({}, r.defaults, e), this.settings.fullPage = this.element.is("body"), this.init(), this.settings.start && this.start() }; r.defaults = { overlay: void 0, zIndex: void 0, message: "Loading...", theme: "light", shownClass: "loading-shown", hiddenClass: "loading-hidden", stoppable: !1, start: !0, onStart: function (t) { t.overlay.fadeIn(150) }, onStop: function (t) { t.overlay.fadeOut(150) }, onClick: function () { } }, r.setDefaults = function (t) { r.defaults = o.a.extend({}, r.defaults, t) }, o.a.extend(r.prototype, { init: function () { this.isActive = !1, this.overlay = this.settings.overlay || this.createOverlay(), this.resize(), this.attachMethodsToExternalEvents(), this.attachOptionsHandlers() }, createOverlay: function () { var t = o()('<div class="loading-overlay loading-theme-' + this.settings.theme + '"><div class="loading-overlay-content">' + this.settings.message + "</div></div>").addClass(this.settings.hiddenClass).hide().appendTo("body"), e = this.element.attr("id"); return e && t.attr("id", e + "_loading-overlay"), t }, attachMethodsToExternalEvents: function () { var t = this; t.element.on("loading.start", function () { t.overlay.removeClass(t.settings.hiddenClass).addClass(t.settings.shownClass) }), t.element.on("loading.stop", function () { t.overlay.removeClass(t.settings.shownClass).addClass(t.settings.hiddenClass) }), t.settings.stoppable && t.overlay.on("click", function () { t.stop() }), t.overlay.on("click", function () { t.element.trigger("loading.click", t) }), o()(window).on("resize", function () { t.resize() }), o()(function () { t.resize() }) }, attachOptionsHandlers: function () { var t = this; t.element.on("loading.start", function (e, n) { t.settings.onStart(n) }), t.element.on("loading.stop", function (e, n) { t.settings.onStop(n) }), t.element.on("loading.click", function (e, n) { t.settings.onClick(n) }) }, calcZIndex: function () { return void 0 !== this.settings.zIndex ? this.settings.zIndex : (parseInt(this.element.css("z-index")) || 0) + 1 + this.settings.fullPage }, resize: function () { var t = this.element, e = t.outerWidth(), n = t.outerHeight(); this.settings.fullPage && (n = "100%", e = "100%"), this.overlay.css({ position: this.settings.fullPage ? "fixed" : "absolute", zIndex: this.calcZIndex(), top: t.offset().top, left: t.offset().left, width: e, height: n }) }, start: function () { this.isActive = !0, this.resize(), this.element.trigger("loading.start", this) }, stop: function () { this.isActive = !1, this.element.trigger("loading.stop", this) }, active: function () { return this.isActive }, toggle: function () { this.active() ? this.stop() : this.start() }, destroy: function () { this.overlay.remove() } }); var s = "jquery-loading"; o.a.fn.loading = function (t) { return this.each(function () { var e = o.a.data(this, s); e ? void 0 === t ? e.start() : "string" == typeof t ? e[t].apply(e) : (e.destroy(), o.a.data(this, s, new r(o()(this), t))) : void 0 !== t && "object" != typeof t && "start" !== t && "toggle" !== t || o.a.data(this, s, new r(o()(this), t)) }) }, o.a.fn.Loading = function (t) { var e = o()(this).data(s); return e && void 0 === t || o()(this).data(s, e = new r(o()(this), t)), e }, o.a.expr[":"].loading = function (t) { var e = o.a.data(t, s); return !!e && e.active() }, o.a.Loading = r }, function (t, e, n) { var i = n(3); "string" == typeof i && (i = [[t.i, i, ""]]); var o = { insert: "head", singleton: !1 }; n(5)(i, o); i.locals && (t.exports = i.locals) }, function (t, e, n) { (t.exports = n(4)(!1)).push([t.i, "/* Default jquery-loading styles */\r\n\r\n.loading-overlay {\r\n  display: table;\r\n  opacity: 0.7;\r\n}\r\n\r\n.loading-overlay-content {\r\n  text-transform: uppercase;\r\n  letter-spacing: 0.4em;\r\n  font-size: 1.15em;\r\n  font-weight: bold;\r\n  text-align: center;\r\n  display: table-cell;\r\n  vertical-align: middle;\r\n}\r\n\r\n.loading-overlay.loading-theme-light {\r\n  background-color: #fff;\r\n  color: #000;\r\n}\r\n\r\n.loading-overlay.loading-theme-dark {\r\n  background-color: #000;\r\n  color: #fff;\r\n}\r\n", ""]) }, function (t, e, n) { "use strict"; t.exports = function (t) { var e = []; return e.toString = function () { return this.map(function (e) { var n = function (t, e) { var n = t[1] || "", i = t[3]; if (!i) return n; if (e && "function" == typeof btoa) { var o = (s = i, a = btoa(unescape(encodeURIComponent(JSON.stringify(s)))), l = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(a), "/*# ".concat(l, " */")), r = i.sources.map(function (t) { return "/*# sourceURL=".concat(i.sourceRoot).concat(t, " */") }); return [n].concat(r).concat([o]).join("\n") } var s, a, l; return [n].join("\n") }(e, t); return e[2] ? "@media ".concat(e[2], "{").concat(n, "}") : n }).join("") }, e.i = function (t, n) { "string" == typeof t && (t = [[null, t, ""]]); for (var i = {}, o = 0; o < this.length; o++) { var r = this[o][0]; null != r && (i[r] = !0) } for (var s = 0; s < t.length; s++) { var a = t[s]; null != a[0] && i[a[0]] || (n && !a[2] ? a[2] = n : n && (a[2] = "(".concat(a[2], ") and (").concat(n, ")")), e.push(a)) } }, e } }, function (t, e, n) { "use strict"; var i, o = {}, r = function () { return void 0 === i && (i = Boolean(window && document && document.all && !window.atob)), i }, s = function () { var t = {}; return function (e) { if (void 0 === t[e]) { var n = document.querySelector(e); if (window.HTMLIFrameElement && n instanceof window.HTMLIFrameElement) try { n = n.contentDocument.head } catch (t) { n = null } t[e] = n } return t[e] } }(); function a(t, e) { for (var n = [], i = {}, o = 0; o < t.length; o++) { var r = t[o], s = e.base ? r[0] + e.base : r[0], a = { css: r[1], media: r[2], sourceMap: r[3] }; i[s] ? i[s].parts.push(a) : n.push(i[s] = { id: s, parts: [a] }) } return n } function l(t, e) { for (var n = 0; n < t.length; n++) { var i = t[n], r = o[i.id], s = 0; if (r) { for (r.refs++; s < r.parts.length; s++)r.parts[s](i.parts[s]); for (; s < i.parts.length; s++)r.parts.push(v(i.parts[s], e)) } else { for (var a = []; s < i.parts.length; s++)a.push(v(i.parts[s], e)); o[i.id] = { id: i.id, refs: 1, parts: a } } } } function c(t) { var e = document.createElement("style"); if (void 0 === t.attributes.nonce) { var i = n.nc; i && (t.attributes.nonce = i) } if (Object.keys(t.attributes).forEach(function (n) { e.setAttribute(n, t.attributes[n]) }), "function" == typeof t.insert) t.insert(e); else { var o = s(t.insert || "head"); if (!o) throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid."); o.appendChild(e) } return e } var u, d = (u = [], function (t, e) { return u[t] = e, u.filter(Boolean).join("\n") }); function f(t, e, n, i) { var o = n ? "" : i.css; if (t.styleSheet) t.styleSheet.cssText = d(e, o); else { var r = document.createTextNode(o), s = t.childNodes; s[e] && t.removeChild(s[e]), s.length ? t.insertBefore(r, s[e]) : t.appendChild(r) } } var h = null, p = 0; function v(t, e) { var n, i, o; if (e.singleton) { var r = p++; n = h || (h = c(e)), i = f.bind(null, n, r, !1), o = f.bind(null, n, r, !0) } else n = c(e), i = function (t, e, n) { var i = n.css, o = n.media, r = n.sourceMap; if (o && t.setAttribute("media", o), r && btoa && (i += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(r)))), " */")), t.styleSheet) t.styleSheet.cssText = i; else { for (; t.firstChild;)t.removeChild(t.firstChild); t.appendChild(document.createTextNode(i)) } }.bind(null, n, e), o = function () { !function (t) { if (null === t.parentNode) return !1; t.parentNode.removeChild(t) }(n) }; return i(t), function (e) { if (e) { if (e.css === t.css && e.media === t.media && e.sourceMap === t.sourceMap) return; i(t = e) } else o() } } t.exports = function (t, e) { (e = e || {}).attributes = "object" == typeof e.attributes ? e.attributes : {}, e.singleton || "boolean" == typeof e.singleton || (e.singleton = r()); var n = a(t, e); return l(n, e), function (t) { for (var i = [], r = 0; r < n.length; r++) { var s = n[r], c = o[s.id]; c && (c.refs--, i.push(c)) } t && l(a(t, e), e); for (var u = 0; u < i.length; u++) { var d = i[u]; if (0 === d.refs) { for (var f = 0; f < d.parts.length; f++)d.parts[f](); delete o[d.id] } } } } }]) });
+    </script>
+    <script>
+        var LoadingManagerService = (function ()
+        {
+            var container = '#map';
+            var show = function (message)
+            {
+                $(container).loading({
+                    message: message,
+                    showClass: 'loadingShow'
+                });
+            }
+
+            var hide = function ()
+            {
+                if ($(container).is(':loading'))
+                    $(container).loading('stop');
+            }
+
+            //return plublic methods of service
+            return {
+                Show: show,
+                Hide: hide
+            };
+        })();
+    </script>
+
+    <!--Map GPS Manager-->
+    <script>
+        var MapGpsManagerService = (function ()
+        {
+            //icono de posición GPS
+            var gps = L.icon({
+                iconUrl: 'data:image/png;base64,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',
+                iconSize: [15, 20],
+                iconAnchor: [7, 20],
+                popupAnchor: [0, -20],
+            });
+
+            var gpsNoDirection = L.icon({
+                iconUrl: 'data:image/png;base64,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',
+                iconSize: [15, 20],
+                iconAnchor: [7, 20],
+                popupAnchor: [0, -20],
+            });
+
+            var actualPosition = L.layerGroup();
+
+            var getLayer = function ()
+            {
+                return actualPosition;
+            }
+
+            var setGpsPosition = function (lat, lng, center, angle)
+            {
+                var latLang = L.latLng(lat, lng);
+
+                let icon = gpsNoDirection;
+                if (angle)
+                    icon = gps;
+
+                var markerPosition = L.marker(latLang, { icon: icon, rotationAngle: angle })
+                    .bindPopup('<b>Hola,</b><br>Este eres tú.');
+                actualPosition.clearLayers();
+                actualPosition.addLayer(markerPosition);
+                if (center)
+                    MapManagerService.SetView(lat, lng);
+            }
+            var clearGpsPosition = function ()
+            {
+                actualPosition.clearLayers();
+            }
+
+            var removeLayer = function ()
+            {
+                actualPosition.remove();
+            }
+            //return plublic methods of service
+
+            return {
+                GetLayer: getLayer,
+                RemoveLayer: removeLayer,
+                SetGpsPosition: setGpsPosition,
+                ClearGpsPosition: clearGpsPosition
+            };
+        })();
+    </script>
+
+    <!--Map Events-->
+    <script>
+        var MapEventsManagerService = (function ()
+        {
+            var register = function ()
+            {
+                var map = MapManagerService.GetMap();
+
+                //set events
+                //map.on('load', onMapLoad);
+                //map.on('zoomstart', onMapZoomStart);
+                map.on('zoomend', onMapZoomEnd);
+                //map.on('move', onMapMove);
+                map.on('dblclick', onMapDblClick);
+                //map.on('baselayerchange', onMapBaseLayerChange);
+                //map.on('draw:created', onMapDrawCreated);
+
+                //map.on('layerremove', onLayerRemove);
+                //map.on('layeradd', onLayerAdd);
+
+                //map.on('click', onMapClick);
+            }
+
+            var onLayerRemove = function (event)
+            {
+                console.log('Layer:', event.layer);
+                if (event.layer.options.className == 'OVLY#Tracks' || event.layer.options.className == 'OVLY#Waypoints' ||
+                    event.layer.options.className == 'OVLY#GPX' || event.layer.options.className == 'OVLY#Recintes')
+                {
+                    BackendManagerService.SetCheckLayer(event.layer.options.className, false);
+                }
+            }
+
+            var onLayerAdd = function (event)
+            {
+                console.log('Layer:', event.layer);
+                if (event.layer.options.className == 'OVLY#Tracks' || event.layer.options.className == 'OVLY#Waypoints' ||
+                    event.layer.options.className == 'OVLY#GPX' || event.layer.options.className == 'OVLY#Recintes')
+                {
+                    BackendManagerService.SetCheckLayer(event.layer.options.className, true);
+                }
+            }
+
+            var onMapDrawCreated = function (e)
+            {
+                var type = e.layerType, layer = e.layer;
+
+                var estateEdicio = DrawLayerManagerService.GetState();
+                console.log('draw estateEdicio:', estateEdicio);
+
+                var currentPoligon = DrawLayerManagerService.GetCurrentPoligon();
+                console.log('draw currentPoligon:', currentPoligon);
+
+                var newCoordinates = TurfUtilsManagerService.ConverLatlngsToCoords(layer._latlngs);
+                var oldGeometry = TurfUtilsManagerService.GetGeometry(currentPoligon);
+
+                var union;
+                if (estateEdicio == "ADD")
+                {
+                    var polygon2 = turf.polygon(newCoordinates);
+
+                    union = turf.union(oldGeometry, polygon2);
+                    console.log('draw add result:', union);
+                }
+                else
+                {
+                    var polygon2 = turf.polygon(newCoordinates);
+
+                    union = turf.difference(oldGeometry, polygon2);
+                    console.log('draw remove result:', union);
+                }
+
+                union = L.geoJSON(union, {
+                    //onEachFeature: onEachFeature
+                });
+                union = union._layers[(union._leaflet_id - 1)];
+
+                DrawLayerManagerService.AddPoligon(union);
+            }
+
+            var onMapBaseLayerChange = function (e)
+            {
+                console.log('idLayer:', e.layer._leaflet_id);
+                console.log('Layer:', e);
+                BackendManagerService.SetLastLayer(e.layer); //._leaflet_id);
+                MapLayersManagerService.SetCurrentLayer(e.layer);
+            }
+
+            var onMapLoad = function (e)
+            {
+                BackendManagerService.LoadApp();
+            }
+
+            var onMapZoomStart = function (e)
+            {
+                var map = MapManagerService.GetMap();
+                BackendManagerService.SetLastZoom('zoomstart', map.getZoom());
+            }
+
+            var onMapZoomEnd = function (e)
+            {
+                let map = MapManagerService.GetMap();
+                console.log('[onMapZoomEnd] Layer:', e);
+
+                postMessageToBackend('setZoom;' + map.getZoom());
+            }
+
+            var onMapMove = function (e)
+            {
+                var map = MapManagerService.GetMap();
+                var latlng = map.getCenter();
+                BackendManagerService.SetLastCenter(map.getZoom(), latlng.lat, latlng.lng, latlng.alt);
+            }
+
+            var onMapDblClick = function (e)
+            {
+                postMessageToBackend('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng);
+            }
+
+            var onMapClick = function (e)
+            {
+                var map = MapManagerService.GetMap();
+                var popup = L.popup()
+                popup.setLatLng(e.latlng)
+                    .setContent("[MapEventsManagerService] You clicked the map at " + e.latlng.toString())
+                    .openOn(map);
+
+                var evtArgs = { id: 'map1', tagName: 'map', lat: e.latlng.lat, lng: e.latlng.lng, alt: e.latlng.alt };
+                window['mapEventHandler']['raiseEvent']('click', evtArgs);
+            }
+
+            //return plublic methods of service
+            return {
+                Register: register,
+            };
+        })();
+    </script>
+
+    <!--Map Waypoints-->
+    <script>
+        var WaypointManagerService = (function ()
+        {
+            var waypoints = L.markerClusterGroup({
+                spiderfyOnMaxZoom: false,
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true
+            });
+            var waypointsList = {};
+
+            var getLayer = function ()
+            {
+                return waypoints;
+            }
+
+            var clearWaypoints = function ()
+            {
+                console.log("Clear Layer Waypoints");
+                waypoints.clearLayers();
+                waypointsList = {};
+            }
+
+            var addWaypoint = function (waypoint)
+            {
+                console.log("Add Waypoint in Layer", waypoint);
+
+                var latLang = L.latLng(waypoint.lat, waypoint.lng);
+                waypointsList[waypoint.id] = L.marker(latLang).on('click', function ()
+                {
+                    waypointOnClick(waypoint);
+                }).bindTooltip(waypoint.name).addTo(waypoints);
+
+                console.log("layer waypoints", waypoints);
+            }
+
+            var waypointOnClick = function (waypoint)
+            {
+                postMessageToBackend('editWaypoint;' + waypoint.id);
+            }
+
+            var fitWaypoint = function (id)
+            {
+                console.log("Fit Waypoint", id);
+                var latlng = waypointsList[id].getLatLng();
+                var map = MapManagerService.GetMap();
+                map.setView(latlng, map.getMaxZoom());
+            }
+
+            var removeLayer = function ()
+            {
+                waypoints.remove();
+            }
+
+            //return plublic methods of service
+            return {
+                //Waypoints
+                GetLayer: getLayer,
+                RemoveLayer: removeLayer,
+                ClearWaypoints: clearWaypoints,
+                AddWaypoint: addWaypoint,
+                FitWaypoint: fitWaypoint,
+                //Waypoints
+            };
+        })();
+    </script>
+
+    <!--Map Tracks-->
+    <script>
+        var TrackManagerService = (function ()
+        {
+            //Layer group for all tracks
+            var tracks = L.layerGroup();
+            var trackList = {};
+
+            var getLayer = function ()
+            {
+                return tracks;
+            }
+
+            const setStyleTrack = (weight, color, fillColor, opacity, fillopacity) =>
+            {
+                return {
+                    "opacity": opacity,     //1
+                    "weight": weight,
+                    "fillColor": fillColor,
+                    "color": color,
+                    "fillOpacity": fillopacity  //0.5
+                }
+            }
+
+            var addTrack = function (track)
+            {
+                console.log('Add Track', track);
+
+                var type;
+                if (track.type == "LineString")
+                {
+                    type = track.lineString;
+                } else
+                {
+                    type = track.polygon;
+                }
+                
+                trackList[track.id] = L.geoJSON(type, {
+                    style: setStyleTrack(track.weight, track.color, track.fillColor, track.opacity, track.fillopacity),
+                    onEachFeature: function onEachFeature(feature, layer)
+                    {
+                        layer.on('click', function (e)
+                        {
+                            postMessageToBackend('editTrack;' + track.id);
+                        });
+                    }
+                }).bindTooltip(track.name + ' - ' + track.description).addTo(tracks);
+                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
+                var polygonArea = turf.area(track.polygon);
+                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
+                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
+                //window['mapEventHandler']['raiseEvent']('turfDistance', evtArgs);
+            }
+
+            var clearTracks = function ()
+            {
+                tracks.clearLayers();
+                trackList = {};
+            }
+
+            var fitTrack = function (id)
+            {
+                console.log('Fit Track', id);
+                //Esperamos 1 segundo, ya que la pantalla del menu, borra y actualiza los elementos del mapa
+                //setTimeout(function ()
+                //{
+                    let bounds = trackList[id].getBounds();
+                var map = MapManagerService.GetMap();
+                map.setZoom(map.getMaxZoom());
+                    map.fitBounds(bounds);
+
+                console.log('bounds', bounds);
+                    //Se oculta el resto de traks para identificarlo
+                    //var keys = Object.keys(trackList);
+                    //for (var i = 0; i < keys.length; i++)
+                    //{
+                    //    if (keys[i] != id)
+                    //        trackList[keys[i]].remove();
+                    //}
+                    //Se vuelven a mostrar todos los traks
+                    //setTimeout(function ()
+                    //{
+                        //var keys = Object.keys(trackList);
+                        //for (var i = 0; i < keys.length; i++)
+                        //{
+                        //    if (keys[i] != id)
+                        //        trackList[keys[i]].addTo(tracks);
+                        //}
+                    /*}, 2000);*/
+                /*}, 1000);*/
+            }
+
+            var removeLayer = function ()
+            {
+                tracks.remove();
+            }
+
+            var calcularTrack = function (track)
+            {
+                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
+                var polygonArea = turf.area(track.polygon);
+                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
+                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
+                //window['mapEventHandler']['raiseEvent']('closeTrack', evtArgs);
+            }
+            //return plublic methods of service
+            return {
+                GetLayer: getLayer,
+                RemoveLayer: removeLayer,
+                ClearTracks: clearTracks,
+                AddTrack: addTrack,
+                FitTrack: fitTrack,
+                CalcularTrack: calcularTrack
+            };
+        })();
+    </script>
+    
+    <!--Map Layers-->
+    <script>
+        var MapLayersManagerService = (function ()
+        {
+            var baseMapsArr;
+            var baseMaps;
+            var overlayMaps;
+            var layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+            var IsModeEdicio = false;
+            var currentLayer;
+            var layerControlsAdicionals;
+            var layerControlsWms;
+            var layerControlsWmsProject;
+
+            var chkWaypoints = true;
+            var chkTracks = true;
+
+            var baseLayerName = "OpenStreetMap";
+            var baseLayerOpacity = 1;
+
+            var addLayers = function (idLayer)
+            {
+                baseMaps = new Object();
+                baseMapsArr = [];
+
+                console.log("creando capa open street maps");
+                addOpenStreetMaps();
+
+                console.log("creando controles de vista");
+                createControlsView();
+            }
+
+            var addOpenStreetMaps = function ()
+            {
+                var openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                });
+
+                baseMaps["OpenStreetMap"] = openStreetMaps;
+                baseMapsArr.push(openStreetMaps);
+            }
+
+            var createControlsView = function ()
+            {
+                var map = MapManagerService.GetMap();
+
+                //DrawLayerManagerService.RemoveLayer();
+
+                var layerTracks = TrackManagerService.GetLayer();
+                layerTracks.options.className = "OVLY#Tracks";
+
+                var layerWaypoints = WaypointManagerService.GetLayer();
+                layerWaypoints.options.className = "OVLY#Waypoints";
+
+                var layerActualPosition = MapGpsManagerService.GetLayer();
+
+                overlayMaps = { 'Waypoints': layerWaypoints, 'Tracks': layerTracks, };
+
+                layerControls.remove();
+                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+                layerControls.addTo(map);
+
+                if (chkTracks)
+                    layerTracks.addTo(map);
+                else
+                    layerTracks.removeFrom(map);
+
+                if (chkWaypoints)
+                    layerWaypoints.addTo(map);
+                else
+                    layerWaypoints.removeFrom(map);
+
+                layerActualPosition.addTo(map);
+
+                setBaseLayer(baseLayerName);
+                updateOpacity(baseLayerOpacity);
+            }
+
+            var createControlsEdit = function ()
+            {
+                setModeEdicio(true);
+                var map = MapManagerService.GetMap();
+                var layerDraws = DrawLayerManagerService.GetLayer();
+
+                overlayMaps = {};
+                layerControls.remove();
+
+                if (layerControlsWms != null)
+                    layerControlsWms.remove();
+
+                if (layerControlsWmsProject != null)
+                    layerControlsWmsProject.remove();
+
+                if (layerControlsAdicionals != null)
+                    layerControlsAdicionals.remove();
+
+                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+                layerControls.addTo(map);
+
+                layerDraws.addTo(map);
+            }
+
+            var getModeEdicio = function ()
+            {
+                return IsModeEdicio;
+            }
+
+            var setModeEdicio = function (isModeEdicio)
+            {
+                IsModeEdicio = isModeEdicio;
+            }
+
+            var setCurrentLayer = function (layer)
+            {
+                currentLayer = layer;
+            }
+
+            //gestión de opacidad, layers, ...
+            var updateOpacity = function (value)
+            {
+                if (currentLayer != null)
+                {
+                    currentLayer.setOpacity(value);
+                }
+            }
+            var setLayerOpacity = function (className, value)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.setOpacity(value);
+                    }
+                });
+            }
+            var setLayerzIndex = function (className, value)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.setZIndex(value);
+                    }
+                });
+            }
+            var removeLayer = function (className)
+            {
+                var map = MapManagerService.GetMap();
+                map.eachLayer(function (layer)
+                {
+                    if (layer.options.className == className)
+                    {
+                        layer.removeFrom(map);
+                    }
+                });
+            }
+            var setBaseLayer = function (className)
+            {
+                var map = MapManagerService.GetMap();
+                var activeLayer = className;
+                if (baseMaps[activeLayer])
+                {
+                    currentLayer = baseMaps[activeLayer];
+                    map.addLayer(currentLayer);
+                }
+            }
+           
+            var setChecks = function (ShowWaypoints, ShowTracks)
+            {
+                chkWaypoints = ShowWaypoints;
+                chkTracks = ShowTracks;
+            }
+            var setInitLayer = function (BaseLayerName, BaseLayerOpacity)
+            {
+                baseLayerName = BaseLayerName;
+                baseLayerOpacity = BaseLayerOpacity;
+            }
+
+            //return plublic methods of service
+            return {
+                AddLayers: addLayers,
+                CreateControlsView: createControlsView,
+                CreateControlsEdit: createControlsEdit,
+                GetModeEdicio: getModeEdicio,
+                SetModeEdicio: setModeEdicio,
+                SetCurrentLayer: setCurrentLayer,
+
+                UpdateOpacity: updateOpacity,
+                SetLayerOpacity: setLayerOpacity,
+                SetLayerzIndex: setLayerzIndex,
+                SetBaseLayer: setBaseLayer,
+                RemoveLayer: removeLayer,
+                SetChecks: setChecks,
+                SetInitLayer: setInitLayer
+            };
+        })();
+    </script>
+
+    <!--Map Manager-->
+    <script>
+        var MapManagerService = (function ()
+        {
+            var LeafletMap;
+            var IsDevelop;
+            var IdProyecto;
+
+            var getIsDevelop = function ()
+            {
+                return IsDevelop;
+            }
+
+            var getMap = function ()
+            {
+                return LeafletMap;
+            }
+
+            var getIdProyecto = function ()
+            {
+                return IdProyecto;
+            }
+
+            var iniciarPantalla = function (idLastLayer, isDevelop, idProyecto)
+            {
+                IsDevelop = isDevelop;
+                IdProyecto = idProyecto;
+                //instance the map
+                LeafletMap = L.map('map',
+                    {
+                        zoomControl: true,
+                        doubleClickZoom: false,
+                        boxZoom: false,
+                        maxZoom: 19,
+                    });
+
+                //set events
+                MapEventsManagerService.Register();
+
+                //center map
+                LeafletMap.fitWorld();
+
+                //add layers
+                console.log("añadiendo capas");
+                MapLayersManagerService.AddLayers(idLastLayer);
+
+                //Custom Buttons to edit
+                console.log("añadiendo botones laterales");
+                //MapButtonManagerService.CreateButtonNavigation();
+                //MapButtonManagerService.CreateButtonDeveloperTools();
+                //MapButtonManagerService.CreateButtonHome();
+                //MapButtonManagerService.CreateButtonOpacity();
+
+                //boton de navegación
+                let buttonNavigation = L.easyButton({
+                    states: [{
+                        stateName: 'location-disable',
+                        icon: '<img width="24" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAAA+0lEQVRYR72UwRKEMAhD6/7/P7sXcbJIgLR134wXhCRw6BhrnNc3zccX/s3hCwnqpi3tTpNq7Ek90p8bzA3qQ39sNDdCr7AomNu82s8LDbFoBpHmvVg27HsrWlrdd0A1H90ZDMASt4QA1GGzd0/3AhX2JJswW+ZBFYBtYKApgnOpRhUgwm+7hBJgmylyJKLqI2Owk4c6ygVeAdNGCdk2Q+ynvSsXYGYSKwG2UAWITsdgF0k1qgCvgwGmNrhQZ+/+7gWYUEZrJkpeDUYziDTPxCoRQ30tH36PAtAV7RJ6hUVgVwjqQ38AqyFSj/SnQw2iaE9zTgT7ofsOvMYXVUIwIVOMQ/UAAAAASUVORK5CYII=" />',
+                        title: 'Habilitar localización',
+                        onClick: function (btn, map)
+                        {
+                            LoadingManagerService.Show('Activant localització...');
+
+                            postMessageToBackend("enableLocation");
+                            postMessageToBackend("enableCenterLocation");
+
+                            LoadingManagerService.Hide();
+                            btn.state('location-enable');
+
+                        }
+                    }, {
+                        stateName: 'location-enable', // name the state
+                        icon: '<img width="24" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAABCklEQVRYR72WwRWEMAhEcQvYErc4S7QB94RiZGBIov+IMDNwyFNkhHXbZd32tlzh0xbeZmkLkOqmvy+lnTdVjVuSIOHHYXMlCAE/TDNXQAi3SJuraLXfcCukYo7IheL8VSwazoxbSC3uHaiaCz9zBkCJSaEDq4NmTQ93gQx9klUYLeMQB0AbKNbUYucSjTiAR7vtIHyAiaaWBYpWHxkFnRzo8Bd4iDOtlxBtI8X+oLf/AsisSH+AScQBvNMh0EUSjTjAC5wBOjcQ6Zg1/dwFkFAEOXNPng2ibZXivC+WiSjV19IJfyscsKIsjrmEAWRiCGAuaQCZECIwFyqAUg2SGM9hHf9H4N6BB/kDiZmKpZ8LOc0AAAAASUVORK5CYII=" />',
+                        title: 'Seguimiento sin centrar', // like its title
+                        onClick: function (btn, map)
+                        {       // and its callback
+                            LoadingManagerService.Show('Desactivant centrat del mapa...');
+
+                            postMessageToBackend("disableCenterLocation");
+
+                            LoadingManagerService.Hide();
+                            btn.state('location-enable-move');
+
+                        }
+                    }, {
+                        stateName: 'location-enable-move', // name the state
+                        icon: '<img width="24" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAABDklEQVRYR72WPRaDQAiEMVdIa+n9T5QyrWcwFfsIMvys6NdlhZmBgheiC+zrduzrduj3Ci/98DSLfkBUJ31/PyntsKhqrImCuB+vmjNeCPihy5xBIczHrDmLVuslp4dIzBKRVPv/fnjNujEiq5W6A1VzKvSMAChxVoiROqhX1qQ2EMEnmYXRMBZuADQBI00lsi/ScANY6Gmvkg7QaSpZkGj1yDBo5UgnvYG7GGmthGgaKtZ7tdMbQGZVpgN04QawVodAG4k03ABPMALMTkATvbI+tQEk5JHtOSWPGtG0TLXfFItEmOq11OaEAlBBNItlTl4AagyBzCkKQA0hPHPKBGCqQSLjFvaG/wipO3AnPzElqGojdMIzAAAAAElFTkSuQmCC" />',
+                        title: 'deshabilitar localización', // like its title
+                        onClick: function (btn, map)
+                        {       // and its callback
+                            LoadingManagerService.Show('Desactivant localització...');
+
+                            postMessageToBackend("disableLocation");
+
+                            LoadingManagerService.Hide();
+                            MapGpsManagerService.ClearGpsPosition();
+                            btn.state('location-disable');
+
+                        }
+                    }
+                    ]
+                });
+                buttonNavigation.addTo(MapManagerService.GetMap());
+
+                //add scale
+                L.control.scale({
+                    imperial: false
+                }
+                ).addTo(LeafletMap);
+
+                postMessageToBackend('mapLoaded');
+                console.log("ocultando loader");
+                LoadingManagerService.Hide();
+            }
+
+            var setView = function (lat, lng)
+            {
+                var latLng = L.latLng(lat, lng);
+                LeafletMap.setView(latLng, LeafletMap.getZoom());
+            }
+
+            var setBounds = function (center1, center2, center3, center4)
+            {
+                LeafletMap.fitBounds([
+                    [center1, center2],
+                    [center3, center4]
+                ]);
+            }
+
+            var disableZoom = function ()
+            {
+                LeafletMap.touchZoom.disable();
+                LeafletMap.doubleClickZoom.disable();
+                LeafletMap.scrollWheelZoom.disable();
+                LeafletMap.boxZoom.disable();
+                LeafletMap.keyboard.disable();
+            }
+            var enableZoom = function ()
+            {
+                LeafletMap.touchZoom.enable();
+                LeafletMap.doubleClickZoom.enable();
+                LeafletMap.scrollWheelZoom.enable();
+                LeafletMap.boxZoom.enable();
+                LeafletMap.keyboard.enable();
+            }
+
+            var setZoom = function (zoom)
+            {
+                LeafletMap.setZoom(zoom);
+            }
+
+            var setZoomMax = function ()
+            {
+                LeafletMap.setZoom(LeafletMap.getMaxZoom());
+            }
+
+            var enableDisableMapMove = function (enable)
+            {
+                if (enable)
+                    LeafletMap.dragging.enable();
+                else
+                    LeafletMap.dragging.disable();
+            }
+
+            //return plublic methods of service
+            return {
+                GetIdProyecto: getIdProyecto,
+                GetIsDevelop: getIsDevelop,
+                IniciarPantalla: iniciarPantalla,
+                GetMap: getMap,
+
+                //Map controls
+                SetView: setView,
+                SetZoom: setZoom,
+                SetBounds: setBounds,
+                SetZoomMax: setZoomMax,
+                EnableDisableMapMove: enableDisableMapMove,
+                //Map controls
+
+                EnableZoom: enableZoom,
+                DisableZoom: disableZoom,
+            };
+        })();
+    </script>
+
+    <!--Screen init-->
+    <script>
+        $(document).ready(function ()
+        {
+            LoadingManagerService.Show("Carregant mapa...");
+            MapManagerService.IniciarPantalla(1, true, 1);
+        });
+
+        //funcion de actualizar la posición en mapa
+        function updatePosition(lat, lng, center, angle)
+        {
+            console.log('lat: ' + lat);
+            console.log('lng: ' + lng);
+
+            if (MapManagerService.GetMap().getZoom() <= 1)
+                MapManagerService.SetZoom(15);
+
+            MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
+
+        }
+    </script>
+</body>
+</html>
