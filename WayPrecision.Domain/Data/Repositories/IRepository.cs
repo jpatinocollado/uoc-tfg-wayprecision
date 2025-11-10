@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WayPrecision.Domain.Data.Repositories
+﻿namespace WayPrecision.Domain.Data.Repositories
 {
     /// <summary>
     /// Define las operaciones CRUD básicas y operaciones diferidas para un repositorio de entidades de tipo <typeparamref name="T"/>.

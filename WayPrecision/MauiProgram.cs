@@ -33,10 +33,10 @@ namespace WayPrecision
 
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "wayprecision.db3");
 
-            builder.Services.AddScoped<DatabaseContext>(_ => new DatabaseContext(dbPath));
+            builder.Services.AddScoped(_ => new DatabaseContext(dbPath));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<ConfigurationService>();
-            builder.Services.AddScoped<WaypointService>();
+            builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
+            builder.Services.AddScoped<IService<Waypoint>, WaypointService>();
             builder.Services.AddScoped<IService<Track>, MockTrackService>();
 
             return builder.Build();

@@ -31,8 +31,14 @@ namespace WayPrecision
             if (App.Current == null)
                 return;
 
-            ConfigurationService config = ((App)Application.Current).Services.GetRequiredService<ConfigurationService>();
+            IConfigurationService config = ((App)Application.Current).Services.GetRequiredService<IConfigurationService>();
             await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
+        }
+
+        private async void OnLicenseClicked(object sender, EventArgs e)
+        {
+            Uri uri = new Uri("https://github.com/jpatinocollado/uoc-tfg-wayprecision/blob/main/LICENSE.md");
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
         }
     }
 }

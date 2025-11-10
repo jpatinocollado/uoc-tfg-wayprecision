@@ -1,6 +1,3 @@
-using System.Runtime.CompilerServices;
-using Microsoft.VisualBasic.FileIO;
-using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
 
@@ -14,10 +11,10 @@ public partial class SettingsPage : ContentPage
         public string Display { get; set; } = string.Empty;
     }
 
-    private readonly ConfigurationService _configurationService;
+    private readonly IConfigurationService _configurationService;
     private Configuration _currentConfig;
 
-    public SettingsPage(ConfigurationService configurationService)
+    public SettingsPage(IConfigurationService configurationService)
     {
         InitializeComponent();
 

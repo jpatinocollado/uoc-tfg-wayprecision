@@ -12,17 +12,17 @@ namespace WayPrecision.Domain.Models
         }
 
         [PrimaryKey]
-        public string Guid { get; set; }
+        public string Guid { get; set; } = String.Empty;
 
-        public string Name { get; set; }
-        public string Observation { get; set; }
-        public string Created { get; set; }
-        public string Finalized { get; set; }
+        public string Name { get; set; } = String.Empty;
+        public string Observation { get; set; } = String.Empty;
+        public string Created { get; set; } = String.Empty;
+        public string Finalized { get; set; } = String.Empty;
         public bool IsOpened { get; set; }
 
         public int TotalPoints { get; set; }
-        public string AreaUnits { get; set; }
-        public string LengthUnits { get; set; }
+        public string AreaUnits { get; set; } = String.Empty;
+        public string LengthUnits { get; set; } = String.Empty;
 
         public double? Area { get; set; }
         public double? Length { get; set; }

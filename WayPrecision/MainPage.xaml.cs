@@ -12,9 +12,9 @@ namespace WayPrecision
 {
     public partial class MainPage : ContentPage, IQueryAttributable
     {
-        private readonly ConfigurationService _configurationService;
+        private readonly IConfigurationService _configurationService;
         private readonly IService<Track> _trackService;
-        private readonly WaypointService _waypointService;
+        private readonly IService<Waypoint> _waypointService;
 
         private readonly IGpsManager gpsManager;
         private GpsLocation? _lastPosition = null;
@@ -27,7 +27,7 @@ namespace WayPrecision
         private string? _pendingTrackGuid;
         private bool _isAppeared;
 
-        public MainPage(WaypointService waypointService, IService<Track> trackService, ConfigurationService configurationService)
+        public MainPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService)
         {
             InitializeComponent();
 

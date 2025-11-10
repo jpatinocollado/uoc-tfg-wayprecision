@@ -5,17 +5,17 @@ namespace WayPrecision.Domain.Models
     public class Waypoint
     {
         [PrimaryKey]
-        public string Guid { get; set; }
+        public string Guid { get; set; } = String.Empty;
 
-        public string Name { get; set; }
-        public string Observation { get; set; }
-        public string Created { get; set; }
+        public string Name { get; set; } = String.Empty;
+        public string Observation { get; set; } = String.Empty;
+        public string Created { get; set; } = String.Empty;
 
         [Indexed]
-        public string PositionGuid { get; set; }
+        public string PositionGuid { get; set; } = String.Empty;
 
         [Ignore] // SQLite-net no soporta navegación automática, pero puedes cargarla manualmente
-        public virtual Position Position { get; set; }
+        public virtual Position Position { get; set; } = new Position();
 
         [Ignore]
         public DateTime? CreatedLocal

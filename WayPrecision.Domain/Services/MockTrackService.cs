@@ -5,10 +5,10 @@ namespace WayPrecision.Domain.Services
 {
     public class MockTrackService : IService<Track>
     {
-        private readonly ConfigurationService _configurationService;
+        private readonly IConfigurationService _configurationService;
         private ConcurrentBag<Track> Tracks = new ConcurrentBag<Track>();
 
-        public MockTrackService(ConfigurationService configurationService)
+        public MockTrackService(IConfigurationService configurationService)
         {
             _configurationService = configurationService;
 

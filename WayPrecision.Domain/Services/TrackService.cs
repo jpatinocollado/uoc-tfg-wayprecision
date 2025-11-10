@@ -10,14 +10,14 @@ namespace WayPrecision.Domain.Services
     /// </summary>
     public class TrackService : IService<Track>
     {
-        private readonly ConfigurationService _configurationService;
+        private readonly IConfigurationService _configurationService;
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Inicializa una nueva instancia de la clase <see cref="TrackService"/>.
         /// </summary>
         /// <param name="unitOfWork">Unidad de trabajo para coordinar operaciones sobre repositorios.</param>
-        public TrackService(IUnitOfWork unitOfWork, ConfigurationService configurationService)
+        public TrackService(IUnitOfWork unitOfWork, IConfigurationService configurationService)
         {
             _unitOfWork = unitOfWork;
             _configurationService = configurationService;
@@ -178,7 +178,7 @@ namespace WayPrecision.Domain.Services
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
             Track.SetConfiguration(configuration);
-            
+
             //if (!string.IsNullOrWhiteSpace(Track.PositionGuid))
             //    Track.Position = await _unitOfWork.Positions.GetByIdAsync(Track.PositionGuid);
 

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WayPrecision.Domain.Models;
-
-namespace WayPrecision.Domain.Services
+﻿namespace WayPrecision.Domain.Services
 {
     public interface IService<T>
     {
