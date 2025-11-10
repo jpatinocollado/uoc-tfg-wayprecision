@@ -757,6 +757,9 @@
 
             var fitWaypoint = function (id)
             {
+                postMessageToBackend("disableCenterLocation");
+                MapManagerService.FitEstate();
+
                 console.log("Fit Waypoint", id);
                 var latlng = waypointsList[id].getLatLng();
                 var map = MapManagerService.GetMap();
@@ -855,6 +858,9 @@
 
             var fitTrack = function (id)
             {
+                postMessageToBackend("disableCenterLocation");
+                MapManagerService.FitEstate();
+
                 console.log('Fit Track', id);
                 //Esperamos 1 segundo, ya que la pantalla del menu, borra y actualiza los elementos del mapa
                 //setTimeout(function ()
@@ -1118,6 +1124,9 @@
             var LeafletMap;
             var IsDevelop;
             var IdProyecto;
+            let buttonNavigation;
+            let IsEnableLocation = false;
+            let IsEnableCenterLocation = false;
 
             var getIsDevelop = function ()
             {
@@ -1165,7 +1174,7 @@
                 //MapButtonManagerService.CreateButtonOpacity();
 
                 //boton de navegación
-                let buttonNavigation = L.easyButton({
+                buttonNavigation = L.easyButton({
                     states: [{
                         stateName: 'location-disable',
                         icon: '<img width="24" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAAA+0lEQVRYR72UwRKEMAhD6/7/P7sXcbJIgLR134wXhCRw6BhrnNc3zccX/s3hCwnqpi3tTpNq7Ek90p8bzA3qQ39sNDdCr7AomNu82s8LDbFoBpHmvVg27HsrWlrdd0A1H90ZDMASt4QA1GGzd0/3AhX2JJswW+ZBFYBtYKApgnOpRhUgwm+7hBJgmylyJKLqI2Owk4c6ygVeAdNGCdk2Q+ynvSsXYGYSKwG2UAWITsdgF0k1qgCvgwGmNrhQZ+/+7gWYUEZrJkpeDUYziDTPxCoRQ30tH36PAtAV7RJ6hUVgVwjqQ38AqyFSj/SnQw2iaE9zTgT7ofsOvMYXVUIwIVOMQ/UAAAAASUVORK5CYII=" />',
@@ -1180,6 +1189,8 @@
                             LoadingManagerService.Hide();
                             btn.state('location-enable');
 
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = true;
                         }
                     }, {
                         stateName: 'location-enable', // name the state
@@ -1193,6 +1204,9 @@
 
                             LoadingManagerService.Hide();
                             btn.state('location-enable-move');
+
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = true;
 
                         }
                     }, {
@@ -1209,6 +1223,8 @@
                             MapGpsManagerService.ClearGpsPosition();
                             btn.state('location-disable');
 
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = false;
                         }
                     }
                     ]
@@ -1275,6 +1291,19 @@
                     LeafletMap.dragging.disable();
             }
 
+            var fitEstate = function ()
+            {
+                console.log('fitEstate');
+                console.log('IsEnableLocation:', IsEnableLocation);
+                console.log('IsEnableCenterLocation:', IsEnableCenterLocation);
+                if (IsEnableLocation && IsEnableCenterLocation)
+                {
+                    console.log('fitEstate');
+                    buttonNavigation.state('location-enable-move');
+                    IsEnableCenterLocation = false;
+                }
+            }
+
             //return plublic methods of service
             return {
                 GetIdProyecto: getIdProyecto,
@@ -1292,6 +1321,9 @@
 
                 EnableZoom: enableZoom,
                 DisableZoom: disableZoom,
+
+                //fit
+                FitEstate: fitEstate
             };
         })();
     </script>

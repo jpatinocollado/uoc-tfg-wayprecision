@@ -37,7 +37,9 @@
     </FlyoutItem>
 
     <FlyoutItem Title="Configuración" Icon="config32x32.png">
-        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
+        <ShellContent
+        Route="SettingsPage"
+        ContentTemplate="{DataTemplate local:SettingsPage}" />
     </FlyoutItem>
 
     <!-- Pie del menú lateral -->

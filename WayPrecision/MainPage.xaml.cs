@@ -297,7 +297,10 @@ namespace WayPrecision
 
         private async Task TryFitElement()
         {
-            if (_isAppeared && !string.IsNullOrEmpty(_pendingTrackGuid))
+            if (!_isAppeared)
+                return;
+
+            if (!string.IsNullOrEmpty(_pendingTrackGuid))
             {
                 TrackScriptBuilder script = new TrackScriptBuilder();
                 string js = script.FitTrack(_pendingTrackGuid).Render();
@@ -305,7 +308,7 @@ namespace WayPrecision
                 _pendingTrackGuid = null; // Solo una vez
             }
 
-            if (_isAppeared && !string.IsNullOrEmpty(_pendingWaypointGuid))
+            if (!string.IsNullOrEmpty(_pendingWaypointGuid))
             {
                 WaypointScriptBuilder script = new WaypointScriptBuilder();
                 string js = script.FitWaypoint(_pendingWaypointGuid).Render();
