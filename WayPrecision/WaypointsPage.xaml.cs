@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision;
@@ -42,7 +43,7 @@ public partial class WaypointsPage : ContentPage
     {
         if (sender is Button button && button.CommandParameter is Waypoint waypoint)
         {
-            await Navigation.PushAsync(new WaypointDetailPage(waypoint, WaypointDetailPageMode.Edited));
+            await Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Edited));
         }
     }
 

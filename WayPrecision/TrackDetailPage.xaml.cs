@@ -1,14 +1,8 @@
-using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision;
-
-public enum TrackDetailPageMode
-{
-    Created,
-    Edited
-}
 
 public partial class TrackDetailPage : ContentPage
 {
@@ -20,9 +14,9 @@ public partial class TrackDetailPage : ContentPage
     /// <summary>
     /// Indica el modo de la página: creación o edición.
     /// </summary>
-    private readonly TrackDetailPageMode PageMode;
+    private readonly DetailPageMode PageMode;
 
-    public TrackDetailPage(Track track, TrackDetailPageMode pageMode)
+    public TrackDetailPage(Track track, DetailPageMode pageMode)
     {
         InitializeComponent();
 
@@ -31,7 +25,7 @@ public partial class TrackDetailPage : ContentPage
         BindingContext = track;
         PageMode = pageMode;
 
-        if (PageMode == TrackDetailPageMode.Created)
+        if (PageMode == DetailPageMode.Created)
         {
             DeleteButton.IsVisible = false;
             ViewOnMapButton.IsVisible = false;
@@ -72,12 +66,12 @@ public partial class TrackDetailPage : ContentPage
             return;
         }
 
-        if (PageMode == TrackDetailPageMode.Created)
+        if (PageMode == DetailPageMode.Created)
         {
             await service.CreateAsync(track);
             await DisplayAlert("Guardado", "El track ha sido creado.", "OK");
         }
-        else if (PageMode == TrackDetailPageMode.Edited)
+        else if (PageMode == DetailPageMode.Edited)
         {
             await service.UpdateAsync(track);
             await DisplayAlert("Guardado", "El track ha sido actualizado.", "OK");

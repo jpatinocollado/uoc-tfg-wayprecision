@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision;
@@ -43,7 +44,7 @@ public partial class TracksPage : ContentPage
     {
         if (sender is Button button && button.CommandParameter is Track track)
         {
-            await Navigation.PushAsync(new TrackDetailPage(track, TrackDetailPageMode.Edited));
+            await Navigation.PushAsync(new TrackDetailPage(track, DetailPageMode.Edited));
         }
     }
 
