@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.VisualBasic.FileIO;
 using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
@@ -28,6 +29,8 @@ public partial class SettingsPage : ContentPage
 
         // Guardar configuración al hacer clic en el botón
         SaveButton.Clicked += async (s, e) => await SaveConfigurationAsync();
+
+        CancelarButton.Clicked += async (s, e) => await CancelAsync();
     }
 
     private async Task LoadConfigurationAsync()
@@ -85,6 +88,12 @@ public partial class SettingsPage : ContentPage
 
         await DisplayAlert("Configuración", "Configuración guardada correctamente.", "OK");
 
-        await Shell.Current.GoToAsync($"//MainPage");
+        await Navigation.PopAsync();
+        //await Shell.Current.GoToAsync($"//MainPage");
+    }
+
+    private async Task CancelAsync()
+    {
+        await Navigation.PopAsync();
     }
 }

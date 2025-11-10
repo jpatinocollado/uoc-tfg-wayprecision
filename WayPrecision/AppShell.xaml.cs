@@ -1,4 +1,7 @@
-﻿namespace WayPrecision
+﻿using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Services;
+
+namespace WayPrecision
 {
     public partial class AppShell : Shell
     {
@@ -21,6 +24,15 @@
         private static async void OnLinkedInTapped(object sender, EventArgs e)
         {
             await Launcher.Default.OpenAsync("https://www.linkedin.com/in/jesuspatinocollado/");
+        }
+
+        private async void OnSettingsPageClicked(object sender, EventArgs e)
+        {
+            if (App.Current == null)
+                return;
+
+            ConfigurationService config = ((App)Application.Current).Services.GetRequiredService<ConfigurationService>();
+            await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
         }
     }
 }
