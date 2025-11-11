@@ -1,4 +1,7 @@
-﻿namespace WayPrecision
+﻿using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Services;
+
+namespace WayPrecision
 {
     public partial class AppShell : Shell
     {
@@ -21,6 +24,21 @@
         private static async void OnLinkedInTapped(object sender, EventArgs e)
         {
             await Launcher.Default.OpenAsync("https://www.linkedin.com/in/jesuspatinocollado/");
+        }
+
+        private async void OnSettingsPageClicked(object sender, EventArgs e)
+        {
+            if (App.Current == null)
+                return;
+
+            IConfigurationService config = ((App)Application.Current).Services.GetRequiredService<IConfigurationService>();
+            await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
+        }
+
+        private async void OnLicenseClicked(object sender, EventArgs e)
+        {
+            Uri uri = new Uri("https://github.com/jpatinocollado/uoc-tfg-wayprecision/blob/main/LICENSE.md");
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
         }
     }
 }

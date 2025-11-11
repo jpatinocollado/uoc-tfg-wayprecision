@@ -7,7 +7,7 @@ namespace WayPrecision.Domain.Services
     /// <summary>
     /// Servicio encargado de gestionar los waypoints.
     /// </summary>
-    public class WaypointService
+    public class WaypointService : IService<Waypoint>
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -26,25 +26,27 @@ namespace WayPrecision.Domain.Services
             foreach (var waypoint in waypoints.Where(waypoint => !string.IsNullOrWhiteSpace(waypoint.PositionGuid)))
                 waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
 
-            return waypoints;
+            return waypoints.OrderByDescending(a => a.Created).ToList();
         }
 
-
-        public async Task<Waypoint> GetByIdAsync(string guid)
+        public async Task<Waypoint?> GetByIdAsync(string guid)
         {
             Waypoint waypoint = await _unitOfWork.Waypoints.GetByIdAsync(guid);
 
-            if( !string.IsNullOrWhiteSpace(waypoint.PositionGuid))
+            if (waypoint == null)
+                return null;
+
+            if (!string.IsNullOrWhiteSpace(waypoint.PositionGuid))
                 waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
 
             return waypoint;
         }
 
-
         /// <summary>
         /// Añade un nuevo waypoint y su posición asociada obligatoriamente.
         /// </summary>
-        public async Task AddAsync(Waypoint waypoint)
+        public async Task<Waypoint> CreateAsync(Waypoint waypoint)
+
         {
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
@@ -70,24 +72,30 @@ namespace WayPrecision.Domain.Services
             _unitOfWork.Waypoints.AddDeferred(waypoint);
 
             await _unitOfWork.SaveChangesAsync();
+
+            return await Task.FromResult(waypoint);
         }
 
         /// <summary>
         /// Edita un waypoint existente.
         /// </summary>
-        public async Task UpdateAsync(Waypoint waypoint)
+        public async Task<Waypoint> UpdateAsync(Waypoint waypoint)
+
         {
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
 
             await _unitOfWork.Waypoints.UpdateAsync(waypoint);
+
+            return await Task.FromResult(waypoint);
         }
 
         /// <summary>
         /// Elimina un waypoint existente.
         /// </summary>
-        public async Task DeleteAsync(Waypoint waypoint)
+        public async Task<bool> DeleteAsync(string guid)
         {
+            Waypoint waypoint = await _unitOfWork.Waypoints.GetByIdAsync(guid);
             if (waypoint == null)
                 throw new ArgumentNullException(nameof(waypoint));
 
@@ -97,6 +105,8 @@ namespace WayPrecision.Domain.Services
 
             //guardamos los cambios
             await _unitOfWork.SaveChangesAsync();
+
+            return await Task.FromResult(true);
         }
     }
 }

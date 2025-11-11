@@ -1,0 +1,98 @@
+﻿namespace WayPrecision.Domain.Sensors.Location
+{
+    internal class MockGpsManager : IGpsManager
+    {
+        public event EventHandler<LocationEventArgs> PositionChanged;
+
+        private CancellationTokenSource _cts;
+        private bool _isListening;
+        private TimeSpan GpsInterval;
+
+        private int index = 0;
+        private readonly List<LocationEventArgs> Locations = [];
+
+        public MockGpsManager()
+        {
+            _cts = new CancellationTokenSource();
+            GpsInterval = new TimeSpan(0, 0, 30);
+
+            InitPositions();
+        }
+
+        private void InitPositions()
+        {
+            Locations.Add(new LocationEventArgs(new GpsLocation()
+            {
+                Guid = Guid.NewGuid(),
+                Latitude = 41.66215253129646,
+                Longitude = 0.5533226915521051,
+            }));
+            Locations.Add(new LocationEventArgs(new GpsLocation()
+            {
+                Guid = Guid.NewGuid(),
+                Latitude = 41.662429274617224,
+                Longitude = 0.5539554704481465,
+            }));
+            Locations.Add(new LocationEventArgs(new GpsLocation()
+            {
+                Guid = Guid.NewGuid(),
+                Latitude = 41.66162310597749,
+                Longitude = 0.5542021469669579,
+            }));
+            Locations.Add(new LocationEventArgs(new GpsLocation()
+            {
+                Guid = Guid.NewGuid(),
+                Latitude = 41.661358391685724,
+                Longitude = 0.5535800931369118,
+            }));
+        }
+
+        public async Task StartListeningAsync(TimeSpan gpsInterval)
+        {
+            GpsInterval = gpsInterval;
+
+            if (_cts is null || _cts.IsCancellationRequested)
+                _cts = new CancellationTokenSource();
+
+            if (_isListening)
+                return;
+
+            _isListening = true;
+
+            await Task.Run(async () =>
+            {
+                while (!_cts.Token.IsCancellationRequested)
+                {
+                    var location = Locations[index];
+                    index++;
+
+                    if (index >= Locations.Count)
+                        index = 0;
+
+                    location.Location.Timestamp = DateTime.UtcNow;
+                    PositionChanged?.Invoke(this, location);
+                    await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
+                }
+            }, _cts.Token);
+        }
+
+        public Task StopListeningAsync()
+        {
+            index = 0;
+
+            if (!_isListening)
+                return Task.CompletedTask;
+
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _isListening = false;
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeGpsInterval(TimeSpan gpsInterval)
+        {
+            GpsInterval = gpsInterval;
+            return Task.CompletedTask;
+        }
+    }
+}

@@ -8,14 +8,14 @@ namespace WayPrecision;
 
 public partial class WaypointsPage : ContentPage
 {
-    private readonly WaypointService service;
+    private readonly IService<Waypoint> _service;
     public ObservableCollection<Waypoint> Waypoints { get; set; } = [];
 
-    public WaypointsPage(IUnitOfWork unitOfWork)
+    public WaypointsPage(IService<Waypoint> service)
     {
         InitializeComponent();
 
-        service = new WaypointService(unitOfWork);
+        _service = service;
 
         BindingContext = this;
 
@@ -31,7 +31,7 @@ public partial class WaypointsPage : ContentPage
 
     private async Task LoadWaypoints()
     {
-        var waypoints = await service.GetAllAsync();
+        var waypoints = await _service.GetAllAsync();
         Waypoints.Clear();
         foreach (var waypoint in waypoints)
             Waypoints.Add(waypoint);

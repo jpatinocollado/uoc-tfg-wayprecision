@@ -27,6 +27,9 @@
     <!--Jquery-->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+    <!--Turf-->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+
     <!--leaflet-->
     <script src='https://unpkg.com/leaflet/dist/leaflet.js'></script>
 
@@ -754,6 +757,9 @@
 
             var fitWaypoint = function (id)
             {
+                postMessageToBackend("disableCenterLocation");
+                MapManagerService.FitEstate();
+
                 console.log("Fit Waypoint", id);
                 var latlng = waypointsList[id].getLatLng();
                 var map = MapManagerService.GetMap();
@@ -807,14 +813,29 @@
                 console.log('Add Track', track);
 
                 var type;
+                var lineLength;
+                var polygonArea;
+                var polygonLength;
+                var alt = '<bold>' + track.name + '</bold>';
                 if (track.type == "LineString")
                 {
                     type = track.lineString;
+                    lineLength = turf.length(track.lineString, { units: 'meters' });
+
+                    if (track.length)
+                        alt += '<br /> Longitud: ' + track.length;
                 } else
                 {
                     type = track.polygon;
+                    polygonArea = turf.area(track.polygon);
+                    polygonLength = turf.length(track.polygon, { units: 'meters' });
+
+                    if (track.area)
+                        alt += '<br /> Área: ' + track.area;
+                    if (track.length)
+                        alt += '<br /> Perímetro: ' + track.length;
                 }
-                
+
                 trackList[track.id] = L.geoJSON(type, {
                     style: setStyleTrack(track.weight, track.color, track.fillColor, track.opacity, track.fillopacity),
                     onEachFeature: function onEachFeature(feature, layer)
@@ -824,12 +845,9 @@
                             postMessageToBackend('editTrack;' + track.id);
                         });
                     }
-                }).bindTooltip(track.name + ' - ' + track.description).addTo(tracks);
-                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
-                var polygonArea = turf.area(track.polygon);
-                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
-                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
-                //window['mapEventHandler']['raiseEvent']('turfDistance', evtArgs);
+                }).bindTooltip(alt).addTo(tracks);
+
+                postMessageToBackend('updateTrack;' + track.id + ';' + lineLength + ';' + polygonArea + ';' + polygonLength);
             }
 
             var clearTracks = function ()
@@ -840,33 +858,36 @@
 
             var fitTrack = function (id)
             {
+                postMessageToBackend("disableCenterLocation");
+                MapManagerService.FitEstate();
+
                 console.log('Fit Track', id);
                 //Esperamos 1 segundo, ya que la pantalla del menu, borra y actualiza los elementos del mapa
                 //setTimeout(function ()
                 //{
-                    let bounds = trackList[id].getBounds();
+                let bounds = trackList[id].getBounds();
                 var map = MapManagerService.GetMap();
                 map.setZoom(map.getMaxZoom());
-                    map.fitBounds(bounds);
+                map.fitBounds(bounds);
 
                 console.log('bounds', bounds);
-                    //Se oculta el resto de traks para identificarlo
-                    //var keys = Object.keys(trackList);
-                    //for (var i = 0; i < keys.length; i++)
-                    //{
-                    //    if (keys[i] != id)
-                    //        trackList[keys[i]].remove();
-                    //}
-                    //Se vuelven a mostrar todos los traks
-                    //setTimeout(function ()
-                    //{
-                        //var keys = Object.keys(trackList);
-                        //for (var i = 0; i < keys.length; i++)
-                        //{
-                        //    if (keys[i] != id)
-                        //        trackList[keys[i]].addTo(tracks);
-                        //}
-                    /*}, 2000);*/
+                //Se oculta el resto de traks para identificarlo
+                //var keys = Object.keys(trackList);
+                //for (var i = 0; i < keys.length; i++)
+                //{
+                //    if (keys[i] != id)
+                //        trackList[keys[i]].remove();
+                //}
+                //Se vuelven a mostrar todos los traks
+                //setTimeout(function ()
+                //{
+                //var keys = Object.keys(trackList);
+                //for (var i = 0; i < keys.length; i++)
+                //{
+                //    if (keys[i] != id)
+                //        trackList[keys[i]].addTo(tracks);
+                //}
+                /*}, 2000);*/
                 /*}, 1000);*/
             }
 
@@ -894,7 +915,7 @@
             };
         })();
     </script>
-    
+
     <!--Map Layers-->
     <script>
         var MapLayersManagerService = (function ()
@@ -1064,7 +1085,7 @@
                     map.addLayer(currentLayer);
                 }
             }
-           
+
             var setChecks = function (ShowWaypoints, ShowTracks)
             {
                 chkWaypoints = ShowWaypoints;
@@ -1103,6 +1124,9 @@
             var LeafletMap;
             var IsDevelop;
             var IdProyecto;
+            let buttonNavigation;
+            let IsEnableLocation = false;
+            let IsEnableCenterLocation = false;
 
             var getIsDevelop = function ()
             {
@@ -1150,7 +1174,7 @@
                 //MapButtonManagerService.CreateButtonOpacity();
 
                 //boton de navegación
-                let buttonNavigation = L.easyButton({
+                buttonNavigation = L.easyButton({
                     states: [{
                         stateName: 'location-disable',
                         icon: '<img width="24" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAGHaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49J++7vycgaWQ9J1c1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCc/Pg0KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyI+PHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj48cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0idXVpZDpmYWY1YmRkNS1iYTNkLTExZGEtYWQzMS1kMzNkNzUxODJmMWIiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj48dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCjw/eHBhY2tldCBlbmQ9J3cnPz4slJgLAAAA+0lEQVRYR72UwRKEMAhD6/7/P7sXcbJIgLR134wXhCRw6BhrnNc3zccX/s3hCwnqpi3tTpNq7Ek90p8bzA3qQ39sNDdCr7AomNu82s8LDbFoBpHmvVg27HsrWlrdd0A1H90ZDMASt4QA1GGzd0/3AhX2JJswW+ZBFYBtYKApgnOpRhUgwm+7hBJgmylyJKLqI2Owk4c6ygVeAdNGCdk2Q+ynvSsXYGYSKwG2UAWITsdgF0k1qgCvgwGmNrhQZ+/+7gWYUEZrJkpeDUYziDTPxCoRQ30tH36PAtAV7RJ6hUVgVwjqQ38AqyFSj/SnQw2iaE9zTgT7ofsOvMYXVUIwIVOMQ/UAAAAASUVORK5CYII=" />',
@@ -1165,6 +1189,8 @@
                             LoadingManagerService.Hide();
                             btn.state('location-enable');
 
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = true;
                         }
                     }, {
                         stateName: 'location-enable', // name the state
@@ -1178,6 +1204,9 @@
 
                             LoadingManagerService.Hide();
                             btn.state('location-enable-move');
+
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = true;
 
                         }
                     }, {
@@ -1194,6 +1223,8 @@
                             MapGpsManagerService.ClearGpsPosition();
                             btn.state('location-disable');
 
+                            IsEnableLocation = true;
+                            IsEnableCenterLocation = false;
                         }
                     }
                     ]
@@ -1260,6 +1291,19 @@
                     LeafletMap.dragging.disable();
             }
 
+            var fitEstate = function ()
+            {
+                console.log('fitEstate');
+                console.log('IsEnableLocation:', IsEnableLocation);
+                console.log('IsEnableCenterLocation:', IsEnableCenterLocation);
+                if (IsEnableLocation && IsEnableCenterLocation)
+                {
+                    console.log('fitEstate');
+                    buttonNavigation.state('location-enable-move');
+                    IsEnableCenterLocation = false;
+                }
+            }
+
             //return plublic methods of service
             return {
                 GetIdProyecto: getIdProyecto,
@@ -1277,6 +1321,9 @@
 
                 EnableZoom: enableZoom,
                 DisableZoom: disableZoom,
+
+                //fit
+                FitEstate: fitEstate
             };
         })();
     </script>

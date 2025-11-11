@@ -7,7 +7,7 @@ namespace WayPrecision.Test
 {
     public class WaypointServiceIntegrationTest
     {
-        private readonly WaypointService _service;
+        private readonly IService<Waypoint> _service;
         private readonly IUnitOfWork _unitOfWork;
 
         public WaypointServiceIntegrationTest()
@@ -35,7 +35,7 @@ namespace WayPrecision.Test
             };
 
             // Act
-            await _service.AddAsync(waypoint);
+            waypoint = await _service.CreateAsync(waypoint);
             var allWaypoints = await _service.GetAllAsync();
             var storedWaypoint = allWaypoints.FirstOrDefault(w => w.Name == "Test Waypoint");
 
@@ -64,8 +64,8 @@ namespace WayPrecision.Test
                 Observation = "O2",
                 Position = new Position { Latitude = 3, Longitude = 4 }
             };
-            await _service.AddAsync(waypoint1);
-            await _service.AddAsync(waypoint2);
+            waypoint1 = await _service.CreateAsync(waypoint1);
+            waypoint2 = await _service.CreateAsync(waypoint2);
 
             // Act
             var all = await _service.GetAllAsync();
@@ -87,7 +87,7 @@ namespace WayPrecision.Test
                 Position = new Position { Latitude = 1, Longitude = 2 }
             };
 
-            await _service.AddAsync(waypoint);
+            waypoint = await _service.CreateAsync(waypoint);
             var all = await _service.GetAllAsync();
             var stored = all.First(w => w.Name == "ToUpdate");
             stored.Observation = "Updated";
@@ -111,12 +111,12 @@ namespace WayPrecision.Test
                 Position = new Position { Latitude = 7, Longitude = 8 }
             };
 
-            await _service.AddAsync(waypoint);
+            waypoint = await _service.CreateAsync(waypoint);
             var all = await _service.GetAllAsync();
             var stored = all.First(w => w.Name == "ToDelete");
 
             // Act
-            await _service.DeleteAsync(stored);
+            await _service.DeleteAsync(waypoint.Guid);
             var afterDelete = await _service.GetAllAsync();
 
             // Assert

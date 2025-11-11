@@ -1,5 +1,3 @@
-using Microsoft.VisualBasic.FileIO;
-using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
 
@@ -13,10 +11,10 @@ public partial class SettingsPage : ContentPage
         public string Display { get; set; } = string.Empty;
     }
 
-    private readonly ConfigurationService _configurationService;
+    private readonly IConfigurationService _configurationService;
     private Configuration _currentConfig;
 
-    public SettingsPage(ConfigurationService configurationService)
+    public SettingsPage(IConfigurationService configurationService)
     {
         InitializeComponent();
 
@@ -28,20 +26,22 @@ public partial class SettingsPage : ContentPage
 
         // Guardar configuración al hacer clic en el botón
         SaveButton.Clicked += async (s, e) => await SaveConfigurationAsync();
+
+        CancelarButton.Clicked += async (s, e) => await CancelAsync();
     }
 
     private async Task LoadConfigurationAsync()
     {
         var areaOptions = new List<UnitOption>
     {
-        new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "m²" },
-        new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "km²" },
-        new() { Key = UnitEnum.Hectareas.ToString(), Display = "ha" }
+        new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "Metros Cuadrados (m²)" },
+        new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "Kilómetros Cuadrados (km²)" },
+        new() { Key = UnitEnum.Hectareas.ToString(), Display = "Hectáreas (ha)" }
     };
         var lengthOptions = new List<UnitOption>
     {
-        new() { Key = UnitEnum.Metros.ToString(), Display = "m" },
-        new() { Key = UnitEnum.Kilometros.ToString(), Display = "km" }
+        new() { Key = UnitEnum.Metros.ToString(), Display = "Metros (m)" },
+        new() { Key = UnitEnum.Kilometros.ToString(), Display = "Kilómetros (km)" }
     };
 
         AreaUnitsPicker.ItemsSource = areaOptions;
@@ -85,6 +85,12 @@ public partial class SettingsPage : ContentPage
 
         await DisplayAlert("Configuración", "Configuración guardada correctamente.", "OK");
 
-        await Shell.Current.GoToAsync($"//MainPage");
+        await Navigation.PopAsync();
+        //await Shell.Current.GoToAsync($"//MainPage");
+    }
+
+    private async Task CancelAsync()
+    {
+        await Navigation.PopAsync();
     }
 }

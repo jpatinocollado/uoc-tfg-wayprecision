@@ -14,7 +14,7 @@ public partial class WaypointDetailPage : ContentPage
     /// <summary>
     /// Servicio para gestionar operaciones sobre waypoints.
     /// </summary>
-    private readonly WaypointService service;
+    private readonly IService<Waypoint> service;
 
     /// <summary>
     /// Indica el modo de la página: creación o edición.
@@ -30,8 +30,7 @@ public partial class WaypointDetailPage : ContentPage
     {
         InitializeComponent();
 
-        IUnitOfWork _unitOfWork = ((App)Application.Current).Services.GetRequiredService<IUnitOfWork>();
-        service = new WaypointService(_unitOfWork);
+        service = ((App)Application.Current).Services.GetRequiredService<IService<Waypoint>>();
 
         BindingContext = waypoint;
         PageMode = pageMode;
@@ -53,10 +52,15 @@ public partial class WaypointDetailPage : ContentPage
         bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este waypoint?", "Sí", "No");
         if (confirm)
         {
+            Waypoint waypoint = (Waypoint)BindingContext;
             // Lógica para eliminar el waypoint usando _unitOfWork, por ejemplo:
-            await service.DeleteAsync((Waypoint)BindingContext);
+            await service.DeleteAsync(waypoint.Guid);
 
             await DisplayAlert("Eliminado", "El waypoint ha sido eliminado.", "OK");
+
+            //Cerramos la pantalla actual sacandola de la pila de navegación
+            await Navigation.PopAsync();
+
             //await Navigation.PopAsync();
 
             //// Actualizar waypoints en MainPage si está en la pila de navegación
@@ -66,7 +70,7 @@ public partial class WaypointDetailPage : ContentPage
             //    mainPage?.PaintWaypoints();
             //}
 
-            await Shell.Current.GoToAsync($"//MainPage");
+            //await Shell.Current.GoToAsync($"//MainPage");
         }
     }
 
@@ -86,7 +90,7 @@ public partial class WaypointDetailPage : ContentPage
 
         if (PageMode == DetailPageMode.Created)
         {
-            await service.AddAsync(waypoint);
+            await service.CreateAsync(waypoint);
             await DisplayAlert("Guardado", "El waypoint ha sido creado.", "OK");
         }
         else if (PageMode == DetailPageMode.Edited)
@@ -95,15 +99,8 @@ public partial class WaypointDetailPage : ContentPage
             await DisplayAlert("Guardado", "El waypoint ha sido actualizado.", "OK");
         }
 
-        //await Navigation.PopAsync();
-
-        //// Actualizar waypoints en MainPage si está en la pila de navegación
-        //if (Application.Current != null &&
-        //        Application.Current.MainPage is Shell shell &&
-        //                    shell.CurrentPage is MainPage mainPage)
-        //    mainPage?.PaintWaypoints();
-
-        await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+        //Cerramos la pantalla actual sacandola de la pila de navegación
+        await Navigation.PopAsync();
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)

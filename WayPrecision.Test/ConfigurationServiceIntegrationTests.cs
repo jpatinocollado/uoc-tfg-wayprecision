@@ -7,7 +7,7 @@ namespace WayPrecision.Test
 {
     public class ConfigurationServiceIntegrationTests
     {
-        private readonly ConfigurationService _service;
+        private readonly IConfigurationService _service;
         private readonly IUnitOfWork _unitOfWork;
 
         public ConfigurationServiceIntegrationTests()

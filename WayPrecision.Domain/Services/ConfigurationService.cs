@@ -6,7 +6,7 @@ namespace WayPrecision.Domain.Services
     /// <summary>
     /// Servicio encargado de gestionar la configuración global de la aplicación.
     /// </summary>
-    public class ConfigurationService
+    public class ConfigurationService : IConfigurationService
     {
         private readonly IUnitOfWork _unitOfWork;
 

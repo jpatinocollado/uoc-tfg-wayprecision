@@ -12,11 +12,11 @@ namespace WayPrecision
 {
     public partial class MainPage : ContentPage, IQueryAttributable
     {
-        private readonly ConfigurationService _configurationService;
+        private readonly IConfigurationService _configurationService;
         private readonly IService<Track> _trackService;
-        private readonly WaypointService _waypointService;
+        private readonly IService<Waypoint> _waypointService;
 
-        private readonly IGpsManager gpsManager;
+        private readonly IGpsManager _gpsManager;
         private GpsLocation? _lastPosition = null;
 
         private bool isWebViewReady = false;
@@ -27,7 +27,7 @@ namespace WayPrecision
         private string? _pendingTrackGuid;
         private bool _isAppeared;
 
-        public MainPage(WaypointService waypointService, IService<Track> trackService, ConfigurationService configurationService)
+        public MainPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
         {
             InitializeComponent();
 
@@ -36,12 +36,13 @@ namespace WayPrecision
             _configurationService = configurationService;
 
             MapWebView.Navigated += OnMapWebViewNavigated;
-            MapWebView.Loaded += OnMapWebView_Loaded;
+            MapWebView.Loaded += OnMapWebViewLoaded;
+            MapWebView.Navigating += MapWebViewNavigating;
 
             LoadOnlineOpenStreetMaps();
 
-            gpsManager = new InternalGpsManager();
-            gpsManager.PositionChanged += OnPositionChanged;
+            _gpsManager = gpsManager;
+            _gpsManager.PositionChanged += OnPositionChanged;
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -50,10 +51,12 @@ namespace WayPrecision
             if (query.TryGetValue("waypointGuid", out var guidWaypointObj) && guidWaypointObj is string guidWaypoint)
             {
                 _pendingWaypointGuid = guidWaypoint;
+                Shell.Current.GoToAsync("//MainPage");
             }
             else if (query.TryGetValue("trackGuid", out var guidTrackObj) && guidTrackObj is string guidTrack)
             {
                 _pendingTrackGuid = guidTrack;
+                Shell.Current.GoToAsync("//MainPage");
             }
         }
 
@@ -66,14 +69,19 @@ namespace WayPrecision
                 PaintElements();
 
                 _isAppeared = true;
-                TryFitElement();
+                await TryFitElement();
             }
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
-            await gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
+            await _gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
         }
 
-        private void OnMapWebView_Loaded(object? sender, EventArgs e)
+        private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+        private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
             isWebViewReady = true;
         }
@@ -107,7 +115,7 @@ namespace WayPrecision
             {
                 DateTime dateTime = DateTime.UtcNow;
 
-                Waypoint waypoint = new Waypoint
+                Waypoint waypoint = new()
                 {
                     Name = "",
                     Observation = "",
@@ -205,10 +213,10 @@ namespace WayPrecision
             if (value)
             {
                 Configuration configuration = await _configurationService.GetOrCreateAsync();
-                _ = gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
+                _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
             }
             else
-                _ = gpsManager.StopListeningAsync();
+                _ = _gpsManager.StopListeningAsync();
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
@@ -237,7 +245,7 @@ namespace WayPrecision
             {
                 DateTime dateTime = DateTime.UtcNow;
 
-                Waypoint waypoint = new Waypoint
+                Waypoint waypoint = new()
                 {
                     Name = "",
                     Observation = "",
@@ -263,29 +271,6 @@ namespace WayPrecision
             });
         }
 
-        //public void CreateTracks()
-        //{
-        //    MainThread.BeginInvokeOnMainThread(() =>
-        //    {
-        //        //DateTime dateTime = DateTime.UtcNow;
-
-        //        //Waypoint waypoint = new Waypoint
-        //        //{
-        //        //    Name = "",
-        //        //    Observation = "",
-        //        //    Created = dateTime.ToString("o"),
-        //        //    Position = new Position
-        //        //    {
-        //        //        Latitude = lat,
-        //        //        Longitude = lng,
-        //        //        Timestamp = dateTime.ToString("o"),
-        //        //    }
-        //        //};
-
-        //        //Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Created));
-        //    });
-        //}
-
         public void EditTrack(string id)
         {
             MainThread.BeginInvokeOnMainThread(async () =>
@@ -297,17 +282,20 @@ namespace WayPrecision
 
         private async Task TryFitElement()
         {
-            if (_isAppeared && !string.IsNullOrEmpty(_pendingTrackGuid))
+            if (!_isAppeared)
+                return;
+
+            if (!string.IsNullOrEmpty(_pendingTrackGuid))
             {
-                TrackScriptBuilder script = new TrackScriptBuilder();
+                TrackScriptBuilder script = new();
                 string js = script.FitTrack(_pendingTrackGuid).Render();
                 await MapWebView.EvaluateJavaScriptAsync(js);
                 _pendingTrackGuid = null; // Solo una vez
             }
 
-            if (_isAppeared && !string.IsNullOrEmpty(_pendingWaypointGuid))
+            if (!string.IsNullOrEmpty(_pendingWaypointGuid))
             {
-                WaypointScriptBuilder script = new WaypointScriptBuilder();
+                WaypointScriptBuilder script = new();
                 string js = script.FitWaypoint(_pendingWaypointGuid).Render();
                 await MapWebView.EvaluateJavaScriptAsync(js);
                 _pendingWaypointGuid = null; // Solo una vez
@@ -321,8 +309,8 @@ namespace WayPrecision
                 var waypoints = await _waypointService.GetAllAsync();
                 var tracks = await _trackService.GetAllAsync();
 
-                TrackScriptBuilder scTracks = new TrackScriptBuilder();
-                WaypointScriptBuilder scWaypoints = new WaypointScriptBuilder();
+                TrackScriptBuilder scTracks = new();
+                WaypointScriptBuilder scWaypoints = new();
 
                 await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetClearWaypoints());
                 foreach (var waypoint in waypoints)
@@ -335,6 +323,23 @@ namespace WayPrecision
                 {
                     await MapWebView.EvaluateJavaScriptAsync(scTracks.GetTrack(track));
                 }
+            });
+        }
+
+        internal async Task UpdateTrackDataGeometry(string idUpdatedTrack, double? trackLength, double? trackArea, double? trackPerimeter)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Track track = await _trackService.GetByIdAsync(idUpdatedTrack);
+
+                if (track.IsOpened)
+                    track.Length = trackLength;
+                else
+                {
+                    track.Length = trackPerimeter;
+                    track.Area = trackArea;
+                }
+                await _trackService.UpdateAsync(track);
             });
         }
 

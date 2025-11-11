@@ -9,7 +9,7 @@
             <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="20" />
 
             <Label Text="Creado" FontAttributes="Bold" />
-            <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm}'}"
+            <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                  IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
                  BackgroundColor="{DynamicResource Gray200}" />
 

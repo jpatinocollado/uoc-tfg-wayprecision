@@ -62,28 +62,32 @@ namespace WayPrecision.Domain.Map.Scripting
                 }
             });
 
+            int weight = track.IsOpened ? 5 : 2;
+
             return "TrackManagerService.AddTrack({ " +
-                               "id: '" + track.Guid + "', " +
-                               "name: '" + track.Name + "', " +
-                               "description: '" + track.Observation + "', " +
+                               $"id: '{track.Guid}', " +
+                               $"name: '{track.Name}', " +
+                               $"description: '{track.Observation}', " +
+                               $"length: '{track.LengthLocal}', " +
+                               $"area: '{track.AreaLocal}', " +
                                "color: '#31882A', " +
                                "fillColor: '#2AAD27', " +
                                "opacity: 1.0, " +
                                "fillopacity: 0.5, " +
-                               "weight: 2, " +
-                               "type: '" + track.TypeGeometry.ToString() + "', " +
+                               $"weight: {weight}, " +
+                               $"type: '{track.TypeGeometry.ToString()}', " +
                                "polygon: { " +
                                     "type: 'Feature'," +
                                     "geometry: {" +
                                         "type: 'Polygon'," +
-                                        "coordinates: [[" + coordsPolygon + "]]" +
+                                        $"coordinates: [[{coordsPolygon}]]" +
                                     "}" +
                                 "}," +
                                 "lineString: { " +
                                     "type: 'Feature'," +
                                     "geometry: {" +
                                         "type: 'LineString'," +
-                                        "coordinates: [" + coordsLinea + "]" +
+                                        $"coordinates: [{coordsLinea}]" +
                                     "}" +
                                 "}" +
                               " });";
