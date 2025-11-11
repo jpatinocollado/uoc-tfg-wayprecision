@@ -70,25 +70,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="WaypointsPage.xaml.cs">
+	  <Compile Update="Pages\Maps\MapPage.xaml.cs">
+	    <DependentUpon>MapPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\Waypoints\WaypointsPage.xaml.cs">
 	    <DependentUpon>WaypointsPage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="SettingsPage.xaml">
+	  <MauiXaml Update="Pages\Settings\SettingsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="TrackDetailPage.xaml">
+	  <MauiXaml Update="Pages\Tracks\TrackDetailPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="TracksPage.xaml">
+	  <MauiXaml Update="Pages\Tracks\TracksPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="WaypointDetailPage.xaml">
+	  <MauiXaml Update="Pages\Waypoints\WaypointDetailPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="WaypointsPage.xaml">
+	  <MauiXaml Update="Pages\Waypoints\WaypointsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
