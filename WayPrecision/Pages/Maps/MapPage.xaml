@@ -11,7 +11,7 @@
      VerticalOptions="Fill" />
 
         <!-- Panel flotante para lat/lon -->
-        <Frame x:Name="pnDades" BackgroundColor="#AAFFFFFF"
+        <Frame x:Name="pnGpsData" BackgroundColor="#AAFFFFFF"
        CornerRadius="10"
        Padding="10"
        HorizontalOptions="Center"
@@ -26,14 +26,19 @@
             </VerticalStackLayout>
         </Frame>
 
-        <HorizontalStackLayout Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
+        <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
         BackgroundColor="{StaticResource White}">
-            <Button Text="Datos GPS" Style="{StaticResource PrimaryButton}"
-             Clicked="OnShowLocationClicked" />
-            <Button Text="Waypoint" Style="{StaticResource PrimaryButton}"
-             Clicked="OnCreateWaypointClicked" />
-            <Button Text="Track" Style="{StaticResource PrimaryButton}"
-             Clicked="OnCreateTrackClicked" />
+            <Button x:Name="btnGpsData" Text="Datos GPS" Style="{StaticResource PrimaryButton}" />
+            <Button x:Name="btnCreateWaypoint" Text="Waypoint" Style="{StaticResource PrimaryButton}" />
+            <Button x:Name="btnCreateTrack" Text="Track" Style="{StaticResource PrimaryButton}" />
+        </HorizontalStackLayout>
+
+        <HorizontalStackLayout x:Name="BtnStackLayoutTracking" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
+                BackgroundColor="{StaticResource White}">
+            <Button x:Name="btnPlay" Text="Play" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnPause" Text="Pause" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnStop" Text="Stop" Style="{StaticResource SecondaryButton}" />
+            <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" />
         </HorizontalStackLayout>
     </Grid>
 </ContentPage>

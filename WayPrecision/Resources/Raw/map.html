@@ -1348,6 +1348,16 @@
             MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
 
         }
+
+        function messageShow(message)
+        {
+            LoadingManagerService.Show(message);
+        }
+
+        function messageHide()
+        {
+            LoadingManagerService.Hide();
+        }
     </script>
 </body>
 </html>

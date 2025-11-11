@@ -39,7 +39,7 @@ namespace WayPrecision
             builder.Services.AddScoped<IGpsManager, MockGpsManager>();
             builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
             builder.Services.AddScoped<IService<Waypoint>, WaypointService>();
-            builder.Services.AddScoped<IService<Track>, MockTrackService>();
+            builder.Services.AddSingleton<IService<Track>, MockTrackService>();
 
             return builder.Build();
         }
