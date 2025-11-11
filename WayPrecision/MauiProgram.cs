@@ -2,6 +2,7 @@
 using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision
@@ -35,6 +36,7 @@ namespace WayPrecision
 
             builder.Services.AddScoped(_ => new DatabaseContext(dbPath));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IGpsManager, MockGpsManager>();
             builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
             builder.Services.AddScoped<IService<Waypoint>, WaypointService>();
             builder.Services.AddScoped<IService<Track>, MockTrackService>();

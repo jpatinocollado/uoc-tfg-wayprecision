@@ -172,9 +172,12 @@ namespace WayPrecision.Domain.Services
         /// <returns>
         /// Una tarea que representa la operación asíncrona. El resultado contiene el track encontrado o <c>null</c> si no existe.
         /// </returns>
-        public async Task<Track> GetByIdAsync(string guid)
+        public async Task<Track?> GetByIdAsync(string guid)
         {
-            Track Track = await _unitOfWork.Tracks.GetByIdAsync(guid);
+            Track? Track = await _unitOfWork.Tracks.GetByIdAsync(guid);
+
+            if (Track == null)
+                return null;
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
             Track.SetConfiguration(configuration);

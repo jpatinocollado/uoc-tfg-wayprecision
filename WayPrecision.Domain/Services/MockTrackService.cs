@@ -6,7 +6,7 @@ namespace WayPrecision.Domain.Services
     public class MockTrackService : IService<Track>
     {
         private readonly IConfigurationService _configurationService;
-        private ConcurrentBag<Track> Tracks = new ConcurrentBag<Track>();
+        private ConcurrentBag<Track> Tracks = [];
 
         public MockTrackService(IConfigurationService configurationService)
         {
@@ -31,7 +31,7 @@ namespace WayPrecision.Domain.Services
                 TotalPoints = 3,
                 //LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = new List<TrackPoint>() {
+                TrackPoints = [
                     new TrackPoint(){
                          Guid = Guid.NewGuid().ToString(),
                          TrackGuid = trackId,
@@ -68,7 +68,7 @@ namespace WayPrecision.Domain.Services
                             Accuracy = 20
                          }
                     }
-                }
+                ]
             });
 
             string t2 = Guid.NewGuid().ToString();
@@ -90,7 +90,7 @@ namespace WayPrecision.Domain.Services
                 TotalPoints = 3,
                 //LengthUnits = UnitEnum.Metros.ToString(),
                 TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = new List<TrackPoint>() {
+                TrackPoints = [
                     new TrackPoint(){
                          Guid = Guid.NewGuid().ToString(),
                          TrackGuid = t2,
@@ -140,7 +140,7 @@ namespace WayPrecision.Domain.Services
                             Accuracy = 20
                          }
                     }
-                }
+                ]
             });
 
             string t3 = Guid.NewGuid().ToString();
@@ -157,7 +157,7 @@ namespace WayPrecision.Domain.Services
                 IsOpened = true,
                 TotalPoints = 2,
                 TypeGeometry = TypeGeometry.LineString,
-                TrackPoints = new List<TrackPoint>() {
+                TrackPoints = [
                     new TrackPoint(){
                          Guid = Guid.NewGuid().ToString(),
                          TrackGuid = t3,
@@ -182,7 +182,7 @@ namespace WayPrecision.Domain.Services
                             Accuracy = 20
                          }
                     }
-                }
+                ]
             });
         }
 
@@ -215,9 +215,12 @@ namespace WayPrecision.Domain.Services
             return await Task.FromResult(Tracks.OrderByDescending(a => a.Created).ToList());
         }
 
-        public async Task<Track> GetByIdAsync(string guid)
+        public async Task<Track?> GetByIdAsync(string guid)
         {
             var track = Tracks.FirstOrDefault(t => t.Guid == guid);
+
+            if (track == null)
+                return null;
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
             track.SetConfiguration(configuration);
@@ -231,8 +234,10 @@ namespace WayPrecision.Domain.Services
             var existingTrack = trackList.FirstOrDefault(t => t.Guid == entity.Guid);
             if (existingTrack != null)
             {
-                var newBag = new ConcurrentBag<Track>(trackList.Where(t => t.Guid != entity.Guid));
-                newBag.Add(entity);
+                var newBag = new ConcurrentBag<Track>(trackList.Where(t => t.Guid != entity.Guid))
+                {
+                    entity
+                };
                 Tracks = newBag;
                 return Task.FromResult(entity);
             }

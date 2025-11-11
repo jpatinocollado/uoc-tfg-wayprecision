@@ -29,9 +29,12 @@ namespace WayPrecision.Domain.Services
             return waypoints.OrderByDescending(a => a.Created).ToList();
         }
 
-        public async Task<Waypoint> GetByIdAsync(string guid)
+        public async Task<Waypoint?> GetByIdAsync(string guid)
         {
             Waypoint waypoint = await _unitOfWork.Waypoints.GetByIdAsync(guid);
+
+            if (waypoint == null)
+                return null;
 
             if (!string.IsNullOrWhiteSpace(waypoint.PositionGuid))
                 waypoint.Position = await _unitOfWork.Positions.GetByIdAsync(waypoint.PositionGuid);
