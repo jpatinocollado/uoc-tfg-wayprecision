@@ -11,7 +11,7 @@ namespace WayPrecision.Pages.Maps
         private readonly TrackScriptBuilder _trackScriptBuilder;
         private readonly IService<Track> _service;
 
-        private Track CurrentTrack = new();
+        private Track CurrentTrack;
         private bool IsListening = false;
 
         public MapStateTracking(IService<Track> service)
@@ -23,11 +23,14 @@ namespace WayPrecision.Pages.Maps
         public override void Init()
         {
             //Initialize current track
-            CurrentTrack.Guid = Guid.NewGuid().ToString();
-            CurrentTrack.TypeGeometry = TypeGeometry.LineString;
-            CurrentTrack.Created = DateTime.UtcNow.ToString("o");
-            CurrentTrack.TrackPoints = new List<TrackPoint>();
-            CurrentTrack.IsOpened = true;
+            CurrentTrack = new()
+            {
+                Guid = Guid.NewGuid().ToString(),
+                TypeGeometry = TypeGeometry.LineString,
+                Created = DateTime.UtcNow.ToString("o"),
+                TrackPoints = new List<TrackPoint>(),
+                IsOpened = true
+            };
 
             //label total puntos
             MapPage.lbTotalPointsPublic.Text = "Puntos: 0";
@@ -41,6 +44,7 @@ namespace WayPrecision.Pages.Maps
             MapPage.btnPlayPublic.Clicked += OnPlayClicked;
             MapPage.btnPausePublic.Clicked += OnPauseClicked;
             MapPage.btnStopPublic.Clicked += OnStopClicked;
+            MapPage.btnCancelPublic.Clicked += OnCancelClicked;
 
             //State Play default
             MapPage.btnPlayPublic.IsEnabled = false;
@@ -60,6 +64,7 @@ namespace WayPrecision.Pages.Maps
             MapPage.btnPlayPublic.Clicked -= OnPlayClicked;
             MapPage.btnPausePublic.Clicked -= OnPauseClicked;
             MapPage.btnStopPublic.Clicked -= OnStopClicked;
+            MapPage.btnCancelPublic.Clicked -= OnCancelClicked;
         }
 
         private void OnPlayClicked(object? sender, EventArgs e)
@@ -86,8 +91,8 @@ namespace WayPrecision.Pages.Maps
 
         private async void OnStopClicked(object? sender, EventArgs e)
         {
-            //stop listening GPS
-            IsListening = false;
+            //al hacer stop, procedemos a finalizar el track, lo primero es ponerlo en pausa
+            OnPauseClicked(null, new EventArgs());
 
             //Finalize current track
             CurrentTrack.Finalized = DateTime.UtcNow.ToString("o");
@@ -137,13 +142,14 @@ namespace WayPrecision.Pages.Maps
             }
 
             string nameTrack = string.Empty;
+
             while (string.IsNullOrWhiteSpace(nameTrack))
                 nameTrack = await MapPage.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
 
             CurrentTrack.Name = nameTrack;
             CurrentTrack = await _service.CreateAsync(CurrentTrack);
 
-            await MapPage.ShowLoading("Calculando geometrías...");
+            await MapPage.ShowLoading("Calculando <br/> geometrías...");
 
             MapPage.TransitionTo(new MapStateDefault(_service));
 
@@ -153,6 +159,35 @@ namespace WayPrecision.Pages.Maps
             await MapPage.HideLoading();
 
             MapPage.EditTrack(CurrentTrack.Guid);
+        }
+
+        private async void OnCancelClicked(object? sender, EventArgs e)
+        {
+            bool reanudarTrack = IsListening;
+
+            //al cancelar el track, lo primero es ponerlo en pausa
+            OnPauseClicked(null, new EventArgs());
+
+            //preguntamos si quiere cancelar el Track
+            bool cancelarTrack = await MapPage.DisplayAlert(
+                "Finalizar Track",
+                "¿Quieres Cancelar el track?",
+                "Sí",
+                "No"
+            );
+
+            if (cancelarTrack)
+            {
+                //Hacemos la transición de estado sin guardar el track
+                MapPage.TransitionTo(new MapStateDefault(_service));
+            }
+            else
+            {
+                //Si hay que reanudar el Track simulamos pulsar Pause
+                if (reanudarTrack)
+                    OnPlayClicked(null, new EventArgs());
+            }
+
         }
 
         public override async Task AddPosition(GpsLocation lastPosition)

@@ -4,7 +4,7 @@
              x:Class="WayPrecision.MainPage"
              Title="WayPrecision">
 
-    <Grid RowDefinitions="*,Auto" Padding="0">
+    <Grid RowDefinitions="*,Auto, Auto" Padding="0">
         <WebView x:Name="MapWebView"
      Grid.Row="0"
      HorizontalOptions="Fill"
@@ -32,13 +32,18 @@
             <Button x:Name="btnCreateWaypoint" Text="Waypoint" Style="{StaticResource PrimaryButton}" />
             <Button x:Name="btnCreateTrack" Text="Track" Style="{StaticResource PrimaryButton}" />
         </HorizontalStackLayout>
-
-        <HorizontalStackLayout x:Name="BtnStackLayoutTracking" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
+        <VerticalStackLayout  x:Name="BtnStackLayoutTracking" Grid.Row="1">
+            <HorizontalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center"
+        BackgroundColor="{StaticResource White}">
+                <Button x:Name="btnPlay" Text="" ImageSource="play32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnPause" Text="" ImageSource="pause32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnStop" Text="" ImageSource="stop32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnCancel" Text="" ImageSource="close32x32.png" Style="{StaticResource SecondaryButton}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="2" Padding="0,5,0,10" Spacing="10" HorizontalOptions="Center"
                 BackgroundColor="{StaticResource White}">
-            <Button x:Name="btnPlay" Text="Play" Style="{StaticResource SecondaryButton}" />
-            <Button x:Name="btnPause" Text="Pause" Style="{StaticResource SecondaryButton}" />
-            <Button x:Name="btnStop" Text="Stop" Style="{StaticResource SecondaryButton}" />
-            <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" />
-        </HorizontalStackLayout>
+                <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
     </Grid>
 </ContentPage>

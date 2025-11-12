@@ -30,6 +30,7 @@ Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
   - [Durable iconos creados por Icon Hubs - Flaticon](https://www.flaticon.es/iconos-gratis/durable)
   - [Engranaje iconos creados por Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/engranaje)
   - [Turismo iconos creados por -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/turismo)
+  - [Close icons creados por Pixel perfect - Flaticon](https://www.flaticon.com/free-icons/close)
 
 Se reconoce y respeta la propiedad intelectual de estos proyectos y recursos, y se han utilizado conforme a sus respectivas licencias y políticas de atribución.
 

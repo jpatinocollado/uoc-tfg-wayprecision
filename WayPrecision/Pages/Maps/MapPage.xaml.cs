@@ -32,11 +32,12 @@ namespace WayPrecision
         public WebView MapWebViewPublic => MapWebView;
 
         public HorizontalStackLayout BtnStackLayoutDefaultPublic => BtnStackLayoutDefault;
-        public HorizontalStackLayout BtnStackLayoutTrackingPublic => BtnStackLayoutTracking;
+        public VerticalStackLayout BtnStackLayoutTrackingPublic => BtnStackLayoutTracking;
 
         public Button btnPlayPublic => btnPlay;
         public Button btnPausePublic => btnPause;
         public Button btnStopPublic => btnStop;
+        public Button btnCancelPublic => btnCancel;
 
         public Label lbTotalPointsPublic => lbTotalPoints;
 
