@@ -29,6 +29,8 @@ namespace WayPrecision
         internal string? _pendingTrackGuid;
         internal bool _isAppeared;
 
+        public WebView MapWebViewPublic => MapWebView;
+
         public HorizontalStackLayout BtnStackLayoutDefaultPublic => BtnStackLayoutDefault;
         public HorizontalStackLayout BtnStackLayoutTrackingPublic => BtnStackLayoutTracking;
 
@@ -376,6 +378,9 @@ namespace WayPrecision
             {
                 Track track = await _trackService.GetByIdAsync(idUpdatedTrack);
 
+                if (track == null)
+                    return;
+
                 if (track.IsOpened)
                     track.Length = trackLength;
                 else
@@ -385,6 +390,8 @@ namespace WayPrecision
                 }
                 await _trackService.UpdateAsync(track);
             });
+
+            await Task.CompletedTask;
         }
 
         #endregion Elements
@@ -403,16 +410,20 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MapWebView.EvaluateJavaScriptAsync($"messageShow('{message}');");
+                await MapWebView.EvaluateJavaScriptAsync($"LoadingManagerService.Show('{message}');");
             });
+
+            await Task.CompletedTask;
         }
 
         internal async Task HideLoading()
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MapWebView.EvaluateJavaScriptAsync("messageHide();");
+                await MapWebView.EvaluateJavaScriptAsync("LoadingManagerService.Hide();");
             });
+
+            await Task.CompletedTask;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
@@ -7,6 +8,7 @@ namespace WayPrecision.Pages.Maps
 {
     public class MapStateTracking : MapState
     {
+        private readonly TrackScriptBuilder _trackScriptBuilder;
         private readonly IService<Track> _service;
 
         private Track CurrentTrack = new();
@@ -14,6 +16,7 @@ namespace WayPrecision.Pages.Maps
 
         public MapStateTracking(IService<Track> service)
         {
+            _trackScriptBuilder = new TrackScriptBuilder();
             _service = service;
         }
 
@@ -21,6 +24,7 @@ namespace WayPrecision.Pages.Maps
         {
             //Initialize current track
             CurrentTrack.Guid = Guid.NewGuid().ToString();
+            CurrentTrack.TypeGeometry = TypeGeometry.LineString;
             CurrentTrack.Created = DateTime.UtcNow.ToString("o");
             CurrentTrack.TrackPoints = new List<TrackPoint>();
             CurrentTrack.IsOpened = true;
@@ -140,18 +144,18 @@ namespace WayPrecision.Pages.Maps
             CurrentTrack = await _service.CreateAsync(CurrentTrack);
 
             await MapPage.ShowLoading("Calculando geometrías...");
-            
-            // espera 10 segundos para que se calculen las medidas
-            await Task.Delay(10000);
-
-            await MapPage.HideLoading();
 
             MapPage.TransitionTo(new MapStateDefault(_service));
+
+            // espera 10 segundos para que se calculen las medidas
+            await Task.Delay(4000);
+
+            await MapPage.HideLoading();
 
             MapPage.EditTrack(CurrentTrack.Guid);
         }
 
-        internal override void AddPosition(GpsLocation lastPosition)
+        public override async Task AddPosition(GpsLocation lastPosition)
         {
             if (IsListening)
             {
@@ -181,7 +185,13 @@ namespace WayPrecision.Pages.Maps
 
                 //Update label total points
                 MapPage.lbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
+
+                //Paint Track in map
+                await MapPage.MapWebViewPublic.EvaluateJavaScriptAsync(_trackScriptBuilder.GetClearTracks());
+                await MapPage.MapWebViewPublic.EvaluateJavaScriptAsync(_trackScriptBuilder.GetTrack(CurrentTrack));
             }
+
+            await Task.CompletedTask;
         }
     }
 }

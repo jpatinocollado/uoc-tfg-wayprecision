@@ -19,6 +19,7 @@ namespace WayPrecision.Pages.Maps
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = true;
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = false;
+            MapPage.pnGpsDataPublic.IsVisible = false;
 
             //Register buttons events
             MapPage.btnGpsDataPublic.Clicked += BtnGpsDataClicked;
@@ -82,9 +83,11 @@ namespace WayPrecision.Pages.Maps
                 MapPage.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
         }
 
-        internal override void AddPosition(GpsLocation lastPosition)
+        public override async Task AddPosition(GpsLocation lastPosition)
         {
             //En el estado por defecto no se realiza ninguna acción al agregar una posición
+
+            await Task.CompletedTask;
         }
     }
 }

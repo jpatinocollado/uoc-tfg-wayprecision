@@ -22,6 +22,8 @@ namespace WayPrecision.Pages.Maps
 
         public abstract void Close();
 
+        public abstract Task AddPosition(GpsLocation lastPosition);
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -42,7 +44,5 @@ namespace WayPrecision.Pages.Maps
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        internal abstract void AddPosition(GpsLocation lastPosition);
     }
 }
