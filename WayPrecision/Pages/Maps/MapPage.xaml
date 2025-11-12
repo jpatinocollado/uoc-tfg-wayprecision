@@ -28,9 +28,9 @@
 
         <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
         BackgroundColor="{StaticResource White}">
-            <Button x:Name="btnGpsData" Text="Datos GPS" Style="{StaticResource PrimaryButton}" />
-            <Button x:Name="btnCreateWaypoint" Text="Waypoint" Style="{StaticResource PrimaryButton}" />
-            <Button x:Name="btnCreateTrack" Text="Track" Style="{StaticResource PrimaryButton}" />
+            <Button x:Name="btnGpsData" Text="" ImageSource="satellite32x32.png" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateWaypoint" Text="" ImageSource="waypoint32x32.png" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateTrack" Text="" ImageSource="track32x32.png" Style="{StaticResource SecondaryButton}" />
         </HorizontalStackLayout>
         <VerticalStackLayout  x:Name="BtnStackLayoutTracking" Grid.Row="1">
             <HorizontalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center"

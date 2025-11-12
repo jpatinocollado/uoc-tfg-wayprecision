@@ -22,15 +22,22 @@ Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
 - **Leaflet**: Biblioteca JavaScript de código abierto para mapas interactivos. Licencia BSD 2-Clause. [https://leafletjs.com](https://leafletjs.com)
 
 - **Iconos de la aplicación**: Los iconos utilizados en la aplicación han sido obtenidos de [Flaticon](https://www.flaticon.com/) y se reconocen según la política de atribución de Flaticon:
-  - [Law icons creados por Freepik - Flaticon](https://www.flaticon.com/free-icons/law)
-  - [Stop icon icons creados por Creative Squad - Flaticon](https://www.flaticon.com/free-icons/stop-icon)
-  - [Pause icons creados por Debi Alpa Nugraha - Flaticon](https://www.flaticon.com/free-icons/pause)
-  - [Pin de ubicación iconos creados por -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/pin-de-ubicacion)
-  - [Mapas y ubicación iconos creados por -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/mapas-y-ubicacion)
-  - [Durable iconos creados por Icon Hubs - Flaticon](https://www.flaticon.es/iconos-gratis/durable)
-  - [Engranaje iconos creados por Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/engranaje)
-  - [Turismo iconos creados por -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/turismo)
-  - [Close icons creados por Pixel perfect - Flaticon](https://www.flaticon.com/free-icons/close)
+  - [Law icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/law)
+  - [Stop icon icons created by Creative Squad - Flaticon](https://www.flaticon.com/free-icons/stop-icon)
+  - [Pause icons created by Debi Alpa Nugraha - Flaticon](https://www.flaticon.com/free-icons/pause)
+  - [Pin de ubicación icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/pin-de-ubicacion)
+  - [Mapas y ubicación icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/mapas-y-ubicacion)
+  - [Durable icons created by Icon Hubs - Flaticon](https://www.flaticon.es/iconos-gratis/durable)
+  - [Engranaje icons created by Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/engranaje)
+  - [Turismo icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/turismo)
+  - [Close icons created by Pixel perfect - Flaticon](https://www.flaticon.com/free-icons/close)
+  - [Satelite icons created by Muhammad Atif - Flaticon](https://www.flaticon.com/free-icons/satelite)
+  - [Location searching icons created by IconBaandar - Flaticon](https://www.flaticon.com/free-icons/location-searching)
+  - [Editing icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/editing)
+  - [Eye password icons created by sonnycandra - Flaticon](https://www.flaticon.com/free-icons/eye-password)
+  - [Looking icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/looking)
+
+
 
 Se reconoce y respeta la propiedad intelectual de estos proyectos y recursos, y se han utilizado conforme a sus respectivas licencias y políticas de atribución.
 

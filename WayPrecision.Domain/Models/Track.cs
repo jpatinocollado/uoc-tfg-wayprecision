@@ -19,8 +19,10 @@ namespace WayPrecision.Domain.Models
         public string Created { get; set; } = String.Empty;
         public string Finalized { get; set; } = String.Empty;
         public bool IsOpened { get; set; }
+        public bool IsVisible { get; set; } = true;
 
-        public int TotalPoints { get; set; }
+        [Ignore]
+        public int TotalPoints => TrackPoints.Count;
         public string AreaUnits { get; set; } = String.Empty;
         public string LengthUnits { get; set; } = String.Empty;
 

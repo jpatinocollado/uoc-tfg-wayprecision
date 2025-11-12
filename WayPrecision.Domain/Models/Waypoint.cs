@@ -11,6 +11,8 @@ namespace WayPrecision.Domain.Models
         public string Observation { get; set; } = String.Empty;
         public string Created { get; set; } = String.Empty;
 
+        public bool IsVisible { get; set; } = true;
+
         [Indexed]
         public string PositionGuid { get; set; } = String.Empty;
 

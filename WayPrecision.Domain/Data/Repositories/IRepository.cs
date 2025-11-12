@@ -1,4 +1,6 @@
-﻿namespace WayPrecision.Domain.Data.Repositories
+﻿using System.Linq.Expressions;
+
+namespace WayPrecision.Domain.Data.Repositories
 {
     /// <summary>
     /// Define las operaciones CRUD básicas y operaciones diferidas para un repositorio de entidades de tipo <typeparamref name="T"/>.
@@ -11,6 +13,12 @@
         /// </summary>
         /// <returns>Una lista de todas las entidades.</returns>
         Task<List<T>> GetAllAsync();
+
+        /// <summary>
+        /// Obtiene todas las entidades de la tabla correspondiente que coinciden con el predicado.
+        /// </summary>
+        /// <returns>Una lista de todas las entidades.</returns>
+        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
 
         /// <summary>
         /// Obtiene una entidad por su identificador único.
