@@ -187,7 +187,6 @@ namespace WayPrecision.Pages.Maps
                 if (reanudarTrack)
                     OnPlayClicked(null, new EventArgs());
             }
-
         }
 
         public override async Task AddPosition(GpsLocation lastPosition)
@@ -222,8 +221,8 @@ namespace WayPrecision.Pages.Maps
                 MapPage.lbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
 
                 //Paint Track in map
-                await MapPage.MapWebViewPublic.EvaluateJavaScriptAsync(_trackScriptBuilder.GetClearTracks());
-                await MapPage.MapWebViewPublic.EvaluateJavaScriptAsync(_trackScriptBuilder.GetTrack(CurrentTrack));
+                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
+                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
             }
 
             await Task.CompletedTask;

@@ -113,6 +113,24 @@ namespace WayPrecision
             isWebViewReady = true;
         }
 
+        public void ExecuteJavaScript(string script)
+        {
+            if (!isWebViewReady)
+                return;
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await MapWebView.EvaluateJavaScriptAsync(script);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error ejecutando JavaScript: {ex.Message}");
+                }
+            });
+        }
+
         private void OnPositionChanged(object? sender, LocationEventArgs e)
         {
             //get last position
@@ -225,7 +243,7 @@ namespace WayPrecision
                 string lng = gpsLocation.Longitude.ToString(CultureInfo.InvariantCulture);
                 string center = _locationCenterEnable.ToString().ToLower();
                 string js = $"updatePosition({lat}, {lng}, {center}, {direction});";
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                ExecuteJavaScript(js);
             }
             catch (Exception ex)
             {
@@ -317,14 +335,14 @@ namespace WayPrecision
             if (!string.IsNullOrEmpty(_pendingTrackGuid))
             {
                 TrackScriptBuilder script = new();
-                await MapWebView.EvaluateJavaScriptAsync(script.GetFitTrack(_pendingTrackGuid));
+                ExecuteJavaScript(script.GetFitTrack(_pendingTrackGuid));
                 _pendingTrackGuid = null; // Solo una vez
             }
 
             if (!string.IsNullOrEmpty(_pendingWaypointGuid))
             {
                 WaypointScriptBuilder script = new();
-                await MapWebView.EvaluateJavaScriptAsync(script.GetFitWaypoint(_pendingWaypointGuid));
+                ExecuteJavaScript(script.GetFitWaypoint(_pendingWaypointGuid));
                 _pendingWaypointGuid = null; // Solo una vez
             }
         }
@@ -342,16 +360,16 @@ namespace WayPrecision
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
 
-                await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetClearWaypoints());
+                ExecuteJavaScript(scWaypoints.GetClearWaypoints());
                 foreach (var waypoint in waypoints)
                 {
-                    await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetWaypoint(waypoint));
+                    ExecuteJavaScript(scWaypoints.GetWaypoint(waypoint));
                 }
 
-                await MapWebView.EvaluateJavaScriptAsync(scTracks.GetClearTracks());
+                ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    await MapWebView.EvaluateJavaScriptAsync(scTracks.GetTrack(track));
+                    ExecuteJavaScript(scTracks.GetTrack(track));
                 }
             });
         }
@@ -366,8 +384,8 @@ namespace WayPrecision
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
 
-                await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetClearWaypoints());
-                await MapWebView.EvaluateJavaScriptAsync(scTracks.GetClearTracks());
+                ExecuteJavaScript(scWaypoints.GetClearWaypoints());
+                ExecuteJavaScript(scTracks.GetClearTracks());
             });
         }
 
@@ -409,7 +427,7 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MapWebView.EvaluateJavaScriptAsync($"LoadingManagerService.Show('{message}');");
+                ExecuteJavaScript($"LoadingManagerService.Show('{message}');");
             });
 
             await Task.CompletedTask;
@@ -419,7 +437,7 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                await MapWebView.EvaluateJavaScriptAsync("LoadingManagerService.Hide();");
+                ExecuteJavaScript("LoadingManagerService.Hide();");
             });
 
             await Task.CompletedTask;
