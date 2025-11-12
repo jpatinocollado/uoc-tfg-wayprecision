@@ -1,10 +1,16 @@
-﻿using SQLite;
+﻿using System.ComponentModel;
+using SQLite;
 
 namespace WayPrecision.Domain.Models
 {
-    public class Track
+    public class Track : INotifyPropertyChanged
     {
         private Configuration? _configuration;
+
+        public Track()
+        {
+            _isVisible = true;
+        }
 
         public void SetConfiguration(Configuration configuration)
         {
@@ -19,10 +25,33 @@ namespace WayPrecision.Domain.Models
         public string Created { get; set; } = String.Empty;
         public string Finalized { get; set; } = String.Empty;
         public bool IsOpened { get; set; }
-        public bool IsVisible { get; set; } = true;
+
+        private bool _isVisible;
+
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible != value)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                    OnPropertyChanged(nameof(GetEyeImage));
+                }
+            }
+        }
+
+        public string GetEyeImage => IsVisible ? "eyeopen32x32.png" : "eyeclose32x32.png";
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         [Ignore]
         public int TotalPoints => TrackPoints.Count;
+
         public string AreaUnits { get; set; } = String.Empty;
         public string LengthUnits { get; set; } = String.Empty;
 

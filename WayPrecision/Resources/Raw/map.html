@@ -745,7 +745,11 @@
                 waypointsList[waypoint.id] = L.marker(latLang).on('click', function ()
                 {
                     waypointOnClick(waypoint);
-                }).bindTooltip(waypoint.name).addTo(waypoints);
+                }).bindTooltip(waypoint.name);
+
+                if (waypoint.visible)
+                    waypointsList[waypoint.id].addTo(waypoints);
+                
 
                 console.log("layer waypoints", waypoints);
             }
@@ -845,7 +849,10 @@
                             postMessageToBackend('editTrack;' + track.id);
                         });
                     }
-                }).bindTooltip(alt).addTo(tracks);
+                }).bindTooltip(alt);
+
+                if (track.visible)
+                    trackList[track.id].addTo(tracks);
 
                 postMessageToBackend('updateTrack;' + track.id + ';' + lineLength + ';' + polygonArea + ';' + polygonLength);
             }

@@ -8,30 +8,14 @@ namespace WayPrecision.Domain.Map.Scripting
         {
         }
 
-        public TrackScriptBuilder ClearTracks()
-        {
-            Script.Append(GetClearTracks());
-            return this;
-        }
-
-        public MapScriptBuilder FitTrack(string id)
-        {
-            Script.Append($"TrackManagerService.FitTrack('{id}');");
-            return this;
-        }
-
-        public MapScriptBuilder UpdateTracks(List<Track> tracks)
-        {
-            tracks.ForEach(track =>
-            {
-                Script.Append(GetTrack(track));
-            });
-            return this;
-        }
-
         public string GetClearTracks()
         {
             return "TrackManagerService.ClearTracks();";
+        }
+
+        public string GetFitTrack(string id)
+        {
+            return $"TrackManagerService.FitTrack('{id}');";
         }
 
         public string GetTrack(Track track)
@@ -68,6 +52,7 @@ namespace WayPrecision.Domain.Map.Scripting
                                $"id: '{track.Guid}', " +
                                $"name: '{track.Name}', " +
                                $"description: '{track.Observation}', " +
+                               $"visible: {track.IsVisible.ToString().ToLower()}, " +
                                $"length: '{track.LengthLocal}', " +
                                $"area: '{track.AreaLocal}', " +
                                "color: '#31882A', " +

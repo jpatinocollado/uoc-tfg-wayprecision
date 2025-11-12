@@ -317,16 +317,14 @@ namespace WayPrecision
             if (!string.IsNullOrEmpty(_pendingTrackGuid))
             {
                 TrackScriptBuilder script = new();
-                string js = script.FitTrack(_pendingTrackGuid).Render();
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                await MapWebView.EvaluateJavaScriptAsync(script.GetFitTrack(_pendingTrackGuid));
                 _pendingTrackGuid = null; // Solo una vez
             }
 
             if (!string.IsNullOrEmpty(_pendingWaypointGuid))
             {
                 WaypointScriptBuilder script = new();
-                string js = script.FitWaypoint(_pendingWaypointGuid).Render();
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                await MapWebView.EvaluateJavaScriptAsync(script.GetFitWaypoint(_pendingWaypointGuid));
                 _pendingWaypointGuid = null; // Solo una vez
             }
         }
