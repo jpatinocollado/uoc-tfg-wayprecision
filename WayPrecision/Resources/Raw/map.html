@@ -749,7 +749,6 @@
 
                 if (waypoint.visible)
                     waypointsList[waypoint.id].addTo(waypoints);
-                
 
                 console.log("layer waypoints", waypoints);
             }
@@ -844,7 +843,7 @@
                     style: setStyleTrack(track.weight, track.color, track.fillColor, track.opacity, track.fillopacity),
                     onEachFeature: function onEachFeature(feature, layer)
                     {
-                        layer.on('click', function (e)
+                        layer.on('dblclick', function (e)
                         {
                             postMessageToBackend('editTrack;' + track.id);
                         });
@@ -1341,7 +1340,27 @@
         {
             LoadingManagerService.Show("Carregant mapa...");
             MapManagerService.IniciarPantalla(1, true, 1);
+
+            replaceAttributionLink();
         });
+
+        function replaceAttributionLink()
+        {
+            var attribution = document.querySelector('.leaflet-control-attribution.leaflet-control');
+            if (!attribution) return;
+
+            var link = attribution.querySelector('a');
+            if (link)
+            {
+                // Creamos un span para reemplazar el enlace
+                var span = document.createElement('span');
+                span.title = link.title;
+                span.innerHTML = link.innerHTML; // Conserva el SVG y el texto
+
+                // Reemplazamos el enlace por el span
+                attribution.replaceChild(span, link);
+            }
+        }
 
         //funcion de actualizar la posición en mapa
         function updatePosition(lat, lng, center, angle)
@@ -1350,12 +1369,11 @@
             console.log('lng: ' + lng);
 
             if (MapManagerService.GetMap().getZoom() <= 1)
-                MapManagerService.SetZoom(15);
+                MapManagerService.SetZoomMax();
 
             MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
 
         }
-
     </script>
 </body>
 </html>

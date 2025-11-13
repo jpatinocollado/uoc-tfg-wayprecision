@@ -64,7 +64,7 @@
                 </Image>
             </HorizontalStackLayout>
 
-            <Label Text="jpcollado@uoc.edu"
+            <Label Text="jpc_paty@hotmail.com"
            FontSize="14"
            Grid.Row="1"
            TextColor="CornflowerBlue">
