@@ -2,7 +2,6 @@
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
-using static SQLite.SQLite3;
 
 namespace WayPrecision.Test
 {
