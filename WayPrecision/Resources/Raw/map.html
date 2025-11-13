@@ -566,7 +566,6 @@
                 actualPosition.remove();
             }
             //return plublic methods of service
-
             return {
                 GetLayer: getLayer,
                 RemoveLayer: removeLayer,
@@ -585,94 +584,18 @@
                 var map = MapManagerService.GetMap();
 
                 //set events
-                //map.on('load', onMapLoad);
-                //map.on('zoomstart', onMapZoomStart);
-                map.on('zoomend', onMapZoomEnd);
-                //map.on('move', onMapMove);
                 map.on('dblclick', onMapDblClick);
-                //map.on('baselayerchange', onMapBaseLayerChange);
-                //map.on('draw:created', onMapDrawCreated);
+                map.on('zoomstart', onMapZoomStart);
+                map.on('zoomend', onMapZoomEnd);
+                map.on('move', onMapMove);
 
-                //map.on('layerremove', onLayerRemove);
-                //map.on('layeradd', onLayerAdd);
-
-                //map.on('click', onMapClick);
-            }
-
-            var onLayerRemove = function (event)
-            {
-                console.log('Layer:', event.layer);
-                if (event.layer.options.className == 'OVLY#Tracks' || event.layer.options.className == 'OVLY#Waypoints' ||
-                    event.layer.options.className == 'OVLY#GPX' || event.layer.options.className == 'OVLY#Recintes')
-                {
-                    BackendManagerService.SetCheckLayer(event.layer.options.className, false);
-                }
-            }
-
-            var onLayerAdd = function (event)
-            {
-                console.log('Layer:', event.layer);
-                if (event.layer.options.className == 'OVLY#Tracks' || event.layer.options.className == 'OVLY#Waypoints' ||
-                    event.layer.options.className == 'OVLY#GPX' || event.layer.options.className == 'OVLY#Recintes')
-                {
-                    BackendManagerService.SetCheckLayer(event.layer.options.className, true);
-                }
-            }
-
-            var onMapDrawCreated = function (e)
-            {
-                var type = e.layerType, layer = e.layer;
-
-                var estateEdicio = DrawLayerManagerService.GetState();
-                console.log('draw estateEdicio:', estateEdicio);
-
-                var currentPoligon = DrawLayerManagerService.GetCurrentPoligon();
-                console.log('draw currentPoligon:', currentPoligon);
-
-                var newCoordinates = TurfUtilsManagerService.ConverLatlngsToCoords(layer._latlngs);
-                var oldGeometry = TurfUtilsManagerService.GetGeometry(currentPoligon);
-
-                var union;
-                if (estateEdicio == "ADD")
-                {
-                    var polygon2 = turf.polygon(newCoordinates);
-
-                    union = turf.union(oldGeometry, polygon2);
-                    console.log('draw add result:', union);
-                }
-                else
-                {
-                    var polygon2 = turf.polygon(newCoordinates);
-
-                    union = turf.difference(oldGeometry, polygon2);
-                    console.log('draw remove result:', union);
-                }
-
-                union = L.geoJSON(union, {
-                    //onEachFeature: onEachFeature
-                });
-                union = union._layers[(union._leaflet_id - 1)];
-
-                DrawLayerManagerService.AddPoligon(union);
-            }
-
-            var onMapBaseLayerChange = function (e)
-            {
-                console.log('idLayer:', e.layer._leaflet_id);
-                console.log('Layer:', e);
-                BackendManagerService.SetLastLayer(e.layer); //._leaflet_id);
-                MapLayersManagerService.SetCurrentLayer(e.layer);
-            }
-
-            var onMapLoad = function (e)
-            {
-                BackendManagerService.LoadApp();
             }
 
             var onMapZoomStart = function (e)
             {
                 var map = MapManagerService.GetMap();
-                BackendManagerService.SetLastZoom('zoomstart', map.getZoom());
+                console.log('[onMapZoomStart]:', e);
+                postMessageToBackend('setLastZoom;' + map.getZoom());
             }
 
             var onMapZoomEnd = function (e)
@@ -687,24 +610,13 @@
             {
                 var map = MapManagerService.GetMap();
                 var latlng = map.getCenter();
-                BackendManagerService.SetLastCenter(map.getZoom(), latlng.lat, latlng.lng, latlng.alt);
+                console.log('[onMapMove]:', latlng);
+                postMessageToBackend('setLastCenter;' + latlng.lat + ';' + latlng.lng);
             }
 
             var onMapDblClick = function (e)
             {
                 postMessageToBackend('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng);
-            }
-
-            var onMapClick = function (e)
-            {
-                var map = MapManagerService.GetMap();
-                var popup = L.popup()
-                popup.setLatLng(e.latlng)
-                    .setContent("[MapEventsManagerService] You clicked the map at " + e.latlng.toString())
-                    .openOn(map);
-
-                var evtArgs = { id: 'map1', tagName: 'map', lat: e.latlng.lat, lng: e.latlng.lng, alt: e.latlng.alt };
-                window['mapEventHandler']['raiseEvent']('click', evtArgs);
             }
 
             //return plublic methods of service
@@ -868,33 +780,13 @@
                 MapManagerService.FitEstate();
 
                 console.log('Fit Track', id);
-                //Esperamos 1 segundo, ya que la pantalla del menu, borra y actualiza los elementos del mapa
-                //setTimeout(function ()
-                //{
+
                 let bounds = trackList[id].getBounds();
                 var map = MapManagerService.GetMap();
                 map.setZoom(map.getMaxZoom());
                 map.fitBounds(bounds);
 
                 console.log('bounds', bounds);
-                //Se oculta el resto de traks para identificarlo
-                //var keys = Object.keys(trackList);
-                //for (var i = 0; i < keys.length; i++)
-                //{
-                //    if (keys[i] != id)
-                //        trackList[keys[i]].remove();
-                //}
-                //Se vuelven a mostrar todos los traks
-                //setTimeout(function ()
-                //{
-                //var keys = Object.keys(trackList);
-                //for (var i = 0; i < keys.length; i++)
-                //{
-                //    if (keys[i] != id)
-                //        trackList[keys[i]].addTo(tracks);
-                //}
-                /*}, 2000);*/
-                /*}, 1000);*/
             }
 
             var removeLayer = function ()
@@ -902,22 +794,13 @@
                 tracks.remove();
             }
 
-            var calcularTrack = function (track)
-            {
-                var lineLength = turf.length(track.lineString, { units: 'kilometers' });
-                var polygonArea = turf.area(track.polygon);
-                var polygonLength = turf.length(track.polygon, { units: 'kilometers' });
-                var evtArgs = { id: track.id, distance: lineLength, area: polygonArea, type: track.type, distancePolygon: polygonLength };
-                //window['mapEventHandler']['raiseEvent']('closeTrack', evtArgs);
-            }
             //return plublic methods of service
             return {
                 GetLayer: getLayer,
                 RemoveLayer: removeLayer,
                 ClearTracks: clearTracks,
                 AddTrack: addTrack,
-                FitTrack: fitTrack,
-                CalcularTrack: calcularTrack
+                FitTrack: fitTrack
             };
         })();
     </script>
@@ -947,7 +830,7 @@
                 baseMaps = new Object();
                 baseMapsArr = [];
 
-                console.log("creando capa open street maps");
+                console.log("creando capa openstreetmaps");
                 addOpenStreetMaps();
 
                 console.log("creando controles de vista");
@@ -969,20 +852,21 @@
             {
                 var map = MapManagerService.GetMap();
 
-                //DrawLayerManagerService.RemoveLayer();
-
+                //Layer tracks
                 var layerTracks = TrackManagerService.GetLayer();
                 layerTracks.options.className = "OVLY#Tracks";
 
+                //Layer waypoints
                 var layerWaypoints = WaypointManagerService.GetLayer();
                 layerWaypoints.options.className = "OVLY#Waypoints";
 
+                //Layer actual position
                 var layerActualPosition = MapGpsManagerService.GetLayer();
 
                 overlayMaps = { 'Waypoints': layerWaypoints, 'Tracks': layerTracks, };
 
                 layerControls.remove();
-                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: true });
                 layerControls.addTo(map);
 
                 if (chkTracks)
@@ -997,128 +881,20 @@
 
                 layerActualPosition.addTo(map);
 
-                setBaseLayer(baseLayerName);
-                updateOpacity(baseLayerOpacity);
-            }
-
-            var createControlsEdit = function ()
-            {
-                setModeEdicio(true);
                 var map = MapManagerService.GetMap();
-                var layerDraws = DrawLayerManagerService.GetLayer();
-
-                overlayMaps = {};
-                layerControls.remove();
-
-                if (layerControlsWms != null)
-                    layerControlsWms.remove();
-
-                if (layerControlsWmsProject != null)
-                    layerControlsWmsProject.remove();
-
-                if (layerControlsAdicionals != null)
-                    layerControlsAdicionals.remove();
-
-                layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
-                layerControls.addTo(map);
-
-                layerDraws.addTo(map);
-            }
-
-            var getModeEdicio = function ()
-            {
-                return IsModeEdicio;
-            }
-
-            var setModeEdicio = function (isModeEdicio)
-            {
-                IsModeEdicio = isModeEdicio;
-            }
-
-            var setCurrentLayer = function (layer)
-            {
-                currentLayer = layer;
-            }
-
-            //gestión de opacidad, layers, ...
-            var updateOpacity = function (value)
-            {
-                if (currentLayer != null)
+                
+                if (baseMaps[baseLayerName])
                 {
-                    currentLayer.setOpacity(value);
-                }
-            }
-            var setLayerOpacity = function (className, value)
-            {
-                var map = MapManagerService.GetMap();
-                map.eachLayer(function (layer)
-                {
-                    if (layer.options.className == className)
-                    {
-                        layer.setOpacity(value);
-                    }
-                });
-            }
-            var setLayerzIndex = function (className, value)
-            {
-                var map = MapManagerService.GetMap();
-                map.eachLayer(function (layer)
-                {
-                    if (layer.options.className == className)
-                    {
-                        layer.setZIndex(value);
-                    }
-                });
-            }
-            var removeLayer = function (className)
-            {
-                var map = MapManagerService.GetMap();
-                map.eachLayer(function (layer)
-                {
-                    if (layer.options.className == className)
-                    {
-                        layer.removeFrom(map);
-                    }
-                });
-            }
-            var setBaseLayer = function (className)
-            {
-                var map = MapManagerService.GetMap();
-                var activeLayer = className;
-                if (baseMaps[activeLayer])
-                {
-                    currentLayer = baseMaps[activeLayer];
+                    currentLayer = baseMaps[baseLayerName];
                     map.addLayer(currentLayer);
                 }
-            }
-
-            var setChecks = function (ShowWaypoints, ShowTracks)
-            {
-                chkWaypoints = ShowWaypoints;
-                chkTracks = ShowTracks;
-            }
-            var setInitLayer = function (BaseLayerName, BaseLayerOpacity)
-            {
-                baseLayerName = BaseLayerName;
-                baseLayerOpacity = BaseLayerOpacity;
             }
 
             //return plublic methods of service
             return {
                 AddLayers: addLayers,
                 CreateControlsView: createControlsView,
-                CreateControlsEdit: createControlsEdit,
-                GetModeEdicio: getModeEdicio,
-                SetModeEdicio: setModeEdicio,
-                SetCurrentLayer: setCurrentLayer,
-
-                UpdateOpacity: updateOpacity,
-                SetLayerOpacity: setLayerOpacity,
-                SetLayerzIndex: setLayerzIndex,
-                SetBaseLayer: setBaseLayer,
-                RemoveLayer: removeLayer,
-                SetChecks: setChecks,
-                SetInitLayer: setInitLayer
+               
             };
         })();
     </script>
@@ -1174,10 +950,6 @@
 
                 //Custom Buttons to edit
                 console.log("añadiendo botones laterales");
-                //MapButtonManagerService.CreateButtonNavigation();
-                //MapButtonManagerService.CreateButtonDeveloperTools();
-                //MapButtonManagerService.CreateButtonHome();
-                //MapButtonManagerService.CreateButtonOpacity();
 
                 //boton de navegación
                 buttonNavigation = L.easyButton({
