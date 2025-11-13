@@ -12,7 +12,8 @@ namespace WayPrecision.Test
 
         public WaypointServiceIntegrationTest()
         {
-            var dbContext = new DatabaseContext("C:\\Users\\jpatinoc.INDRA\\AppData\\Local\\User Name\\com.companyname.wayprecision\\Data\\wayprecision.db3");
+            //var dbContext = new DatabaseContext("C:\\Users\\jpatinoc.INDRA\\AppData\\Local\\User Name\\com.companyname.wayprecision\\Data\\wayprecision.db3");
+            var dbContext = new DatabaseContext(":memory:");
             _unitOfWork = new UnitOfWork(dbContext);
             _service = new WaypointService(_unitOfWork);
         }
