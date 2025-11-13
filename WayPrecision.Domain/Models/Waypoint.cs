@@ -44,7 +44,7 @@ namespace WayPrecision.Domain.Models
         public string PositionGuid { get; set; } = String.Empty;
 
         [Ignore] // SQLite-net no soporta navegación automática, pero puedes cargarla manualmente
-        public virtual Position Position { get; set; } = new Position();
+        public virtual Position? Position { get; set; }
 
         [Ignore]
         public DateTime? CreatedLocal

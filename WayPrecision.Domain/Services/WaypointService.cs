@@ -45,13 +45,11 @@ namespace WayPrecision.Domain.Services
         /// <summary>
         /// Añade un nuevo waypoint y su posición asociada obligatoriamente.
         /// </summary>
-        public async Task<Waypoint> CreateAsync(Waypoint waypoint)
+        public async Task<Waypoint?> CreateAsync(Waypoint waypoint)
 
         {
-            if (waypoint == null)
-                throw new ArgumentNullException(nameof(waypoint));
-            else if (waypoint.Position == null)
-                throw new ArgumentNullException(nameof(waypoint.Position));
+            if (waypoint == null || waypoint.Position == null)
+                return null;
 
             DateTime utcNow = DateTime.UtcNow;
 
@@ -79,15 +77,20 @@ namespace WayPrecision.Domain.Services
         /// <summary>
         /// Edita un waypoint existente.
         /// </summary>
-        public async Task<Waypoint> UpdateAsync(Waypoint waypoint)
-
+        public async Task<Waypoint?> UpdateAsync(Waypoint waypoint)
         {
             if (waypoint == null)
-                throw new ArgumentNullException(nameof(waypoint));
+                return null;
+
+            // Verifica si existe el waypoint en la base de datos
+            var existing = await GetByIdAsync(waypoint.Guid);
+            if (existing == null)
+                return null;
 
             await _unitOfWork.Waypoints.UpdateAsync(waypoint);
+            await _unitOfWork.SaveChangesAsync();
 
-            return await Task.FromResult(waypoint);
+            return waypoint;
         }
 
         /// <summary>
@@ -95,13 +98,15 @@ namespace WayPrecision.Domain.Services
         /// </summary>
         public async Task<bool> DeleteAsync(string guid)
         {
-            Waypoint waypoint = await _unitOfWork.Waypoints.GetByIdAsync(guid);
+            Waypoint? waypoint = await GetByIdAsync(guid);
             if (waypoint == null)
-                throw new ArgumentNullException(nameof(waypoint));
+                return await Task.FromResult(false);
+
+            _unitOfWork.Waypoints.DeleteDeferred(waypoint);
 
             //eliminamos el waypoint y su posición asociada
-            _unitOfWork.Waypoints.DeleteDeferred(waypoint);
-            _unitOfWork.Positions.DeleteDeferred(waypoint.Position);
+            if (waypoint.Position != null)
+                _unitOfWork.Positions.DeleteDeferred(waypoint.Position);
 
             //guardamos los cambios
             await _unitOfWork.SaveChangesAsync();
