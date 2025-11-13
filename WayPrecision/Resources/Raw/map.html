@@ -1187,7 +1187,7 @@
                         title: 'Habilitar localización',
                         onClick: function (btn, map)
                         {
-                            LoadingManagerService.Show('Activant localització...');
+                            LoadingManagerService.Show('Activando localización...');
 
                             postMessageToBackend("enableLocation");
                             postMessageToBackend("enableCenterLocation");
@@ -1204,7 +1204,7 @@
                         title: 'Seguimiento sin centrar', // like its title
                         onClick: function (btn, map)
                         {       // and its callback
-                            LoadingManagerService.Show('Desactivant centrat del mapa...');
+                            LoadingManagerService.Show('Desactivando centrar en el mapa...');
 
                             postMessageToBackend("disableCenterLocation");
 
@@ -1221,7 +1221,7 @@
                         title: 'deshabilitar localización', // like its title
                         onClick: function (btn, map)
                         {       // and its callback
-                            LoadingManagerService.Show('Desactivant localització...');
+                            LoadingManagerService.Show('Desactivando localización...');
 
                             postMessageToBackend("disableLocation");
 
@@ -1338,7 +1338,7 @@
     <script>
         $(document).ready(function ()
         {
-            LoadingManagerService.Show("Carregant mapa...");
+            LoadingManagerService.Show("Cargando mapa...");
             MapManagerService.IniciarPantalla(1, true, 1);
 
             replaceAttributionLink();
