@@ -100,7 +100,7 @@ namespace WayPrecision
 
         private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
         {
-            e.Cancel = true;
+            //e.Cancel = true;
         }
 
         private void OnMapWebViewLoaded(object? sender, EventArgs e)
