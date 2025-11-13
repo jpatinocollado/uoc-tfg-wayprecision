@@ -8,14 +8,14 @@ namespace WayPrecision;
 
 public partial class TracksPage : ContentPage
 {
-    private readonly IService<Track> service;
+    private readonly IService<Track> _service;
     public ObservableCollection<Track> Tracks { get; set; } = [];
 
-    public TracksPage(IService<Track> serviceTrack)
+    public TracksPage(IService<Track> service)
     {
         InitializeComponent();
 
-        service = serviceTrack;
+        _service = service;
 
         BindingContext = this;
 
@@ -31,7 +31,7 @@ public partial class TracksPage : ContentPage
 
     private async Task LoadTracks()
     {
-        var tracks = await service.GetAllAsync();
+        var tracks = await _service.GetAllAsync();
 
         Tracks.Clear();
         foreach (var track in tracks)
@@ -52,8 +52,23 @@ public partial class TracksPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is Track track)
         {
+            if (!track.IsVisible)
+                OnEyeClicked(sender, new EventArgs());
+
+            //Task.Delay(500).Wait();
+
             //navega a la página del mapa y muestra el track
             await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+        }
+    }
+
+    private async void OnEyeClicked(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is Track track)
+        {
+            track.IsVisible = !track.IsVisible;
+
+            await _service.UpdateAsync(track);
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
-using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
+using WayPrecision.Pages.Maps;
 
 namespace WayPrecision
 {
@@ -17,15 +15,34 @@ namespace WayPrecision
         private readonly IService<Waypoint> _waypointService;
 
         private readonly IGpsManager _gpsManager;
-        private GpsLocation? _lastPosition = null;
+        internal GpsLocation? _lastPosition = null;
 
-        private bool isWebViewReady = false;
-        private bool _locationEnable = false;
-        private bool _locationCenterEnable = false;
+        internal MapState State;
+        internal bool isWebViewReady = false;
+        internal bool _locationEnable = false;
+        internal bool _locationCenterEnable = false;
 
-        private string? _pendingWaypointGuid;
-        private string? _pendingTrackGuid;
-        private bool _isAppeared;
+        internal string? _pendingWaypointGuid;
+        internal string? _pendingTrackGuid;
+        internal bool _isAppeared;
+
+        public WebView MapWebViewPublic => MapWebView;
+
+        public HorizontalStackLayout BtnStackLayoutDefaultPublic => BtnStackLayoutDefault;
+        public VerticalStackLayout BtnStackLayoutTrackingPublic => BtnStackLayoutTracking;
+
+        public Button btnPlayPublic => btnPlay;
+        public Button btnPausePublic => btnPause;
+        public Button btnStopPublic => btnStop;
+        public Button btnCancelPublic => btnCancel;
+
+        public Label lbTotalPointsPublic => lbTotalPoints;
+
+        public Button btnGpsDataPublic => btnGpsData;
+        public Button btnCreateWaypointPublic => btnCreateWaypoint;
+        public Button btnCreateTrackPublic => btnCreateTrack;
+
+        public Frame pnGpsDataPublic => pnGpsData;
 
         public MainPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
         {
@@ -43,7 +60,11 @@ namespace WayPrecision
 
             _gpsManager = gpsManager;
             _gpsManager.PositionChanged += OnPositionChanged;
+
+            TransitionTo(new MapStateDefault(_trackService));
         }
+
+        #region MAP INITIALIZATION
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
@@ -76,77 +97,6 @@ namespace WayPrecision
             await _gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
         }
 
-        private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void OnMapWebViewLoaded(object? sender, EventArgs e)
-        {
-            isWebViewReady = true;
-        }
-
-        private void OnMapWebViewNavigated(object? sender, WebNavigatedEventArgs e)
-        {
-            isWebViewReady = true;
-        }
-
-        private void OnPositionChanged(object? sender, LocationEventArgs e)
-        {
-            _lastPosition = e.Location;
-
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                UpdatePanelDadesGps();
-                await UpdateMapLocation();
-            });
-        }
-
-        private void OnShowLocationClicked(object sender, EventArgs e)
-        {
-            // Lógica para mostrar los datos de ubicación
-            pnDades.IsVisible = !pnDades.IsVisible;
-        }
-
-        private void OnCreateWaypointClicked(object sender, EventArgs e)
-        {
-            // Lógica para crear un waypoint
-            if (_locationEnable && _lastPosition != null)
-            {
-                DateTime dateTime = DateTime.UtcNow;
-
-                Waypoint waypoint = new()
-                {
-                    Name = "",
-                    Observation = "",
-                    Created = dateTime.ToString("o"),
-                    Position = new Position
-                    {
-                        Latitude = _lastPosition.Latitude,
-                        Longitude = _lastPosition.Longitude,
-                        Accuracy = _lastPosition.Accuracy,
-                        Altitude = _lastPosition.Altitude,
-                        Course = _lastPosition.Course,
-                        Timestamp = dateTime.ToString("o"),
-                    }
-                };
-
-                Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Created));
-            }
-            else
-                DisplayAlert("Crear Waypoint", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
-        }
-
-        private void OnCreateTrackClicked(object sender, EventArgs e)
-        {
-            // Lógica para crear un track
-            if (_locationEnable && _lastPosition != null)
-            {
-            }
-            else
-                DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
-        }
-
         private void LoadOnlineOpenStreetMaps()
         {
             var html = string.Empty;
@@ -164,18 +114,105 @@ namespace WayPrecision
             MapWebView.Source = htmlSource;
         }
 
-        private void UpdatePanelDadesGps()
+        #endregion MAP INITIALIZATION
+
+        #region MAP EVENTS
+
+        private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
+        {
+            //e.Cancel = true;
+        }
+
+        private void OnMapWebViewLoaded(object? sender, EventArgs e)
+        {
+            isWebViewReady = true;
+        }
+
+        private void OnMapWebViewNavigated(object? sender, WebNavigatedEventArgs e)
+        {
+            isWebViewReady = true;
+        }
+
+        public void ExecuteJavaScript(string script)
+        {
+            if (!isWebViewReady)
+                return;
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    await MapWebView.EvaluateJavaScriptAsync(script);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error ejecutando JavaScript: {ex.Message}");
+                }
+            });
+        }
+
+        public void SetZoom(string zoom)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                lbZoom.Text = $"Zoom: {(!string.IsNullOrWhiteSpace(zoom) ? zoom : "-")}";
+            });
+        }
+
+        internal async Task ShowLoading(string message)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                ExecuteJavaScript($"LoadingManagerService.Show('{message}');");
+            });
+
+            await Task.CompletedTask;
+        }
+
+        internal async Task HideLoading()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                ExecuteJavaScript("LoadingManagerService.Hide();");
+            });
+
+            await Task.CompletedTask;
+        }
+
+        #endregion MAP EVENTS
+
+        #region GPS MANAGEMENT
+
+        private void OnPositionChanged(object? sender, LocationEventArgs e)
+        {
+            //get last position
+            _lastPosition = e.Location;
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                //update GPS data panel
+                UpdatePanelDadesGps(_lastPosition);
+
+                //update map location
+                await UpdateMapLocation(_lastPosition);
+
+                //add position to current state
+                State.AddPosition(_lastPosition);
+            });
+        }
+
+        private void UpdatePanelDadesGps(GpsLocation? gpsLocation)
         {
             lbLatitud.Text = $"Lat: -";
             lbLongitud.Text = $"Lng: -";
             lbPrecision.Text = $"Precisión: -";
 
-            if (_locationEnable && _lastPosition != null)
+            if (_locationEnable && gpsLocation != null)
             {
                 CultureInfo ct = CultureInfo.InvariantCulture;
-                double lat = Math.Round(_lastPosition.Latitude, 6);
-                double lng = Math.Round(_lastPosition.Longitude, 6);
-                double? acc = _lastPosition.Accuracy;
+                double lat = Math.Round(gpsLocation.Latitude, 6);
+                double lng = Math.Round(gpsLocation.Longitude, 6);
+                double? acc = gpsLocation.Accuracy;
 
                 lbLatitud.Text = $"Lat: {lat.ToString(ct)}";
                 lbLongitud.Text = $"Lng: {lng.ToString(ct)}";
@@ -185,25 +222,30 @@ namespace WayPrecision
             }
         }
 
-        private async Task UpdateMapLocation()
+        private async Task UpdateMapLocation(GpsLocation? gpsLocation)
         {
-            if (_lastPosition == null || !isWebViewReady || !_locationEnable)
+            if (gpsLocation == null || !isWebViewReady || !_locationEnable)
                 return;
 
             try
             {
                 string direction = "undefined";
 
-                if (_lastPosition.Course.HasValue)
-                    direction = _lastPosition.Course.Value.ToString(CultureInfo.InvariantCulture);
+                if (gpsLocation.Course.HasValue)
+                    direction = gpsLocation.Course.Value.ToString(CultureInfo.InvariantCulture);
 
-                string js = $"updatePosition({_lastPosition.Latitude.ToString(CultureInfo.InvariantCulture)}, {_lastPosition.Longitude.ToString(CultureInfo.InvariantCulture)}, {_locationCenterEnable.ToString().ToLower()}, {direction});";
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                string lat = gpsLocation.Latitude.ToString(CultureInfo.InvariantCulture);
+                string lng = gpsLocation.Longitude.ToString(CultureInfo.InvariantCulture);
+                string center = _locationCenterEnable.ToString().ToLower();
+                string js = $"updatePosition({lat}, {lng}, {center}, {direction});";
+                ExecuteJavaScript(js);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error actualizando ubicación: {ex.Message}");
             }
+
+            await Task.CompletedTask;
         }
 
         public async Task SetEnableLocation(bool value)
@@ -216,12 +258,14 @@ namespace WayPrecision
                 _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
             }
             else
+            {
                 _ = _gpsManager.StopListeningAsync();
 
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                UpdatePanelDadesGps();
-            });
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    UpdatePanelDadesGps(null);
+                });
+            }
         }
 
         public void SetEnableCenterLocation(bool value)
@@ -229,15 +273,9 @@ namespace WayPrecision
             _locationCenterEnable = value;
         }
 
-        public void SetZoom(string zoom)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                lbZoom.Text = $"Zoom: {(!string.IsNullOrWhiteSpace(zoom) ? zoom : "-")}";
-            });
-        }
+        #endregion GPS MANAGEMENT
 
-        #region Elements
+        #region MAP ELEMENTS MANAGEMENT
 
         public void CreateWaypoint(double lat, double lng)
         {
@@ -288,41 +326,59 @@ namespace WayPrecision
             if (!string.IsNullOrEmpty(_pendingTrackGuid))
             {
                 TrackScriptBuilder script = new();
-                string js = script.FitTrack(_pendingTrackGuid).Render();
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                ExecuteJavaScript(script.GetFitTrack(_pendingTrackGuid));
                 _pendingTrackGuid = null; // Solo una vez
             }
 
             if (!string.IsNullOrEmpty(_pendingWaypointGuid))
             {
                 WaypointScriptBuilder script = new();
-                string js = script.FitWaypoint(_pendingWaypointGuid).Render();
-                await MapWebView.EvaluateJavaScriptAsync(js);
+                ExecuteJavaScript(script.GetFitWaypoint(_pendingWaypointGuid));
                 _pendingWaypointGuid = null; // Solo una vez
             }
+
+            await Task.CompletedTask;
         }
 
         public void PaintElements()
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
+                if (!isWebViewReady)
+                    return;
+
                 var waypoints = await _waypointService.GetAllAsync();
                 var tracks = await _trackService.GetAllAsync();
 
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
 
-                await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetClearWaypoints());
+                ExecuteJavaScript(scWaypoints.GetClearWaypoints());
                 foreach (var waypoint in waypoints)
                 {
-                    await MapWebView.EvaluateJavaScriptAsync(scWaypoints.GetWaypoint(waypoint));
+                    ExecuteJavaScript(scWaypoints.GetWaypoint(waypoint));
                 }
 
-                await MapWebView.EvaluateJavaScriptAsync(scTracks.GetClearTracks());
+                ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    await MapWebView.EvaluateJavaScriptAsync(scTracks.GetTrack(track));
+                    ExecuteJavaScript(scTracks.GetTrack(track));
                 }
+            });
+        }
+
+        public void ClearElements()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (!isWebViewReady)
+                    return;
+
+                TrackScriptBuilder scTracks = new();
+                WaypointScriptBuilder scWaypoints = new();
+
+                ExecuteJavaScript(scWaypoints.GetClearWaypoints());
+                ExecuteJavaScript(scTracks.GetClearTracks());
             });
         }
 
@@ -331,6 +387,9 @@ namespace WayPrecision
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 Track track = await _trackService.GetByIdAsync(idUpdatedTrack);
+
+                if (track == null)
+                    return;
 
                 if (track.IsOpened)
                     track.Length = trackLength;
@@ -341,8 +400,20 @@ namespace WayPrecision
                 }
                 await _trackService.UpdateAsync(track);
             });
+
+            await Task.CompletedTask;
         }
 
-        #endregion Elements
+        #endregion MAP ELEMENTS MANAGEMENT
+
+        public void TransitionTo(MapState state)
+        {
+            if (State != null)
+                State.Dispose();
+
+            State = state;
+            State.SetContext(this);
+            State.Init();
+        }
     }
 }

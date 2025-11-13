@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using SQLite;
 
 namespace WayPrecision.Domain.Data.Repositories
@@ -33,6 +34,12 @@ namespace WayPrecision.Domain.Data.Repositories
         /// </summary>
         /// <returns>Lista de todas las entidades.</returns>
         public virtual Task<List<T>> GetAllAsync() => _connection.Table<T>().ToListAsync();
+
+        /// <summary>
+        /// Obtiene todas las entidades de la tabla aplicando el predicado.
+        /// </summary>
+        /// <returns>Lista de todas las entidades.</returns>
+        public virtual Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate) => _connection.Table<T>().Where(predicate).ToListAsync();
 
         /// <summary>
         /// Obtiene una entidad por su identificador.

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WayPrecision.MainPage"
+             Title="WayPrecision">
+
+    <Grid RowDefinitions="*,Auto, Auto" Padding="0">
+        <WebView x:Name="MapWebView"
+     Grid.Row="0"
+     HorizontalOptions="Fill"
+     VerticalOptions="Fill" />
+
+        <!-- Panel flotante para lat/lon -->
+        <Frame x:Name="pnGpsData" BackgroundColor="#AAFFFFFF"
+       CornerRadius="10"
+       Padding="10"
+       HorizontalOptions="Center"
+       VerticalOptions="End"
+       Margin="20"
+       IsVisible="False">
+            <VerticalStackLayout Spacing="5">
+                <Label x:Name="lbLatitud" Text="Lat: -" />
+                <Label x:Name="lbLongitud" Text="Lng: -" />
+                <Label x:Name="lbPrecision" Text="Precisión: -" />
+                <Label x:Name="lbZoom" Text="Zoom: -" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
+        BackgroundColor="{StaticResource White}">
+            <Button x:Name="btnGpsData" Text="" ImageSource="satellite32x32.png" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateWaypoint" Text="" ImageSource="waypoint32x32.png" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateTrack" Text="" ImageSource="track32x32.png" Style="{StaticResource SecondaryButton}" />
+        </HorizontalStackLayout>
+        <VerticalStackLayout  x:Name="BtnStackLayoutTracking" Grid.Row="1">
+            <HorizontalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center"
+        BackgroundColor="{StaticResource White}">
+                <Button x:Name="btnPlay" Text="" ImageSource="play32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnPause" Text="" ImageSource="pause32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnStop" Text="" ImageSource="stop32x32.png" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnCancel" Text="" ImageSource="close32x32.png" Style="{StaticResource SecondaryButton}" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Grid.Row="2" Padding="0,5,0,10" Spacing="10" HorizontalOptions="Center"
+                BackgroundColor="{StaticResource White}">
+                <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

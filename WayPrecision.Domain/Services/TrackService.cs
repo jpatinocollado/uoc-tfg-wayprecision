@@ -31,136 +31,25 @@ namespace WayPrecision.Domain.Services
         /// </returns>
         public async Task<List<Track>> GetAllAsync()
         {
-            // Implementación de demo: devuelve dos tracks de ejemplo.
-            List<Track> Tracks = new List<Track>();
-
-            string trackId = Guid.NewGuid().ToString();
-            string position1 = Guid.NewGuid().ToString();
-            string position2 = Guid.NewGuid().ToString();
-            string position3 = Guid.NewGuid().ToString();
-
-            Tracks.Add(new Track()
-            {
-                Guid = trackId,
-                Name = "Demo Track",
-                Observation = "This is a demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                IsOpened = false,
-                TotalPoints = 3,
-                TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = new List<TrackPoint>() {
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position1,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.661003770342276,
-                            Longitude = 0.5547822911068457,
-                            Timestamp = DateTime.UtcNow.ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position2,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.6605906511649,
-                            Longitude = 0.5552997755430279,
-                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position3,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.661350708186475,
-                            Longitude = 0.5555705834603986,
-                            Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
-                            Accuracy = 20
-                         }
-                    }
-                }
-            });
-
-            string t2 = Guid.NewGuid().ToString();
-            string t2p1 = Guid.NewGuid().ToString();
-            string t2p2 = Guid.NewGuid().ToString();
-            string t2p3 = Guid.NewGuid().ToString();
-            string t2p4 = Guid.NewGuid().ToString();
-
-            Tracks.Add(new Track()
-            {
-                Guid = t2,
-                Name = "Demo Track 2",
-                Observation = "This is a 2 demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                IsOpened = false,
-                TotalPoints = 3,
-                TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = new List<TrackPoint>() {
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p1,
-                         Position = new Position(){
-                            Guid = t2p1,
-                            Latitude = 41.66215253129646,
-                            Longitude = 0.5533226915521051,
-                            Timestamp = DateTime.UtcNow.ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p2,
-                         Position = new Position(){
-                            Guid = t2p2,
-                            Latitude = 41.662429274617224,
-                            Longitude = 0.5539554704481465,
-                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p4,
-                         Position = new Position(){
-                            Guid = t2p4,
-                            Latitude = 41.66162310597749,
-                            Longitude = 0.5542021469669579,
-                            Timestamp = DateTime.UtcNow.AddSeconds(15).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p3,
-                         Position = new Position(){
-                            Guid = t2p3,
-                            Latitude = 41.661358391685724,
-                            Longitude = 0.5535800931369118,
-                            Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
-                            Accuracy = 20
-                         }
-                    }
-                }
-            });
-
             Configuration configuration = await _configurationService.GetOrCreateAsync();
+
+            List<Track> Tracks = await _unitOfWork.Tracks.GetAllAsync();
+
+            HashSet<string> tracksId = Tracks.Select(a => a.Guid).ToHashSet();
+            List<TrackPoint> points = await _unitOfWork.TrackPoints.GetAllAsync(a => tracksId.Contains(a.TrackGuid));
+            HashSet<string> positionsId = points.Select(a => a.PositionGuid).ToHashSet();
+            List<Position> positions = await _unitOfWork.Positions.GetAllAsync(a => positionsId.Contains(a.Guid));
+
+            foreach (var point in points)
+                point.Position = positions.First(a => a.Guid == point.PositionGuid);
+
             foreach (var track in Tracks)
+            {
+                var trackPoints = points.Where(a => a.TrackGuid == track.Guid).ToList();
+
+                track.TrackPoints.AddRange(trackPoints);
                 track.SetConfiguration(configuration);
+            }
 
             return Tracks.OrderByDescending(a => a.Created).ToList();
         }
@@ -180,10 +69,16 @@ namespace WayPrecision.Domain.Services
                 return null;
 
             Configuration configuration = await _configurationService.GetOrCreateAsync();
-            Track.SetConfiguration(configuration);
 
-            //if (!string.IsNullOrWhiteSpace(Track.PositionGuid))
-            //    Track.Position = await _unitOfWork.Positions.GetByIdAsync(Track.PositionGuid);
+            List<TrackPoint> trackPoints = await _unitOfWork.TrackPoints.GetAllAsync(a => a.TrackGuid == Track.Guid);
+            HashSet<string> positionsId = trackPoints.Select(a => a.PositionGuid).ToHashSet();
+            List<Position> positions = await _unitOfWork.Positions.GetAllAsync(a => positionsId.Contains(a.Guid));
+
+            foreach (var point in trackPoints)
+                point.Position = positions.First(a => a.Guid == point.PositionGuid);
+
+            Track.TrackPoints.AddRange(trackPoints);
+            Track.SetConfiguration(configuration);
 
             return Track;
         }
@@ -209,6 +104,12 @@ namespace WayPrecision.Domain.Services
                 entity.Created = utcNow.ToString("o");
 
             _unitOfWork.Tracks.AddDeferred(entity);
+
+            foreach (TrackPoint trackPoint in entity.TrackPoints)
+            {
+                _unitOfWork.Positions.AddDeferred(trackPoint.Position);
+                _unitOfWork.TrackPoints.AddDeferred(trackPoint);
+            }
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -243,15 +144,18 @@ namespace WayPrecision.Domain.Services
         /// <exception cref="ArgumentNullException">Se lanza si el track no existe.</exception>
         public async Task<bool> DeleteAsync(string guid)
         {
-            Track entity = await GetByIdAsync(guid);
+            Track? entity = await GetByIdAsync(guid);
 
             if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+                throw new NullReferenceException(nameof(entity));
 
-            // Eliminamos el track y su posición asociada
+            foreach (TrackPoint trackPoint in entity.TrackPoints)
+            {
+                _unitOfWork.TrackPoints.DeleteDeferred(trackPoint);
+                _unitOfWork.Positions.DeleteDeferred(trackPoint.Position);
+            }
 
             _unitOfWork.Tracks.DeleteDeferred(entity);
-            //_unitOfWork.Positions.DeleteDeferred(Track.Position);
 
             // Guardamos los cambios
             await _unitOfWork.SaveChangesAsync();

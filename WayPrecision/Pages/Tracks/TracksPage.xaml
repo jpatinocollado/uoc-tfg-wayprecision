@@ -57,19 +57,28 @@
                                 </Label>
                             </VerticalStackLayout>
                             <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Center">
-                                <Button Text="Editar"
+                                <Button x:Name="btnEditar" Text=""
                              Clicked="OnEditClicked"
                              CommandParameter="{Binding .}"
                              FontSize="12"
                              Padding="4,0"
-                             Style="{StaticResource PrimaryButton}" />
+                                        ImageSource="editing32x32.png"
+                             Style="{StaticResource SecondaryButton}" />
 
-                                <Button Text="Ver en mapa"
-                             Clicked="OnViewOnMapClicked"
-                             CommandParameter="{Binding .}"
-                             FontSize="12"
-                             Padding="4,0"
-                             Style="{StaticResource TertiaryButton}" />
+                                <Button x:Name="btnBuscar" Text=""
+                                 Clicked="OnViewOnMapClicked"
+                                 CommandParameter="{Binding .}"
+                                 FontSize="12"
+                                 Padding="4,0"
+                                        ImageSource="binoculars32x32.png"
+                             Style="{StaticResource SecondaryButton}" />
+                                <Button x:Name="btnOcultar" Text=""
+                                   Clicked="OnEyeClicked"
+                                   CommandParameter="{Binding .}"
+                                   FontSize="12"
+                                   Padding="4,0"
+                                    ImageSource="{Binding GetEyeImage}"
+                                   Style="{StaticResource SecondaryButton}" />
                             </HorizontalStackLayout>
                         </Grid>
                     </Frame>

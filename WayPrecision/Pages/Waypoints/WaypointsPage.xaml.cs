@@ -39,7 +39,7 @@ public partial class WaypointsPage : ContentPage
         Title = $"Waypoints ({waypoints.Count})";
     }
 
-    private async void OnEditWaypointClicked(object sender, EventArgs e)
+    private async void OnEditClicked(object sender, EventArgs e)
     {
         if (sender is Button button && button.CommandParameter is Waypoint waypoint)
         {
@@ -51,8 +51,23 @@ public partial class WaypointsPage : ContentPage
     {
         if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
         {
+            if (!waypoint.IsVisible)
+                OnEyeClicked(sender, new EventArgs());
+
+            //Task.Delay(1500).Wait();
+
             //navega a la página del mapa y muestra el waypoint
             await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+        }
+    }
+
+    private async void OnEyeClicked(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+        {
+            waypoint.IsVisible = !waypoint.IsVisible;
+            await _service.UpdateAsync(waypoint);
+
         }
     }
 }

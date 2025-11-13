@@ -12,7 +12,8 @@ namespace WayPrecision.Test
 
         public WaypointServiceIntegrationTest()
         {
-            var dbContext = new DatabaseContext("C:\\Users\\jpatinoc.INDRA\\AppData\\Local\\User Name\\com.companyname.wayprecision\\Data\\wayprecision.db3");
+            //var dbContext = new DatabaseContext("C:\\Users\\jpatinoc.INDRA\\AppData\\Local\\User Name\\com.companyname.wayprecision\\Data\\wayprecision.db3");
+            var dbContext = new DatabaseContext(":memory:");
             _unitOfWork = new UnitOfWork(dbContext);
             _service = new WaypointService(_unitOfWork);
         }
@@ -121,6 +122,78 @@ namespace WayPrecision.Test
 
             // Assert
             Assert.DoesNotContain(afterDelete, w => w.Guid == stored.Guid);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_ShouldReturnWaypoint_WhenExists()
+        {
+            // Arrange
+            var waypoint = new Waypoint
+            {
+                Name = "ByIdTest",
+                Position = new Position { Latitude = 10, Longitude = 20 }
+            };
+            waypoint = await _service.CreateAsync(waypoint);
+
+            // Act
+            var found = await _service.GetByIdAsync(waypoint.Guid);
+
+            // Assert
+            Assert.NotNull(found);
+            Assert.Equal("ByIdTest", found.Name);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_ShouldReturnNull_WhenNotExists()
+        {
+            // Act
+            var found = await _service.GetByIdAsync("non-existent-guid");
+
+            // Assert
+            Assert.Null(found);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_ShouldReturnNull_WhenWaypointDoesNotExist()
+        {
+            // Arrange
+            var waypoint = new Waypoint
+            {
+                Guid = "non-existent-guid",
+                Name = "NotFound",
+                Position = new Position { Latitude = 0, Longitude = 0 }
+            };
+
+            // Act
+            var result = await _service.UpdateAsync(waypoint);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldReturnFalse_WhenWaypointDoesNotExist()
+        {
+            // Act
+            var result = await _service.DeleteAsync("non-existent-guid");
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CreateAsync_ShouldThrow_WhenWaypointIsInvalid()
+        {
+            // Arrange
+            var waypoint = new Waypoint
+            {
+                Name = "Invalid",
+            };
+
+            waypoint = await _service.CreateAsync(waypoint);
+
+            // Assert
+            Assert.Null(waypoint);
         }
     }
 }

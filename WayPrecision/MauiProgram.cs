@@ -7,18 +7,24 @@ using WayPrecision.Domain.Services;
 
 namespace WayPrecision
 {
+    // Clase principal para configurar y crear la aplicación MAUI
     public static class MauiProgram
     {
+        // Método de entrada para crear y configurar la app MAUI
         public static MauiApp CreateMauiApp()
         {
+            // Crea el builder de la aplicación
             var builder = MauiApp.CreateBuilder();
             builder
+                // Establece la clase principal de la app
                 .UseMauiApp<App>()
+                // Configura las fuentes personalizadas
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 })
+                // Configura handlers personalizados para WebView según plataforma
                 .ConfigureMauiHandlers(handlers =>
                 {
 #if WINDOWS
@@ -29,18 +35,22 @@ namespace WayPrecision
                 });
 
 #if DEBUG
+            // Habilita el logging de depuración en modo DEBUG
             builder.Logging.AddDebug();
 #endif
 
+            // Define la ruta de la base de datos local
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "wayprecision.db3");
 
-            builder.Services.AddScoped(_ => new DatabaseContext(dbPath));
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IGpsManager, MockGpsManager>();
-            builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
-            builder.Services.AddScoped<IService<Waypoint>, WaypointService>();
-            builder.Services.AddScoped<IService<Track>, MockTrackService>();
+            // Registra los servicios en el contenedor de dependencias
+            builder.Services.AddScoped(_ => new DatabaseContext(dbPath)); // Contexto de base de datos
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Patrón UnitOfWork
+            builder.Services.AddScoped<IGpsManager, MockGpsManager>(); // Servicio GPS (mock)
+            builder.Services.AddScoped<IConfigurationService, ConfigurationService>(); // Servicio de configuración
+            builder.Services.AddScoped<IService<Waypoint>, WaypointService>(); // Servicio para waypoints
+            builder.Services.AddSingleton<IService<Track>, TrackService>(); // Servicio para tracks (singleton)
 
+            // Construye y retorna la app configurada
             return builder.Build();
         }
     }

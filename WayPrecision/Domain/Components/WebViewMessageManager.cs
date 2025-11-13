@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace WayPrecision.Domain.Components
 {
@@ -13,10 +8,7 @@ namespace WayPrecision.Domain.Components
         {
             string[] messages = message.Split(';');
             string evento = messages[0];
-            //if (Application.Current != null &&
-            //    Application.Current.MainPage is Shell shell &&
-            //                shell.CurrentPage is MainPage mainPage)
-            //{
+
             if (Application.Current != null &&
                 Application.Current.Windows.FirstOrDefault()?.Page is Shell shell &&
                 shell.CurrentPage is MainPage mainPage)
@@ -96,6 +88,11 @@ namespace WayPrecision.Domain.Components
                             trackPerimeter = perimeterParsed;
 
                         mainPage.UpdateTrackDataGeometry(idUpdatedTrack, trackLength, trackArea, trackPerimeter);
+                        break;
+
+                    case "setLastCenter":
+                    case "setLastZoom":
+
                         break;
 
                     default:

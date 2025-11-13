@@ -12,178 +12,178 @@ namespace WayPrecision.Domain.Services
         {
             _configurationService = configurationService;
 
-            // Initialize with some mock data
-            string trackId = Guid.NewGuid().ToString();
-            string position1 = Guid.NewGuid().ToString();
-            string position2 = Guid.NewGuid().ToString();
-            string position3 = Guid.NewGuid().ToString();
+            //// Initialize with some mock data
+            //string trackId = Guid.NewGuid().ToString();
+            //string position1 = Guid.NewGuid().ToString();
+            //string position2 = Guid.NewGuid().ToString();
+            //string position3 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track()
-            {
-                Guid = trackId,
-                Name = "Demo Track",
-                Observation = "This is a demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                //Length = 1234.5,
-                //Area = null,
-                IsOpened = false,
-                TotalPoints = 3,
-                //LengthUnits = UnitEnum.Metros.ToString(),
-                TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = [
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position1,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.661003770342276,
-                            Longitude = 0.5547822911068457,
-                            Timestamp = DateTime.UtcNow.ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position2,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.6605906511649,
-                            Longitude = 0.5552997755430279,
-                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = trackId,
-                         PositionGuid = position3,
-                         Position = new Position(){
-                            Guid = position1,
-                            Latitude = 41.661350708186475,
-                            Longitude = 0.5555705834603986,
-                            Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
-                            Accuracy = 20
-                         }
-                    }
-                ]
-            });
+            //Tracks.Add(new Track()
+            //{
+            //    Guid = trackId,
+            //    Name = "Demo Track",
+            //    Observation = "This is a demo track.",
+            //    Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
+            //    Finalized = DateTime.UtcNow.ToString("o"),
+            //    //Length = 1234.5,
+            //    //Area = null,
+            //    IsOpened = false,
+            //    TotalPoints = 3,
+            //    //LengthUnits = UnitEnum.Metros.ToString(),
+            //    TypeGeometry = TypeGeometry.Polygon,
+            //    TrackPoints = [
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = trackId,
+            //             PositionGuid = position1,
+            //             Position = new Position(){
+            //                Guid = position1,
+            //                Latitude = 41.661003770342276,
+            //                Longitude = 0.5547822911068457,
+            //                Timestamp = DateTime.UtcNow.ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = trackId,
+            //             PositionGuid = position2,
+            //             Position = new Position(){
+            //                Guid = position1,
+            //                Latitude = 41.6605906511649,
+            //                Longitude = 0.5552997755430279,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = trackId,
+            //             PositionGuid = position3,
+            //             Position = new Position(){
+            //                Guid = position1,
+            //                Latitude = 41.661350708186475,
+            //                Longitude = 0.5555705834603986,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        }
+            //    ]
+            //});
 
-            string t2 = Guid.NewGuid().ToString();
-            string t2p1 = Guid.NewGuid().ToString();
-            string t2p2 = Guid.NewGuid().ToString();
-            string t2p3 = Guid.NewGuid().ToString();
-            string t2p4 = Guid.NewGuid().ToString();
+            //string t2 = Guid.NewGuid().ToString();
+            //string t2p1 = Guid.NewGuid().ToString();
+            //string t2p2 = Guid.NewGuid().ToString();
+            //string t2p3 = Guid.NewGuid().ToString();
+            //string t2p4 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track()
-            {
-                Guid = t2,
-                Name = "Demo Track 2",
-                Observation = "This is a 2 demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                //Length = 1234.5,
-                //Area = null,
-                IsOpened = false,
-                TotalPoints = 3,
-                //LengthUnits = UnitEnum.Metros.ToString(),
-                TypeGeometry = TypeGeometry.Polygon,
-                TrackPoints = [
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p1,
-                         Position = new Position(){
-                            Guid = t2p1,
-                            Latitude = 41.66215253129646,
-                            Longitude = 0.5533226915521051,
-                            Timestamp = DateTime.UtcNow.ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p2,
-                         Position = new Position(){
-                            Guid = t2p2,
-                            Latitude = 41.662429274617224,
-                            Longitude = 0.5539554704481465,
-                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
+            //Tracks.Add(new Track()
+            //{
+            //    Guid = t2,
+            //    Name = "Demo Track 2",
+            //    Observation = "This is a 2 demo track.",
+            //    Created = DateTime.UtcNow.AddMinutes(-35).ToString("o"),
+            //    Finalized = DateTime.UtcNow.ToString("o"),
+            //    //Length = 1234.5,
+            //    //Area = null,
+            //    IsOpened = false,
+            //    TotalPoints = 3,
+            //    //LengthUnits = UnitEnum.Metros.ToString(),
+            //    TypeGeometry = TypeGeometry.Polygon,
+            //    TrackPoints = [
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t2,
+            //             PositionGuid = t2p1,
+            //             Position = new Position(){
+            //                Guid = t2p1,
+            //                Latitude = 41.66215253129646,
+            //                Longitude = 0.5533226915521051,
+            //                Timestamp = DateTime.UtcNow.ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t2,
+            //             PositionGuid = t2p2,
+            //             Position = new Position(){
+            //                Guid = t2p2,
+            //                Latitude = 41.662429274617224,
+            //                Longitude = 0.5539554704481465,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
 
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p4,
-                         Position = new Position(){
-                            Guid = t2p4,
-                            Latitude = 41.66162310597749,
-                            Longitude = 0.5542021469669579,
-                            Timestamp = DateTime.UtcNow.AddSeconds(15).ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t2,
-                         PositionGuid = t2p3,
-                         Position = new Position(){
-                            Guid = t2p3,
-                            Latitude = 41.661358391685724,
-                            Longitude = 0.5535800931369118,
-                            Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
-                            Accuracy = 20
-                         }
-                    }
-                ]
-            });
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t2,
+            //             PositionGuid = t2p4,
+            //             Position = new Position(){
+            //                Guid = t2p4,
+            //                Latitude = 41.66162310597749,
+            //                Longitude = 0.5542021469669579,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(15).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t2,
+            //             PositionGuid = t2p3,
+            //             Position = new Position(){
+            //                Guid = t2p3,
+            //                Latitude = 41.661358391685724,
+            //                Longitude = 0.5535800931369118,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(10).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        }
+            //    ]
+            //});
 
-            string t3 = Guid.NewGuid().ToString();
-            string t3p1 = Guid.NewGuid().ToString();
-            string t3p2 = Guid.NewGuid().ToString();
+            //string t3 = Guid.NewGuid().ToString();
+            //string t3p1 = Guid.NewGuid().ToString();
+            //string t3p2 = Guid.NewGuid().ToString();
 
-            Tracks.Add(new Track()
-            {
-                Guid = t3,
-                Name = "Demo Track 3",
-                Observation = "This is a 3 demo track.",
-                Created = DateTime.UtcNow.AddMinutes(-1).ToString("o"),
-                Finalized = DateTime.UtcNow.ToString("o"),
-                IsOpened = true,
-                TotalPoints = 2,
-                TypeGeometry = TypeGeometry.LineString,
-                TrackPoints = [
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t3,
-                         PositionGuid = t3p1,
-                         Position = new Position(){
-                            Guid = t3p1,
-                            Latitude = 41.66244477347461,
-                            Longitude = 0.5539968609809877,
-                            Timestamp = DateTime.UtcNow.ToString("o"),
-                            Accuracy = 20
-                         }
-                    },
-                    new TrackPoint(){
-                         Guid = Guid.NewGuid().ToString(),
-                         TrackGuid = t3,
-                         PositionGuid = t3p2,
-                         Position = new Position(){
-                            Guid = t3p2,
-                            Latitude = 41.661637233478324,
-                            Longitude = 0.5542570352554322,
-                            Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
-                            Accuracy = 20
-                         }
-                    }
-                ]
-            });
+            //Tracks.Add(new Track()
+            //{
+            //    Guid = t3,
+            //    Name = "Demo Track 3",
+            //    Observation = "This is a 3 demo track.",
+            //    Created = DateTime.UtcNow.AddMinutes(-1).ToString("o"),
+            //    Finalized = DateTime.UtcNow.ToString("o"),
+            //    IsOpened = true,
+            //    TotalPoints = 2,
+            //    TypeGeometry = TypeGeometry.LineString,
+            //    TrackPoints = [
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t3,
+            //             PositionGuid = t3p1,
+            //             Position = new Position(){
+            //                Guid = t3p1,
+            //                Latitude = 41.66244477347461,
+            //                Longitude = 0.5539968609809877,
+            //                Timestamp = DateTime.UtcNow.ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        },
+            //        new TrackPoint(){
+            //             Guid = Guid.NewGuid().ToString(),
+            //             TrackGuid = t3,
+            //             PositionGuid = t3p2,
+            //             Position = new Position(){
+            //                Guid = t3p2,
+            //                Latitude = 41.661637233478324,
+            //                Longitude = 0.5542570352554322,
+            //                Timestamp = DateTime.UtcNow.AddSeconds(5).ToString("o"),
+            //                Accuracy = 20
+            //             }
+            //        }
+            //    ]
+            //});
         }
 
         public Task<Track> CreateAsync(Track entity)
