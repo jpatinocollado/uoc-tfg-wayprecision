@@ -6,6 +6,9 @@ using WayPrecision.Domain.Services;
 
 namespace WayPrecision.Pages.Maps
 {
+    /// <summary>
+    /// Estado del mapa encargado de gestionar la grabación y seguimiento de un track GPS.
+    /// </summary>
     public class MapStateTracking : MapState
     {
         private readonly TrackScriptBuilder _trackScriptBuilder;
@@ -14,12 +17,19 @@ namespace WayPrecision.Pages.Maps
         private Track CurrentTrack;
         private bool IsListening = false;
 
+        /// <summary>
+        /// Inicializa una nueva instancia de <see cref="MapStateTracking"/>.
+        /// </summary>
+        /// <param name="service">Servicio para la gestión de tracks.</param>
         public MapStateTracking(IService<Track> service)
         {
             _trackScriptBuilder = new TrackScriptBuilder();
             _service = service;
         }
 
+        /// <summary>
+        /// Inicializa el estado de seguimiento, crea el track y configura los controles y eventos.
+        /// </summary>
         public override void Init()
         {
             //Initialize current track
@@ -58,6 +68,9 @@ namespace WayPrecision.Pages.Maps
             MapPage.ClearElements();
         }
 
+        /// <summary>
+        /// Cierra el estado de seguimiento, desregistrando los eventos de los botones.
+        /// </summary>
         public override void Close()
         {
             //Unregister buttons events
@@ -67,6 +80,11 @@ namespace WayPrecision.Pages.Maps
             MapPage.btnCancelPublic.Clicked -= OnCancelClicked;
         }
 
+        /// <summary>
+        /// Evento que inicia la grabación del track y actualiza el estado de los controles.
+        /// </summary>
+        /// <param name="sender">Origen del evento.</param>
+        /// <param name="e">Argumentos del evento.</param>
         private void OnPlayClicked(object? sender, EventArgs e)
         {
             //start listening GPS
@@ -78,6 +96,11 @@ namespace WayPrecision.Pages.Maps
             MapPage.btnStopPublic.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Evento que pausa la grabación del track y actualiza el estado de los controles.
+        /// </summary>
+        /// <param name="sender">Origen del evento.</param>
+        /// <param name="e">Argumentos del evento.</param>
         private void OnPauseClicked(object? sender, EventArgs e)
         {
             //stop listening GPS
@@ -89,6 +112,11 @@ namespace WayPrecision.Pages.Maps
             MapPage.btnStopPublic.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Evento que finaliza el track actual, solicita información al usuario y guarda el track.
+        /// </summary>
+        /// <param name="sender">Origen del evento.</param>
+        /// <param name="e">Argumentos del evento.</param>
         private async void OnStopClicked(object? sender, EventArgs e)
         {
             //al hacer stop, procedemos a finalizar el track, lo primero es ponerlo en pausa
@@ -161,6 +189,11 @@ namespace WayPrecision.Pages.Maps
             MapPage.EditTrack(CurrentTrack.Guid);
         }
 
+        /// <summary>
+        /// Evento que cancela la grabación del track actual, preguntando al usuario y gestionando la transición de estado.
+        /// </summary>
+        /// <param name="sender">Origen del evento.</param>
+        /// <param name="e">Argumentos del evento.</param>
         private async void OnCancelClicked(object? sender, EventArgs e)
         {
             bool reanudarTrack = IsListening;
@@ -189,6 +222,10 @@ namespace WayPrecision.Pages.Maps
             }
         }
 
+        /// <summary>
+        /// Agrega una nueva posición GPS al track actual si la grabación está activa, actualiza el mapa y la interfaz.
+        /// </summary>
+        /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public override async Task AddPosition(GpsLocation lastPosition)
         {
             if (IsListening)
