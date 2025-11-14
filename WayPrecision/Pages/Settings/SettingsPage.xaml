@@ -5,17 +5,19 @@
              Title="Configuración">
     <Grid RowDefinitions="*,Auto,Auto" Padding="20">
         <!-- Contenido principal en la parte superior -->
-        <VerticalStackLayout Grid.Row="0" Spacing="24">
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
 
-            <Label Text="Intervalo de posición GPS (segundos):" FontAttributes="Bold" />
+            <Label Text="Intervalo de posición GPS" FontAttributes="Bold" />
+            <Label Text="Rango: 1 – 30 segundos." FontAttributes="Italic" />
+            <Label Text="Intervalos más cortos mejoran la precisión pero consumen más batería." FontAttributes="Italic" />
             <Entry x:Name="GpsIntervalEntry"
                Keyboard="Numeric"
                Placeholder="Introduce el intervalo en segundos" />
 
-            <Label Text="Unidad de área:" FontAttributes="Bold" />
+            <Label Text="Unidad de área" FontAttributes="Bold" Padding="0,10,0,0" />
             <Picker x:Name="AreaUnitsPicker" />
 
-            <Label Text="Unidad de longitud:" FontAttributes="Bold" />
+            <Label Text="Unidad de longitud" FontAttributes="Bold" Padding="0,10,0,0" />
             <Picker x:Name="LengthUnitsPicker" />
         </VerticalStackLayout>
 
