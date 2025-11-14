@@ -14,7 +14,7 @@
                             <VerticalStackLayout Grid.Column="0">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
                                 <Label Text="{Binding CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding FinalizedLocal, StringFormat='Finalizado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <!--<Label Text="{Binding FinalizedLocal, StringFormat='Finalizado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />-->
                                 <Label Text="{Binding Duration, StringFormat='Duración: {0:hh\\:mm\\:ss}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
                                 <Label Text="{Binding TotalPoints, StringFormat='Posiciones GPS: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
                                 <Label Text="{Binding AreaLocal, StringFormat='Área: {0}'}"

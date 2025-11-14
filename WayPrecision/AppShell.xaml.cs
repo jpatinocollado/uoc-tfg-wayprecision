@@ -62,6 +62,8 @@ namespace WayPrecision
             {
                 IConfigurationService config = ((App)Application.Current).Services.GetRequiredService<IConfigurationService>();
                 await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
+
+                Shell.Current.FlyoutIsPresented = false;
             }
         }
 
