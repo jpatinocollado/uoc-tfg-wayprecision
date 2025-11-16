@@ -2,8 +2,9 @@
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
-using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
+using WayPrecision.Domain.Services.Location;
 using WayPrecision.Pages.Maps;
 
 namespace WayPrecision
@@ -15,7 +16,7 @@ namespace WayPrecision
         private readonly IService<Waypoint> _waypointService;
 
         private readonly IGpsManager _gpsManager;
-        internal GpsLocation? _lastPosition = null;
+        internal Position? _lastPosition = null;
 
         internal MapState State;
         internal bool isWebViewReady = false;
@@ -54,7 +55,6 @@ namespace WayPrecision
 
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebViewLoaded;
-            MapWebView.Navigating += MapWebViewNavigating;
 
             LoadOnlineOpenStreetMaps();
 
@@ -117,11 +117,6 @@ namespace WayPrecision
         #endregion MAP INITIALIZATION
 
         #region MAP EVENTS
-
-        private void MapWebViewNavigating(object? sender, WebNavigatingEventArgs e)
-        {
-            //e.Cancel = true;
-        }
 
         private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
@@ -186,7 +181,7 @@ namespace WayPrecision
         private void OnPositionChanged(object? sender, LocationEventArgs e)
         {
             //get last position
-            _lastPosition = e.Location;
+            _lastPosition = e.Position;
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
@@ -201,7 +196,7 @@ namespace WayPrecision
             });
         }
 
-        private void UpdatePanelDadesGps(GpsLocation? gpsLocation)
+        private void UpdatePanelDadesGps(Position? gpsLocation)
         {
             lbLatitud.Text = $"Lat: -";
             lbLongitud.Text = $"Lng: -";
@@ -222,7 +217,7 @@ namespace WayPrecision
             }
         }
 
-        private async Task UpdateMapLocation(GpsLocation? gpsLocation)
+        private async Task UpdateMapLocation(Position? gpsLocation)
         {
             if (gpsLocation == null || !isWebViewReady || !_locationEnable)
                 return;

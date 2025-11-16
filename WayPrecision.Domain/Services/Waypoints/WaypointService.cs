@@ -2,7 +2,7 @@
 using System.Linq;
 using WayPrecision.Domain.Data.UnitOfWork;
 
-namespace WayPrecision.Domain.Services
+namespace WayPrecision.Domain.Services.Waypoints
 {
     /// <summary>
     /// Servicio encargado de gestionar los waypoints.

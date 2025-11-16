@@ -10,23 +10,15 @@ namespace WayPrecision
         {
             base.ConnectHandler(platformView);
 
-            // Capturar mensajes desde JS -> C#
+            //registramos el evento para recibir mensajes desde el WebView
             platformView.WebMessageReceived += (s, e) =>
             {
+                //obtenemos el mensaje enviado desde el WebView
                 var message = e.TryGetWebMessageAsString();
 
-                // Evaluamos el mensaje recibido para realizar las acciones correspondientes
+                // enviamos el mensaje al gestor de mensajes
                 WebViewMessageManager.EvaluateMessage(message);
             };
-        }
-
-        // Método auxiliar para enviar mensaje desde C# -> JS
-        public void SendMessageToJs(string msg)
-        {
-            if (PlatformView != null)
-            {
-                PlatformView.ExecuteScriptAsync($"showMessage('{msg}')");
-            }
         }
     }
 }

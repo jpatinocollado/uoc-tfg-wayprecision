@@ -1,7 +1,7 @@
 ﻿using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 
-namespace WayPrecision.Domain.Services
+namespace WayPrecision.Domain.Services.Configuracion
 {
     /// <summary>
     /// Servicio encargado de gestionar la configuración global de la aplicación.

@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WayPrecision.Domain.Sensors.Location
+namespace WayPrecision.Domain.Models
 {
     public class LocationEventArgs
     {
-        public LocationEventArgs(GpsLocation location)
+        public LocationEventArgs(Position position)
         {
-            Location = location;
+            Position = position;
         }
 
-        public GpsLocation Location { get; set; }
+        public Position Position { get; set; }
     }
 }

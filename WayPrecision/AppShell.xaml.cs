@@ -1,4 +1,4 @@
-﻿using WayPrecision.Domain.Services;
+﻿using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision
 {
@@ -58,8 +58,13 @@ namespace WayPrecision
             if (App.Current == null)
                 return;
 
-            IConfigurationService config = ((App)Application.Current).Services.GetRequiredService<IConfigurationService>();
-            await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
+            if (Shell.Current.Navigation.NavigationStack.LastOrDefault() is not SettingsPage)
+            {
+                IConfigurationService config = ((App)Application.Current).Services.GetRequiredService<IConfigurationService>();
+                await Shell.Current.Navigation.PushAsync(new SettingsPage(config));
+
+                Shell.Current.FlyoutIsPresented = false;
+            }
         }
 
         /// <summary>

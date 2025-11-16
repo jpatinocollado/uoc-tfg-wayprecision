@@ -1,4 +1,6 @@
-﻿namespace WayPrecision.Domain.Sensors.Location
+﻿using WayPrecision.Domain.Models;
+
+namespace WayPrecision.Domain.Services.Location
 {
     internal class MockGpsManager : IGpsManager
     {
@@ -21,27 +23,27 @@
 
         private void InitPositions()
         {
-            Locations.Add(new LocationEventArgs(new GpsLocation()
+            Locations.Add(new LocationEventArgs(new Position()
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.66215253129646,
                 Longitude = 0.5533226915521051,
             }));
-            Locations.Add(new LocationEventArgs(new GpsLocation()
+            Locations.Add(new LocationEventArgs(new Position()
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.662429274617224,
                 Longitude = 0.5539554704481465,
             }));
-            Locations.Add(new LocationEventArgs(new GpsLocation()
+            Locations.Add(new LocationEventArgs(new Position()
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.66162310597749,
                 Longitude = 0.5542021469669579,
             }));
-            Locations.Add(new LocationEventArgs(new GpsLocation()
+            Locations.Add(new LocationEventArgs(new Position()
             {
-                Guid = Guid.NewGuid(),
+                Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.661358391685724,
                 Longitude = 0.5535800931369118,
             }));
@@ -69,7 +71,7 @@
                     if (index >= Locations.Count)
                         index = 0;
 
-                    location.Location.Timestamp = DateTime.UtcNow;
+                    location.Position.Timestamp = DateTime.UtcNow.ToString("o");
                     PositionChanged?.Invoke(this, location);
                     await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
                 }

@@ -226,7 +226,7 @@ namespace WayPrecision.Pages.Maps
         /// Agrega una nueva posición GPS al track actual si la grabación está activa, actualiza el mapa y la interfaz.
         /// </summary>
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
-        public override async Task AddPosition(GpsLocation lastPosition)
+        public override async Task AddPosition(Position lastPosition)
         {
             if (IsListening)
             {
@@ -239,7 +239,7 @@ namespace WayPrecision.Pages.Maps
                     Accuracy = lastPosition.Accuracy,
                     Altitude = lastPosition.Altitude,
                     Course = lastPosition.Course,
-                    Timestamp = lastPosition.Timestamp.ToString("o"),
+                    Timestamp = lastPosition.Timestamp,
                 };
 
                 //Create new track point and add to current track

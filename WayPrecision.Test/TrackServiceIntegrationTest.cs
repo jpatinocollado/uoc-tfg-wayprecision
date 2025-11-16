@@ -4,6 +4,7 @@ using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
 using Xunit;
 using System.Threading.Tasks;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Test
 {

@@ -1,4 +1,4 @@
-﻿using WayPrecision.Domain.Sensors.Location;
+﻿using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Pages.Maps
 {
@@ -37,7 +37,7 @@ namespace WayPrecision.Pages.Maps
         /// Agrega una nueva posición GPS al estado del mapa.
         /// </summary>
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
-        public abstract Task AddPosition(GpsLocation lastPosition);
+        public abstract Task AddPosition(Position lastPosition);
 
         /// <summary>
         /// Libera los recursos utilizados por la instancia.

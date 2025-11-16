@@ -1,7 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Services.Configuracion;
 
-namespace WayPrecision.Domain.Services
+namespace WayPrecision.Domain.Services.Tracks
 {
     public class MockTrackService : IService<Track>
     {
