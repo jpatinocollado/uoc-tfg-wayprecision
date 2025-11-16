@@ -4,6 +4,10 @@ using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
+using WayPrecision.Domain.Services.Location;
+using WayPrecision.Domain.Services.Tracks;
+using WayPrecision.Domain.Services.Waypoints;
 
 namespace WayPrecision
 {
@@ -28,7 +32,7 @@ namespace WayPrecision
                 .ConfigureMauiHandlers(handlers =>
                 {
 #if WINDOWS
-                handlers.AddHandler(typeof(WebView), typeof(CustomWebViewHandler));
+                    handlers.AddHandler(typeof(WebView), typeof(CustomWebViewHandler));
 #elif ANDROID
                     handlers.AddHandler(typeof(WebView), typeof(CustomWebViewHandler));
 #endif
@@ -45,10 +49,10 @@ namespace WayPrecision
             // Registra los servicios en el contenedor de dependencias
             builder.Services.AddScoped(_ => new DatabaseContext(dbPath)); // Contexto de base de datos
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Patrón UnitOfWork
-            builder.Services.AddScoped<IGpsManager, MockGpsManager>(); // Servicio GPS (mock)
+            builder.Services.AddScoped<IGpsManager, InternalGpsManager>(); // Servicio de comunicacion del sensor GPS
             builder.Services.AddScoped<IConfigurationService, ConfigurationService>(); // Servicio de configuración
-            builder.Services.AddScoped<IService<Waypoint>, WaypointService>(); // Servicio para waypoints
-            builder.Services.AddSingleton<IService<Track>, TrackService>(); // Servicio para tracks (singleton)
+            builder.Services.AddScoped<IService<Waypoint>, WaypointService>(); // Servicio para la gestión de los waypoints
+            builder.Services.AddScoped<IService<Track>, TrackService>(); // Servicio para la gestión de los tracks
 
             // Construye y retorna la app configurada
             return builder.Build();

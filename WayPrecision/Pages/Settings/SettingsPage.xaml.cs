@@ -1,5 +1,5 @@
 using WayPrecision.Domain.Models;
-using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision;
 

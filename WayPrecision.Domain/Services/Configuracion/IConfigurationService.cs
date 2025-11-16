@@ -1,6 +1,6 @@
 ﻿using WayPrecision.Domain.Models;
 
-namespace WayPrecision.Domain.Services
+namespace WayPrecision.Domain.Services.Configuracion
 {
     public interface IConfigurationService
     {

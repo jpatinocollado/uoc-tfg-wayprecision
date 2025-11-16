@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Services.Configuracion;
 
-namespace WayPrecision.Domain.Services
+namespace WayPrecision.Domain.Services.Tracks
 {
     /// <summary>
     /// Servicio para la gestión de entidades <see cref="Track"/>.

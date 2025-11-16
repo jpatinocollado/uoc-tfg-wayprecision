@@ -115,7 +115,7 @@ namespace WayPrecision.Pages.Maps
         /// En el estado por defecto no se realiza ninguna acción al agregar una posición GPS.
         /// </summary>
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
-        public override async Task AddPosition(GpsLocation lastPosition)
+        public override async Task AddPosition(Position lastPosition)
         {
             //En el estado por defecto no se realiza ninguna acción al agregar una posición
 

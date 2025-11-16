@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WayPrecision.Domain.Models;
+using WayPrecision.Domain.Services.Location;
+using Microsoft.Maui.ApplicationModel; // For MainThread and Permissions
 
 namespace WayPrecision.Domain.Sensors.Location
 {
@@ -36,23 +34,47 @@ namespace WayPrecision.Domain.Sensors.Location
             {
                 while (!_cts.Token.IsCancellationRequested)
                 {
-                    var location = await Geolocation.GetLastKnownLocationAsync() ?? await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts.Token);
-
-                    if (location != null)
+                    try
                     {
-                        PositionChanged?.Invoke(this, new LocationEventArgs(new GpsLocation()
+                        // Comprueba y solicita permisos de ubicación si es necesario
+                        var permissionStatus = await EnsureLocationPermission();
+                        if (permissionStatus != PermissionStatus.Granted)
                         {
-                            Guid = Guid.NewGuid(),
-                            Latitude = location.Latitude,
-                            Longitude = location.Longitude,
-                            Altitude = location.Altitude,
-                            Accuracy = location.Accuracy,
-                            Course = location.Course,
-                            Timestamp = location.Timestamp.UtcDateTime
-                        }));
-                    }
+                            // Permiso denegado, espera el intervalo antes de reintentar
+                            await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
+                            continue;
+                        }
 
-                    await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
+                        // Ejecutar la petición de ubicación en el hilo principal para evitar errores
+                        var location = await MainThread.InvokeOnMainThreadAsync(async () =>
+                        {
+                            return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts.Token);
+                        });
+
+                        if (location != null)
+                        {
+                            // Dispara el evento PositionChanged con la nueva ubicación
+                            PositionChanged?.Invoke(this, new LocationEventArgs(new Position()
+                            {
+                                Guid = Guid.NewGuid().ToString(),
+                                Latitude = location.Latitude,
+                                Longitude = location.Longitude,
+                                Altitude = location.Altitude,
+                                Accuracy = location.Accuracy,
+                                Course = location.Course,
+                                Timestamp = location.Timestamp.UtcDateTime.ToString("o")
+                            }));
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Cancellation requested - exit loop
+                        break;
+                    }
+                    finally
+                    {
+                        await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
+                    }
                 }
             }, _cts.Token);
         }
@@ -72,6 +94,23 @@ namespace WayPrecision.Domain.Sensors.Location
         {
             GpsInterval = gpsInterval;
             return Task.CompletedTask;
+        }
+
+        private async Task<PermissionStatus> EnsureLocationPermission()
+        {
+            // Ensure permission requests are invoked on the main thread
+            var permissionStatus = await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                if (status != PermissionStatus.Granted)
+                {
+                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                }
+
+                return status;
+            });
+
+            return await Task.FromResult(permissionStatus);
         }
     }
 }
