@@ -6,6 +6,14 @@
     <ActiveDebugProfile>Windows Machine</ActiveDebugProfile>
     <SelectedPlatformGroup>PhysicalDevice</SelectedPlatformGroup>
     <DefaultDevice>pixel_7_-_api_34</DefaultDevice>
+    <Source>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</Source>
+    <SmallTileSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</SmallTileSource>
+    <MediumTileSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</MediumTileSource>
+    <WideTileSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</WideTileSource>
+    <LargeTileSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</LargeTileSource>
+    <AppIconSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</AppIconSource>
+    <SplashScreenSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</SplashScreenSource>
+    <PackageLogoSource>D:\GIT\PERSONAL\uoc-tfg-wayprecision\WayPrecision\Resources\AppIcon\designer.png</PackageLogoSource>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
