@@ -10,21 +10,37 @@
      HorizontalOptions="Fill"
      VerticalOptions="Fill" />
 
+        <!-- Banner para indicar estado de conexión -->
+        <Border x:Name="pnNoInternet" Background="{StaticResource Primary300}"
+                Padding="12"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                Margin="12"
+                IsVisible="False">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+            </Border.StrokeShape>
+            <Label TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" Text="Sin conexión a Internet" />
+        </Border>
+
         <!-- Panel flotante para lat/lon -->
-        <Frame x:Name="pnGpsData" BackgroundColor="#AAFFFFFF"
-       CornerRadius="10"
+        <Border x:Name="pnGpsData" Background="{StaticResource Gray100}"
        Padding="10"
+                Opacity="0.7"
        HorizontalOptions="Center"
        VerticalOptions="End"
        Margin="20"
        IsVisible="False">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
             <VerticalStackLayout Spacing="5">
                 <Label x:Name="lbLatitud" Text="Lat: -" />
                 <Label x:Name="lbLongitud" Text="Lng: -" />
                 <Label x:Name="lbPrecision" Text="Precisión: -" />
                 <Label x:Name="lbZoom" Text="Zoom: -" />
             </VerticalStackLayout>
-        </Frame>
+        </Border>
 
         <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
         BackgroundColor="{StaticResource White}">

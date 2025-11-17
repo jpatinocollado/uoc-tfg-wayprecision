@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Net.Http;
+using Microsoft.Maui.Networking;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
@@ -32,18 +34,18 @@ namespace WayPrecision
         public HorizontalStackLayout BtnStackLayoutDefaultPublic => BtnStackLayoutDefault;
         public VerticalStackLayout BtnStackLayoutTrackingPublic => BtnStackLayoutTracking;
 
-        public Button btnPlayPublic => btnPlay;
-        public Button btnPausePublic => btnPause;
-        public Button btnStopPublic => btnStop;
-        public Button btnCancelPublic => btnCancel;
+        public Button BtnPlayPublic => btnPlay;
+        public Button BtnPausePublic => btnPause;
+        public Button BtnStopPublic => btnStop;
+        public Button BtnCancelPublic => btnCancel;
 
-        public Label lbTotalPointsPublic => lbTotalPoints;
+        public Label LbTotalPointsPublic => lbTotalPoints;
 
-        public Button btnGpsDataPublic => btnGpsData;
-        public Button btnCreateWaypointPublic => btnCreateWaypoint;
-        public Button btnCreateTrackPublic => btnCreateTrack;
+        public Button BtnGpsDataPublic => btnGpsData;
+        public Button BtnCreateWaypointPublic => btnCreateWaypoint;
+        public Button BtnCreateTrackPublic => btnCreateTrack;
 
-        public Frame pnGpsDataPublic => pnGpsData;
+        public Border PnGpsDataPublic => pnGpsData;
 
         public MainPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
         {
@@ -60,6 +62,12 @@ namespace WayPrecision
 
             _gpsManager = gpsManager;
             _gpsManager.PositionChanged += OnPositionChanged;
+
+            // Subscribe connectivity changes
+            Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+
+            // Check initial connectivity
+            CheckInitialConnectivity();
 
             TransitionTo(new MapStateDefault(_trackService));
         }
@@ -115,6 +123,89 @@ namespace WayPrecision
         }
 
         #endregion MAP INITIALIZATION
+
+        #region CONNECTIVITY
+
+        private void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+        {
+            bool hasInternet = e.NetworkAccess == NetworkAccess.Internet;
+
+            // Optionally you can verify remote reachability here
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                if (hasInternet)
+                {
+                    // Double check remote reachability to avoid captive portal issues
+                    var reachable = await IsRemoteReachableAsync();
+                    UpdateConnectionUi(reachable);
+                }
+                else
+                {
+                    UpdateConnectionUi(false);
+                }
+            });
+        }
+
+        private void CheckInitialConnectivity()
+        {
+            bool hasInternet = Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+
+            if (hasInternet)
+            {
+                // Fire and forget remote check
+                _ = Task.Run(async () =>
+                {
+                    var reachable = await IsRemoteReachableAsync();
+                    MainThread.BeginInvokeOnMainThread(() => UpdateConnectionUi(reachable));
+                });
+            }
+            else
+            {
+                MainThread.BeginInvokeOnMainThread(() => UpdateConnectionUi(false));
+            }
+        }
+
+        private void UpdateConnectionUi(bool hasInternet)
+        {
+            // Access the banner via FindByName to avoid relying on generated backing field during compile-time analysis
+            var banner = this.FindByName<Border>("pnNoInternet");
+            if (banner != null)
+                banner.IsVisible = !hasInternet;
+
+            // If there's no internet, avoid loading remote resources
+            if (!hasInternet)
+            {
+                // You might want to stop reloading the webview
+                // and notify the user
+                // Optionally show alert once
+                // _ = DisplayAlert("Sin conexión", "No hay conexión a Internet. Algunas funcionalidades pueden no funcionar.", "OK");
+            }
+            else
+            {
+                // If webview wasn't ready because of no internet, try reloading
+                if (MapWebView.Source is HtmlWebViewSource htmlSrc && MapWebView.Handler == null)
+                {
+                    // Try reassigning source
+                    MapWebView.Source = htmlSrc;
+                }
+            }
+        }
+
+        private async Task<bool> IsRemoteReachableAsync(string url = "https://www.google.com/generate_204")
+        {
+            try
+            {
+                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(4) };
+                var res = await http.GetAsync(url);
+                return res.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion CONNECTIVITY
 
         #region MAP EVENTS
 
@@ -192,7 +283,7 @@ namespace WayPrecision
                 await UpdateMapLocation(_lastPosition);
 
                 //add position to current state
-                State.AddPosition(_lastPosition);
+                await State.AddPosition(_lastPosition);
             });
         }
 
@@ -232,7 +323,6 @@ namespace WayPrecision
                 string lat = gpsLocation.Latitude.ToString(CultureInfo.InvariantCulture);
                 string lng = gpsLocation.Longitude.ToString(CultureInfo.InvariantCulture);
                 string center = _locationCenterEnable.ToString().ToLower();
-                //string js = $"updatePosition({lat}, {lng}, {center}, {direction});";
                 string js = $"MapGpsManagerService.SetGpsPosition({lat}, {lng}, {center}, {direction});";
                 ExecuteJavaScript(js);
             }
@@ -300,7 +390,10 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                Waypoint waypoint = await _waypointService.GetByIdAsync(id);
+                Waypoint? waypoint = await _waypointService.GetByIdAsync(id);
+                if (waypoint == null)
+                    return;
+
                 await Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Edited));
             });
         }
@@ -309,7 +402,10 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                Track track = await _trackService.GetByIdAsync(id);
+                Track? track = await _trackService.GetByIdAsync(id);
+                if (track == null)
+                    return;
+
                 await Navigation.PushAsync(new TrackDetailPage(track, DetailPageMode.Edited));
             });
         }
@@ -382,7 +478,7 @@ namespace WayPrecision
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                Track track = await _trackService.GetByIdAsync(idUpdatedTrack);
+                Track? track = await _trackService.GetByIdAsync(idUpdatedTrack);
 
                 if (track == null)
                     return;
@@ -404,8 +500,7 @@ namespace WayPrecision
 
         public void TransitionTo(MapState state)
         {
-            if (State != null)
-                State.Dispose();
+            State?.Dispose();
 
             State = state;
             State.SetContext(this);

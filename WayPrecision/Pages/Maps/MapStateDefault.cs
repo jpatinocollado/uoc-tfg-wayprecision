@@ -29,12 +29,12 @@ namespace WayPrecision.Pages.Maps
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = true;
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = false;
-            MapPage.pnGpsDataPublic.IsVisible = false;
+            MapPage.PnGpsDataPublic.IsVisible = false;
 
             //Register buttons events
-            MapPage.btnGpsDataPublic.Clicked += BtnGpsDataClicked;
-            MapPage.btnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
-            MapPage.btnCreateTrackPublic.Clicked += btnCreateTrackClicked;
+            MapPage.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
+            MapPage.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
+            MapPage.BtnCreateTrackPublic.Clicked += btnCreateTrackClicked;
 
             MapPage.PaintElements();
         }
@@ -45,9 +45,9 @@ namespace WayPrecision.Pages.Maps
         public override void Close()
         {
             //Unregister buttons events
-            MapPage.btnGpsDataPublic.Clicked -= BtnGpsDataClicked;
-            MapPage.btnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
-            MapPage.btnCreateTrackPublic.Clicked -= btnCreateTrackClicked;
+            MapPage.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
+            MapPage.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
+            MapPage.BtnCreateTrackPublic.Clicked -= btnCreateTrackClicked;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace WayPrecision.Pages.Maps
         private void BtnGpsDataClicked(object? sender, EventArgs e)
         {
             // Lógica para mostrar los datos de ubicación
-            MapPage.pnGpsDataPublic.IsVisible = !MapPage.pnGpsDataPublic.IsVisible;
+            MapPage.PnGpsDataPublic.IsVisible = !MapPage.PnGpsDataPublic.IsVisible;
         }
 
         /// <summary>

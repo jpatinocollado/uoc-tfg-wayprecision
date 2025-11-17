@@ -43,23 +43,23 @@ namespace WayPrecision.Pages.Maps
             };
 
             //label total puntos
-            MapPage.lbTotalPointsPublic.Text = "Puntos: 0";
+            MapPage.LbTotalPointsPublic.Text = "Puntos: 0";
 
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = false;
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = true;
-            MapPage.pnGpsDataPublic.IsVisible = true;
+            MapPage.PnGpsDataPublic.IsVisible = true;
 
             //Register buttons events
-            MapPage.btnPlayPublic.Clicked += OnPlayClicked;
-            MapPage.btnPausePublic.Clicked += OnPauseClicked;
-            MapPage.btnStopPublic.Clicked += OnStopClicked;
-            MapPage.btnCancelPublic.Clicked += OnCancelClicked;
+            MapPage.BtnPlayPublic.Clicked += OnPlayClicked;
+            MapPage.BtnPausePublic.Clicked += OnPauseClicked;
+            MapPage.BtnStopPublic.Clicked += OnStopClicked;
+            MapPage.BtnCancelPublic.Clicked += OnCancelClicked;
 
             //State Play default
-            MapPage.btnPlayPublic.IsEnabled = false;
-            MapPage.btnPausePublic.IsEnabled = true;
-            MapPage.btnStopPublic.IsEnabled = true;
+            MapPage.BtnPlayPublic.IsEnabled = false;
+            MapPage.BtnPausePublic.IsEnabled = true;
+            MapPage.BtnStopPublic.IsEnabled = true;
 
             //Start listening GPS
             IsListening = true;
@@ -74,10 +74,10 @@ namespace WayPrecision.Pages.Maps
         public override void Close()
         {
             //Unregister buttons events
-            MapPage.btnPlayPublic.Clicked -= OnPlayClicked;
-            MapPage.btnPausePublic.Clicked -= OnPauseClicked;
-            MapPage.btnStopPublic.Clicked -= OnStopClicked;
-            MapPage.btnCancelPublic.Clicked -= OnCancelClicked;
+            MapPage.BtnPlayPublic.Clicked -= OnPlayClicked;
+            MapPage.BtnPausePublic.Clicked -= OnPauseClicked;
+            MapPage.BtnStopPublic.Clicked -= OnStopClicked;
+            MapPage.BtnCancelPublic.Clicked -= OnCancelClicked;
         }
 
         /// <summary>
@@ -91,9 +91,9 @@ namespace WayPrecision.Pages.Maps
             IsListening = true;
 
             //Update buttons state
-            MapPage.btnPlayPublic.IsEnabled = false;
-            MapPage.btnPausePublic.IsEnabled = true;
-            MapPage.btnStopPublic.IsEnabled = true;
+            MapPage.BtnPlayPublic.IsEnabled = false;
+            MapPage.BtnPausePublic.IsEnabled = true;
+            MapPage.BtnStopPublic.IsEnabled = true;
         }
 
         /// <summary>
@@ -107,9 +107,9 @@ namespace WayPrecision.Pages.Maps
             IsListening = false;
 
             //Update buttons state
-            MapPage.btnPlayPublic.IsEnabled = true;
-            MapPage.btnPausePublic.IsEnabled = false;
-            MapPage.btnStopPublic.IsEnabled = true;
+            MapPage.BtnPlayPublic.IsEnabled = true;
+            MapPage.BtnPausePublic.IsEnabled = false;
+            MapPage.BtnStopPublic.IsEnabled = true;
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace WayPrecision.Pages.Maps
                 CurrentTrack.TrackPoints.Add(trackPoint);
 
                 //Update label total points
-                MapPage.lbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
+                MapPage.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
 
                 //Paint Track in map
                 MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
