@@ -4,13 +4,13 @@ namespace WayPrecision.Domain.Components
 {
     public static class WebViewMessageManager
     {
-        public static void EvaluateMessage(string message)
+        public static async Task EvaluateMessage(string message)
         {
             string[] messages = message.Split(';');
             string evento = messages[0];
 
             if (Application.Current != null &&
-                Application.Current.Windows.FirstOrDefault()?.Page is Shell shell &&
+                Application.Current.Windows[0].Page is Shell shell &&
                 shell.CurrentPage is MainPage mainPage)
             {
                 switch (evento)
@@ -21,11 +21,11 @@ namespace WayPrecision.Domain.Components
                         break;
 
                     case "enableLocation":
-                        mainPage.SetEnableLocation(true);
+                        await mainPage.SetEnableLocation(true);
                         break;
 
                     case "disableLocation":
-                        mainPage.SetEnableLocation(false);
+                        await mainPage.SetEnableLocation(false);
                         break;
 
                     case "enableCenterLocation":
@@ -88,7 +88,7 @@ namespace WayPrecision.Domain.Components
                             CultureInfo.InvariantCulture, out double perimeterParsed))
                             trackPerimeter = perimeterParsed;
 
-                        mainPage.UpdateTrackDataGeometry(idUpdatedTrack, trackLength, trackArea, trackPerimeter);
+                        await mainPage.UpdateTrackDataGeometry(idUpdatedTrack, trackLength, trackArea, trackPerimeter);
                         break;
 
                     case "setLastCenter":
@@ -97,7 +97,7 @@ namespace WayPrecision.Domain.Components
                         break;
 
                     default:
-                        mainPage.DisplayAlert("JS -> C#", message, "Aceptar");
+                        await mainPage.DisplayAlert("JS -> C#", message, "Aceptar");
                         break;
                 }
             }

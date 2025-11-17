@@ -61,19 +61,19 @@ namespace WayPrecision
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebViewLoaded;
 
-            // Subscribe connectivity changes
-            Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
-
-            // Check initial connectivity
-            CheckInitialConnectivity();
-
             // Load initial map
             LoadOnlineOpenStreetMaps();
 
             //GPS Management
             _gpsManager = gpsManager;
             _gpsManager.PositionChanged += OnPositionChanged;
-                     
+
+            // Subscribe connectivity changes
+            Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
+
+            // Check initial connectivity
+            CheckInitialConnectivity();
+
             //Transition to initial state
             TransitionTo(new MapStateDefault(_trackService));
         }
@@ -188,7 +188,7 @@ namespace WayPrecision
             }
             else
             {
-                if(!_firstLoadExecuted)
+                if (!_firstLoadExecuted && isWebViewReady)
                     MapWebView.Reload();
             }
         }
@@ -504,8 +504,6 @@ namespace WayPrecision
         }
 
         #endregion MAP ELEMENTS MANAGEMENT
-
-        
 
         public void TransitionTo(MapState state)
         {
