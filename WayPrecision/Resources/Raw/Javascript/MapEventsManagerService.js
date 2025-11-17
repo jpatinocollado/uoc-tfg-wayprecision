@@ -1,6 +1,6 @@
-﻿var MapEventsManagerService = (function () {
-    var register = function () {
-        var map = MapManagerService.GetMap();
+﻿let MapEventsManagerService = (function () {
+    let register = function () {
+        let map = MapManagerService.GetMap();
 
         //set events
         map.on('dblclick', onMapDblClick);
@@ -9,27 +9,27 @@
         map.on('move', onMapMove);
     }
 
-    var onMapZoomStart = function (e) {
-        var map = MapManagerService.GetMap();
+    let onMapZoomStart = function (e) {
+        let map = MapManagerService.GetMap();
         console.log('[onMapZoomStart]:', e);
         MapBackendManagerService.PostMessage('setLastZoom;' + map.getZoom());
     }
 
-    var onMapZoomEnd = function (e) {
+    let onMapZoomEnd = function (e) {
         let map = MapManagerService.GetMap();
         console.log('[onMapZoomEnd] Layer:', e);
 
         MapBackendManagerService.PostMessage('setZoom;' + map.getZoom());
     }
 
-    var onMapMove = function (e) {
-        var map = MapManagerService.GetMap();
-        var latlng = map.getCenter();
+    let onMapMove = function (e) {
+        let map = MapManagerService.GetMap();
+        let latlng = map.getCenter();
         console.log('[onMapMove]:', latlng);
         MapBackendManagerService.PostMessage('setLastCenter;' + latlng.lat + ';' + latlng.lng);
     }
 
-    var onMapDblClick = function (e) {
+    let onMapDblClick = function (e) {
         MapBackendManagerService.PostMessage('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng);
     }
 

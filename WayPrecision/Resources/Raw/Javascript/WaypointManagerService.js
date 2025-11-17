@@ -1,25 +1,25 @@
-﻿var WaypointManagerService = (function () {
-    var waypoints = L.markerClusterGroup({
+﻿let WaypointManagerService = (function () {
+    let waypoints = L.markerClusterGroup({
         spiderfyOnMaxZoom: false,
         showCoverageOnHover: false,
         zoomToBoundsOnClick: true
     });
-    var waypointsList = {};
+    let waypointsList = {};
 
-    var getLayer = function () {
+    let getLayer = function () {
         return waypoints;
     }
 
-    var clearWaypoints = function () {
+    let clearWaypoints = function () {
         console.log("Clear Layer Waypoints");
         waypoints.clearLayers();
         waypointsList = {};
     }
 
-    var addWaypoint = function (waypoint) {
+    let addWaypoint = function (waypoint) {
         console.log("Add Waypoint in Layer", waypoint);
 
-        var latLang = L.latLng(waypoint.lat, waypoint.lng);
+        let latLang = L.latLng(waypoint.lat, waypoint.lng);
         waypointsList[waypoint.id] = L.marker(latLang).on('click', function () {
             waypointOnClick(waypoint);
         }).bindTooltip(waypoint.name);
@@ -30,21 +30,21 @@
         console.log("layer waypoints", waypoints);
     }
 
-    var waypointOnClick = function (waypoint) {
+    let waypointOnClick = function (waypoint) {
         MapBackendManagerService.PostMessage('editWaypoint;' + waypoint.id);
     }
 
-    var fitWaypoint = function (id) {
+    let fitWaypoint = function (id) {
         MapBackendManagerService.PostMessage("disableCenterLocation");
         MapManagerService.FitEstate();
 
         console.log("Fit Waypoint", id);
-        var latlng = waypointsList[id].getLatLng();
-        var map = MapManagerService.GetMap();
+        let latlng = waypointsList[id].getLatLng();
+        let map = MapManagerService.GetMap();
         map.setView(latlng, map.getMaxZoom());
     }
 
-    var removeLayer = function () {
+    let removeLayer = function () {
         waypoints.remove();
     }
 

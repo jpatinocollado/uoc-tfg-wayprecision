@@ -1,21 +1,21 @@
-﻿var MapLayersManagerService = (function () {
-    var baseMapsArr;
-    var baseMaps;
-    var overlayMaps;
-    var layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
-    var IsModeEdicio = false;
-    var currentLayer;
-    var layerControlsAdicionals;
-    var layerControlsWms;
-    var layerControlsWmsProject;
+﻿let MapLayersManagerService = (function () {
+    let baseMapsArr;
+    let baseMaps;
+    let overlayMaps;
+    let layerControls = L.control.layers(baseMaps, overlayMaps, { collapsed: false });
+    let IsModeEdicio = false;
+    let currentLayer;
+    let layerControlsAdicionals;
+    let layerControlsWms;
+    let layerControlsWmsProject;
 
-    var chkWaypoints = true;
-    var chkTracks = true;
+    let chkWaypoints = true;
+    let chkTracks = true;
 
-    var baseLayerName = "OpenStreetMap";
-    var baseLayerOpacity = 1;
+    let baseLayerName = "OpenStreetMap";
+    let baseLayerOpacity = 1;
 
-    var addLayers = function (idLayer) {
+    let addLayers = function (idLayer) {
         baseMaps = new Object();
         baseMapsArr = [];
 
@@ -26,8 +26,8 @@
         createControlsView();
     }
 
-    var addOpenStreetMaps = function () {
-        var openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    let addOpenStreetMaps = function () {
+        let openStreetMaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         });
@@ -36,19 +36,19 @@
         baseMapsArr.push(openStreetMaps);
     }
 
-    var createControlsView = function () {
-        var map = MapManagerService.GetMap();
+    let createControlsView = function () {
+        let map = MapManagerService.GetMap();
 
         //Layer tracks
-        var layerTracks = TrackManagerService.GetLayer();
+        let layerTracks = TrackManagerService.GetLayer();
         layerTracks.options.className = "OVLY#Tracks";
 
         //Layer waypoints
-        var layerWaypoints = WaypointManagerService.GetLayer();
+        let layerWaypoints = WaypointManagerService.GetLayer();
         layerWaypoints.options.className = "OVLY#Waypoints";
 
         //Layer actual position
-        var layerActualPosition = MapGpsManagerService.GetLayer();
+        let layerActualPosition = MapGpsManagerService.GetLayer();
 
         overlayMaps = { 'Waypoints': layerWaypoints, 'Tracks': layerTracks, };
 
@@ -68,7 +68,7 @@
 
         layerActualPosition.addTo(map);
 
-        var map = MapManagerService.GetMap();
+        let map = MapManagerService.GetMap();
 
         if (baseMaps[baseLayerName]) {
             currentLayer = baseMaps[baseLayerName];

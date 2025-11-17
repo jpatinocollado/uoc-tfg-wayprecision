@@ -1,13 +1,13 @@
-﻿var LoadingManagerService = (function () {
-    var container = '#map';
-    var show = function (message) {
+﻿let LoadingManagerService = (function () {
+    let container = '#map';
+    let show = function (message) {
         $(container).loading({
             message: message,
             showClass: 'loadingShow'
         });
     }
 
-    var hide = function () {
+    let hide = function () {
         if ($(container).is(':loading'))
             $(container).loading('stop');
     }

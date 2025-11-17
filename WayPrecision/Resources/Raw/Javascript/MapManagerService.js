@@ -1,24 +1,24 @@
-﻿var MapManagerService = (function () {
-    var LeafletMap;
-    var IsDevelop;
-    var IdProyecto;
+﻿let MapManagerService = (function () {
+    let LeafletMap;
+    let IsDevelop;
+    let IdProyecto;
     let buttonNavigation;
     let IsEnableLocation = false;
     let IsEnableCenterLocation = false;
 
-    var getIsDevelop = function () {
+    let getIsDevelop = function () {
         return IsDevelop;
     }
 
-    var getMap = function () {
+    let getMap = function () {
         return LeafletMap;
     }
 
-    var getIdProyecto = function () {
+    let getIdProyecto = function () {
         return IdProyecto;
     }
 
-    var iniciarPantalla = function (idLastLayer, isDevelop, idProyecto) {
+    let iniciarPantalla = function (idLastLayer, isDevelop, idProyecto) {
         IsDevelop = isDevelop;
         IdProyecto = idProyecto;
         //instance the map
@@ -68,7 +68,7 @@
                 onClick: function (btn, map) {       // and its callback
                     LoadingManagerService.Show('Desactivando centrar en el mapa...');
 
-                    ("disableCenterLocation");
+                    MapBackendManagerService.PostMessage("disableCenterLocation");
 
                     LoadingManagerService.Hide();
                     btn.state('location-enable-move');
@@ -83,7 +83,7 @@
                 onClick: function (btn, map) {       // and its callback
                     LoadingManagerService.Show('Desactivando localización...');
 
-                    ("disableLocation");
+                    MapBackendManagerService.PostMessage("disableLocation");
 
                     LoadingManagerService.Hide();
                     MapGpsManagerService.ClearGpsPosition();
@@ -108,26 +108,26 @@
         LoadingManagerService.Hide();
     }
 
-    var setView = function (lat, lng) {
-        var latLng = L.latLng(lat, lng);
+    let setView = function (lat, lng) {
+        let latLng = L.latLng(lat, lng);
         LeafletMap.setView(latLng, LeafletMap.getZoom());
     }
 
-    var setBounds = function (center1, center2, center3, center4) {
+    let setBounds = function (center1, center2, center3, center4) {
         LeafletMap.fitBounds([
             [center1, center2],
             [center3, center4]
         ]);
     }
 
-    var disableZoom = function () {
+    let disableZoom = function () {
         LeafletMap.touchZoom.disable();
         LeafletMap.doubleClickZoom.disable();
         LeafletMap.scrollWheelZoom.disable();
         LeafletMap.boxZoom.disable();
         LeafletMap.keyboard.disable();
     }
-    var enableZoom = function () {
+    let enableZoom = function () {
         LeafletMap.touchZoom.enable();
         LeafletMap.doubleClickZoom.enable();
         LeafletMap.scrollWheelZoom.enable();
@@ -135,22 +135,22 @@
         LeafletMap.keyboard.enable();
     }
 
-    var setZoom = function (zoom) {
+    let setZoom = function (zoom) {
         LeafletMap.setZoom(zoom);
     }
 
-    var setZoomMax = function () {
+    let setZoomMax = function () {
         LeafletMap.setZoom(LeafletMap.getMaxZoom());
     }
 
-    var enableDisableMapMove = function (enable) {
+    let enableDisableMapMove = function (enable) {
         if (enable)
             LeafletMap.dragging.enable();
         else
             LeafletMap.dragging.disable();
     }
 
-    var fitEstate = function () {
+    let fitEstate = function () {
         console.log('fitEstate');
         console.log('IsEnableLocation:', IsEnableLocation);
         console.log('IsEnableCenterLocation:', IsEnableCenterLocation);

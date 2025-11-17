@@ -1,9 +1,9 @@
-﻿var TrackManagerService = (function () {
+﻿let TrackManagerService = (function () {
     //Layer group for all tracks
-    var tracks = L.layerGroup();
-    var trackList = {};
+    let tracks = L.layerGroup();
+    let trackList = {};
 
-    var getLayer = function () {
+    let getLayer = function () {
         return tracks;
     }
 
@@ -17,14 +17,14 @@
         }
     }
 
-    var addTrack = function (track) {
+    let addTrack = function (track) {
         console.log('Add Track', track);
 
-        var type;
-        var lineLength;
-        var polygonArea;
-        var polygonLength;
-        var alt = '<bold>' + track.name + '</bold>';
+        let type;
+        let lineLength;
+        let polygonArea;
+        let polygonLength;
+        let alt = '<bold>' + track.name + '</bold>';
         if (track.type == "LineString") {
             type = track.lineString;
             lineLength = turf.length(track.lineString, { units: 'meters' });
@@ -57,26 +57,26 @@
         MapBackendManagerService.PostMessage('updateTrack;' + track.id + ';' + lineLength + ';' + polygonArea + ';' + polygonLength);
     }
 
-    var clearTracks = function () {
+    let clearTracks = function () {
         tracks.clearLayers();
         trackList = {};
     }
 
-    var fitTrack = function (id) {
+    let fitTrack = function (id) {
         MapBackendManagerService.PostMessage("disableCenterLocation");
         MapManagerService.FitEstate();
 
         console.log('Fit Track', id);
 
         let bounds = trackList[id].getBounds();
-        var map = MapManagerService.GetMap();
+        let map = MapManagerService.GetMap();
         map.setZoom(map.getMaxZoom());
         map.fitBounds(bounds);
 
         console.log('bounds', bounds);
     }
 
-    var removeLayer = function () {
+    let removeLayer = function () {
         tracks.remove();
     }
 

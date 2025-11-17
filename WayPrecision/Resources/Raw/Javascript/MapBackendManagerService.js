@@ -1,5 +1,5 @@
-﻿var MapBackendManagerService = (function () {
-    var postMessage = function (message) {
+﻿let MapBackendManagerService = (function () {
+    let postMessage = function (message) {
         if (window.chrome && window.chrome.webview) {
             // Windows
             window.chrome.webview.postMessage(message);
