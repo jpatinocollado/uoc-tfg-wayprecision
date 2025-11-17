@@ -46,7 +46,7 @@ namespace WayPrecision.Domain.Services.Waypoints
         /// <summary>
         /// Añade un nuevo waypoint y su posición asociada obligatoriamente.
         /// </summary>
-        public async Task<Waypoint?> CreateAsync(Waypoint waypoint)
+        public async Task<Waypoint?> CreateAsync(Waypoint? waypoint)
 
         {
             if (waypoint == null || waypoint.Position == null)
@@ -88,7 +88,7 @@ namespace WayPrecision.Domain.Services.Waypoints
         /// <summary>
         /// Edita un waypoint existente.
         /// </summary>
-        public async Task<Waypoint?> UpdateAsync(Waypoint waypoint)
+        public async Task<Waypoint?> UpdateAsync(Waypoint? waypoint)
         {
             if (waypoint == null)
                 throw new ControlledException("El Waypoint no puede ser nulo.");

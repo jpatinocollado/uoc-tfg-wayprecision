@@ -1,4 +1,5 @@
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -50,7 +51,10 @@ public partial class WaypointDetailPage : ContentPage
     {
         // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
         bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este waypoint?", "Sí", "No");
-        if (confirm)
+        if (!confirm)
+            return;
+
+        try
         {
             Waypoint waypoint = (Waypoint)BindingContext;
             // Lógica para eliminar el waypoint usando _unitOfWork, por ejemplo:
@@ -60,17 +64,10 @@ public partial class WaypointDetailPage : ContentPage
 
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
-
-            //await Navigation.PopAsync();
-
-            //// Actualizar waypoints en MainPage si está en la pila de navegación
-            //if (Application.Current.MainPage is NavigationPage navPage)
-            //{
-            //    var mainPage = navPage.Navigation.NavigationStack.OfType<MainPage>().FirstOrDefault();
-            //    mainPage?.PaintWaypoints();
-            //}
-
-            //await Shell.Current.GoToAsync($"//MainPage");
+        }
+        catch (ControlledException ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 
@@ -80,27 +77,34 @@ public partial class WaypointDetailPage : ContentPage
     /// </summary>
     private async void OnSaveWaypointClicked(object sender, EventArgs e)
     {
-        var waypoint = (Waypoint)BindingContext;
-
-        if (string.IsNullOrWhiteSpace(waypoint.Name))
+        try
         {
-            await DisplayAlert("Error", "El nombre es obligatorio.", "OK");
-            return;
-        }
+            var waypoint = (Waypoint)BindingContext;
 
-        if (PageMode == DetailPageMode.Created)
-        {
-            await service.CreateAsync(waypoint);
-            await DisplayAlert("Guardado", "El waypoint ha sido creado.", "OK");
-        }
-        else if (PageMode == DetailPageMode.Edited)
-        {
-            await service.UpdateAsync(waypoint);
-            await DisplayAlert("Guardado", "El waypoint ha sido actualizado.", "OK");
-        }
+            if (string.IsNullOrWhiteSpace(waypoint.Name))
+            {
+                await DisplayAlert("Error", "El nombre es obligatorio.", "OK");
+                return;
+            }
 
-        //Cerramos la pantalla actual sacandola de la pila de navegación
-        await Navigation.PopAsync();
+            if (PageMode == DetailPageMode.Created)
+            {
+                await service.CreateAsync(waypoint);
+                await DisplayAlert("Guardado", "El waypoint ha sido creado.", "OK");
+            }
+            else if (PageMode == DetailPageMode.Edited)
+            {
+                await service.UpdateAsync(waypoint);
+                await DisplayAlert("Guardado", "El waypoint ha sido actualizado.", "OK");
+            }
+
+            //Cerramos la pantalla actual sacandola de la pila de navegación
+            await Navigation.PopAsync();
+        }
+        catch (ControlledException ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)

@@ -1,3 +1,4 @@
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -40,7 +41,10 @@ public partial class TrackDetailPage : ContentPage
     {
         // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
         bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este track?", "Sí", "No");
-        if (confirm)
+        if (!confirm)
+            return;
+
+        try
         {
             // Lógica para eliminar el track usando _unitOfWork, por ejemplo:
             Track track = (Track)BindingContext;
@@ -50,6 +54,10 @@ public partial class TrackDetailPage : ContentPage
 
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
+        }
+        catch (ControlledException ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 
@@ -67,19 +75,26 @@ public partial class TrackDetailPage : ContentPage
             return;
         }
 
-        if (PageMode == DetailPageMode.Created)
+        try
         {
-            await service.CreateAsync(track);
-            await DisplayAlert("Guardado", "El track ha sido creado.", "OK");
-        }
-        else if (PageMode == DetailPageMode.Edited)
-        {
-            await service.UpdateAsync(track);
-            await DisplayAlert("Guardado", "El track ha sido actualizado.", "OK");
-        }
+            if (PageMode == DetailPageMode.Created)
+            {
+                await service.CreateAsync(track);
+                await DisplayAlert("Guardado", "El track ha sido creado.", "OK");
+            }
+            else if (PageMode == DetailPageMode.Edited)
+            {
+                await service.UpdateAsync(track);
+                await DisplayAlert("Guardado", "El track ha sido actualizado.", "OK");
+            }
 
-        //Cerramos la pantalla actual sacandola de la pila de navegación
-        await Navigation.PopAsync();
+            //Cerramos la pantalla actual sacandola de la pila de navegación
+            await Navigation.PopAsync();
+        }
+        catch (ControlledException ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)
