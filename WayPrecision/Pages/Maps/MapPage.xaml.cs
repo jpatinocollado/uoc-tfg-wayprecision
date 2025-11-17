@@ -29,6 +29,8 @@ namespace WayPrecision
         internal string? _pendingTrackGuid;
         internal bool _isAppeared;
 
+        private bool _firstLoadExecuted = false;
+
         public WebView MapWebViewPublic => MapWebView;
 
         public HorizontalStackLayout BtnStackLayoutDefaultPublic => BtnStackLayoutDefault;
@@ -51,6 +53,7 @@ namespace WayPrecision
         {
             InitializeComponent();
 
+            //set services
             _waypointService = waypointService;
             _trackService = trackService;
             _configurationService = configurationService;
@@ -58,17 +61,20 @@ namespace WayPrecision
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebViewLoaded;
 
-            LoadOnlineOpenStreetMaps();
-
-            _gpsManager = gpsManager;
-            _gpsManager.PositionChanged += OnPositionChanged;
-
             // Subscribe connectivity changes
             Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
             // Check initial connectivity
             CheckInitialConnectivity();
 
+            // Load initial map
+            LoadOnlineOpenStreetMaps();
+
+            //GPS Management
+            _gpsManager = gpsManager;
+            _gpsManager.PositionChanged += OnPositionChanged;
+                     
+            //Transition to initial state
             TransitionTo(new MapStateDefault(_trackService));
         }
 
@@ -182,12 +188,8 @@ namespace WayPrecision
             }
             else
             {
-                // If webview wasn't ready because of no internet, try reloading
-                if (MapWebView.Source is HtmlWebViewSource htmlSrc && MapWebView.Handler == null)
-                {
-                    // Try reassigning source
-                    MapWebView.Source = htmlSrc;
-                }
+                if(!_firstLoadExecuted)
+                    MapWebView.Reload();
             }
         }
 
@@ -263,6 +265,11 @@ namespace WayPrecision
             });
 
             await Task.CompletedTask;
+        }
+
+        public void SetFirstLoadExecuted()
+        {
+            _firstLoadExecuted = true;
         }
 
         #endregion MAP EVENTS
@@ -497,6 +504,8 @@ namespace WayPrecision
         }
 
         #endregion MAP ELEMENTS MANAGEMENT
+
+        
 
         public void TransitionTo(MapState state)
         {

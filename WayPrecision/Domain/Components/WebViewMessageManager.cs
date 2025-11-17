@@ -16,6 +16,7 @@ namespace WayPrecision.Domain.Components
                 switch (evento)
                 {
                     case "mapLoaded":
+                        mainPage.SetFirstLoadExecuted();
                         mainPage.PaintElements();
                         break;
 
