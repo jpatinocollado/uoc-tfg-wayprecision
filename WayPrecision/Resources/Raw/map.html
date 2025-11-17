@@ -17,12 +17,16 @@
             bottom: 0;
             right: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-color: white;
         }
     </style>
 </head>
 <body>
     <!--background-color: #333333;-->
-    <div id='map' style="background-color: white; position: absolute; width: 100%; height: 100%; z-index: 1;"></div>
+    <div id='map'></div>
 
     <!--Jquery-->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -37,19 +41,20 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
 
     <!--L.easyButton`s-->
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/easy-button.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/easy-button.js"></script>
 
     <!--Loading-->
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/jquery.loading.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/LoadingManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/jquery.loading.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/LoadingManagerService.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/MapBackendManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/MapGpsManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/MapEventsManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/WaypointManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/TrackManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/MapLayersManagerService.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@refs/heads/features/013-jsdelivr/WayPrecision/Resources/Raw/Javascript/MapManagerService.js"></script>
+    <!--JS de Aplicación-->
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/MapBackendManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/MapGpsManagerService.js?v=1.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/MapEventsManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/WaypointManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/TrackManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/MapLayersManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.1/WayPrecision/Resources/Raw/Javascript/MapManagerService.js"></script>
 
     <!--Screen init-->
     <script>
@@ -75,18 +80,6 @@
                 attribution.replaceChild(span, link);
             }
         }
-
-        ////funcion de actualizar la posición en mapa
-        //function updatePosition(lat, lng, center, angle) {
-        //    console.log('lat: ' + lat);
-        //    console.log('lng: ' + lng);
-
-        //    if (MapManagerService.GetMap().getZoom() <= 1)
-        //        MapManagerService.SetZoomMax();
-
-        //    MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
-
-        //}
     </script>
 </body>
 </html>
