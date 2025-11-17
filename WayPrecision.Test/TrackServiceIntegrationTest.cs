@@ -6,6 +6,7 @@ using Xunit;
 using System.Threading.Tasks;
 using WayPrecision.Domain.Services.Configuracion;
 using WayPrecision.Domain.Services.Tracks;
+using WayPrecision.Domain.Exceptions;
 
 namespace WayPrecision.Test
 {
@@ -24,19 +25,50 @@ namespace WayPrecision.Test
             _service = new TrackService(_unitOfWork, _configurationService);
         }
 
-        [Fact]
-        public async Task CreateAsync_ShouldCreateTrack()
+        private Track CreateSampleTrackWithPoints(string name, int pointsCount = 2)
         {
             var track = new Track
             {
                 Guid = Guid.NewGuid().ToString(),
-                Name = "Test Track",
+                Name = name,
                 Observation = "Test Observation",
                 Created = DateTime.UtcNow.ToString(),
                 IsOpened = true,
                 AreaUnits = "m2",
                 LengthUnits = "m"
             };
+
+            for (int i = 0; i < pointsCount; i++)
+            {
+                var position = new Position
+                {
+                    Guid = Guid.NewGuid().ToString(),
+                    Latitude = 41.0 + i,
+                    Longitude = 2.0 + i,
+                    Altitude = 100 + i,
+                    Accuracy = 5.0,
+                    Course = 90.0,
+                    Timestamp = DateTime.UtcNow.AddMinutes(i).ToString()
+                };
+
+                var trackPoint = new TrackPoint
+                {
+                    Guid = Guid.NewGuid().ToString(),
+                    TrackGuid = track.Guid,
+                    PositionGuid = position.Guid,
+                    Position = position
+                };
+
+                track.TrackPoints.Add(trackPoint);
+            }
+
+            return track;
+        }
+
+        [Fact]
+        public async Task CreateAsync_ShouldCreateTrack()
+        {
+            var track = CreateSampleTrackWithPoints("Test Track", 2);
             var created = await _service.CreateAsync(track);
             Assert.NotNull(created);
             Assert.Equal(track.Guid, created.Guid);
@@ -53,16 +85,7 @@ namespace WayPrecision.Test
         [Fact]
         public async Task GetByIdAsync_ShouldReturnTrack()
         {
-            var track = new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Track By Id",
-                Observation = "Observation",
-                Created = DateTime.UtcNow.ToString(),
-                IsOpened = true,
-                AreaUnits = "m2",
-                LengthUnits = "m"
-            };
+            var track = CreateSampleTrackWithPoints("Track By Id", 2);
             await _service.CreateAsync(track);
             var found = await _service.GetByIdAsync(track.Guid);
             Assert.NotNull(found);
@@ -72,16 +95,7 @@ namespace WayPrecision.Test
         [Fact]
         public async Task UpdateAsync_ShouldUpdateTrack()
         {
-            var track = new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Track To Update",
-                Observation = "Observation",
-                Created = DateTime.UtcNow.ToString(),
-                IsOpened = true,
-                AreaUnits = "m2",
-                LengthUnits = "m"
-            };
+            var track = CreateSampleTrackWithPoints("Track To Update", 2);
             await _service.CreateAsync(track);
             track.Name = "Updated Name";
             var updated = await _service.UpdateAsync(track);
@@ -92,16 +106,7 @@ namespace WayPrecision.Test
         [Fact]
         public async Task DeleteAsync_ShouldDeleteTrack()
         {
-            var track = new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Track To Delete",
-                Observation = "Observation",
-                Created = DateTime.UtcNow.ToString(),
-                IsOpened = true,
-                AreaUnits = "m2",
-                LengthUnits = "m"
-            };
+            var track = CreateSampleTrackWithPoints("Track To Delete", 2);
             await _service.CreateAsync(track);
             var deleted = await _service.DeleteAsync(track.Guid);
             Assert.True(deleted);
@@ -113,39 +118,7 @@ namespace WayPrecision.Test
         public async Task CreateTrack_WithTrackPointsAndPositions_ShouldPersistRelations()
         {
             // Arrange
-            var track = new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Track with Points",
-                Observation = "Test with points",
-                Created = DateTime.UtcNow.ToString(),
-                IsOpened = true,
-                AreaUnits = "m2",
-                LengthUnits = "m"
-            };
-
-            // Create positions and trackpoints
-            for (int i = 0; i < 3; i++)
-            {
-                var position = new Position
-                {
-                    Guid = Guid.NewGuid().ToString(),
-                    Latitude = 41.0 + i,
-                    Longitude = 2.0 + i,
-                    Altitude = 100 + i,
-                    Accuracy = 5.0,
-                    Course = 90.0,
-                    Timestamp = DateTime.UtcNow.AddMinutes(i).ToString()
-                };
-                var trackPoint = new TrackPoint
-                {
-                    Guid = Guid.NewGuid().ToString(),
-                    TrackGuid = track.Guid,
-                    PositionGuid = position.Guid,
-                    Position = position
-                };
-                track.TrackPoints.Add(trackPoint);
-            }
+            var track = CreateSampleTrackWithPoints("Track with Points", 3);
 
             await _service.CreateAsync(track);
 
@@ -165,43 +138,19 @@ namespace WayPrecision.Test
         public async Task DeleteTrack_ShouldDeleteTrackPointsAndPositions()
         {
             // Arrange
-            var track = new Track
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Name = "Track to delete with points",
-                Observation = "Delete test",
-                Created = DateTime.UtcNow.ToString(),
-                IsOpened = true,
-                AreaUnits = "m2",
-                LengthUnits = "m"
-            };
-            var position = new Position
-            {
-                Guid = Guid.NewGuid().ToString(),
-                Latitude = 43.0,
-                Longitude = 4.0,
-                Altitude = 102,
-                Accuracy = 5.0,
-                Course = 90.0,
-                Timestamp = DateTime.UtcNow.ToString()
-            };
+            var track = CreateSampleTrackWithPoints("Track to delete with points", 1);
 
-            var trackPoint = new TrackPoint
-            {
-                Guid = Guid.NewGuid().ToString(),
-                TrackGuid = track.Guid,
-                PositionGuid = position.Guid,
-                Position = position
-            };
+            // Ensure at least one track point exists for deletion test; create with 1 but CreateAsync requires >=2 so use 2
+            track = CreateSampleTrackWithPoints("Track to delete with points", 2);
 
-            track.TrackPoints.Add(trackPoint);
             await _service.CreateAsync(track);
+
+            var trackPoint = track.TrackPoints.First();
+            var position = trackPoint.Position;
 
             // Act
             var deleted = await _service.DeleteAsync(track.Guid);
             var foundTrack = await _service.GetByIdAsync(track.Guid);
-
-            Assert.Null(foundTrack);
 
             var foundTrackPoint = foundTrack?.TrackPoints.FirstOrDefault(a => a.Guid == trackPoint.Guid);
             var foundPosition = foundTrack?.TrackPoints.FirstOrDefault(a => a.Position.Guid == position.Guid);
@@ -211,6 +160,20 @@ namespace WayPrecision.Test
             Assert.Null(foundTrack);
             Assert.Null(foundTrackPoint);
             Assert.Null(foundPosition);
+        }
+
+        [Fact]
+        public async Task CreateAsync_ShouldThrow_WhenLessThanTwoPoints()
+        {
+            var track = CreateSampleTrackWithPoints("Invalid Track", 1);
+
+            await Assert.ThrowsAsync<ControlledException>(async () => await _service.CreateAsync(track));
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldThrow_WhenTrackDoesNotExist()
+        {
+            await Assert.ThrowsAsync<ControlledException>(async () => await _service.DeleteAsync("non-existent-guid"));
         }
     }
 }
