@@ -232,7 +232,8 @@ namespace WayPrecision
                 string lat = gpsLocation.Latitude.ToString(CultureInfo.InvariantCulture);
                 string lng = gpsLocation.Longitude.ToString(CultureInfo.InvariantCulture);
                 string center = _locationCenterEnable.ToString().ToLower();
-                string js = $"updatePosition({lat}, {lng}, {center}, {direction});";
+                //string js = $"updatePosition({lat}, {lng}, {center}, {direction});";
+                string js = $"MapGpsManagerService.SetGpsPosition({lat}, {lng}, {center}, {direction});";
                 ExecuteJavaScript(js);
             }
             catch (Exception ex)

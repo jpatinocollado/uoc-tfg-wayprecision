@@ -17,10 +17,13 @@ Esto significa que puedes:
 
 Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
 
-- **OpenStreetMap**: Los mapas utilizados en la aplicación se basan en datos abiertos proporcionados por OpenStreetMap. © OpenStreetMap contributors. [https://www.openstreetmap.org](https://www.openstreetmap.org)
-
-- **Leaflet**: Biblioteca JavaScript de código abierto para mapas interactivos. Licencia BSD 2-Clause. [https://leafletjs.com](https://leafletjs.com)
-
+- **OpenStreetMap**: [Open Database License (ODbL)](https://www.openstreetmap.org/copyright) Los mapas utilizados en la aplicación se basan en datos abiertos proporcionados por OpenStreetMap. © OpenStreetMap contributors. Licencia Open Database License (ODbL). [https://www.openstreetmap.org](https://www.openstreetmap.org)
+- **Leaflet**: [BSD 2-Clause License](https://github.com/Leaflet/Leaflet/blob/main/LICENSE) Biblioteca JavaScript de código abierto para mapas interactivos. Licencia BSD 2-Clause. [https://leafletjs.com](https://leafletjs.com)
+- **Leaflet.EasyButton**: [MIT License](https://github.com/CliffCloud/Leaflet.EasyButton/blob/master/LICENSE) Plugin para Leaflet que facilita la creación de botones en el mapa. Licencia MIT. [https://github.com/CliffCloud/Leaflet.EasyButton](https://github.com/CliffCloud/Leaflet.EasyButton)
+- **SQLite**: [Public Domain](https://sqlite.org/copyright.html) Motor de base de datos relacional ligero y autónomo. Public Domain. [https://sqlite.org](https://sqlite.org)
+- **jQuery**: [MIT License](https://jquery.com/license/) Biblioteca JavaScript rápida y concisa. Licencia MIT. [https://jquery.com](https://jquery.com)
+- **jQuery Loading**: [MIT License](https://github.com/CarlosBonetti/jquery-loading/blob/master/LICENSE) Plugin jQuery para mostrar indicadores de carga. Licencia MIT. [https://carlosbonetti.github.io/jquery-loading/](https://carlosbonetti.github.io/jquery-loading/)
+- **Turf.js**: [MIT License](https://github.com/Turfjs/turf/blob/master/LICENSE) Biblioteca JavaScript para operaciones geoespaciales. Licencia MIT. [https://turfjs.org](https://turfjs.org)
 - **Iconos de la aplicación**: Los iconos utilizados en la aplicación han sido obtenidos de [Flaticon](https://www.flaticon.com/) y se reconocen según la política de atribución de Flaticon:
   - [Law icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/law)
   - [Stop icon icons created by Creative Squad - Flaticon](https://www.flaticon.com/free-icons/stop-icon)
@@ -36,7 +39,6 @@ Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
   - [Editing icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/editing)
   - [Eye password icons created by sonnycandra - Flaticon](https://www.flaticon.com/free-icons/eye-password)
   - [Looking icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/looking)
-
 
 
 Se reconoce y respeta la propiedad intelectual de estos proyectos y recursos, y se han utilizado conforme a sus respectivas licencias y políticas de atribución.

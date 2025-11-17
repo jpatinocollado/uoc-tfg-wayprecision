@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services.Configuracion;
 
@@ -92,10 +93,27 @@ namespace WayPrecision.Domain.Services.Tracks
         /// Una tarea que representa la operación asíncrona. El resultado contiene el track creado.
         /// </returns>
         /// <exception cref="ArgumentNullException">Se lanza si <paramref name="entity"/> es <c>null</c>.</exception>
-        public async Task<Track> CreateAsync(Track entity)
+        public async Task<Track?> CreateAsync(Track? entity)
         {
             if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+                throw new ControlledException("El Track no puede ser nulo.");
+
+            //comprueba si ya existe un track con el mismo nombre
+            string? newName = entity.Name?.Trim();
+            if (string.IsNullOrEmpty(newName))
+                throw new ControlledException("El nombre del Track no puede estar vacío.");
+
+            var allTracks = await _unitOfWork.Tracks.GetAllAsync();
+            if (allTracks.Any(w => string.Equals(w.Name.Trim(), newName, StringComparison.OrdinalIgnoreCase)))
+                throw new ControlledException($"Ya existe un Track con el nombre '{newName}'.");
+
+            //comprueba si tiene 2 o mas puntos
+            if (entity.TrackPoints.Count < 2)
+                throw new ControlledException("El Track debe tener al menos 2 puntos.");
+
+            //si el track es cerrado debe tener al menos 3 puntos
+            if (entity.TypeGeometry == TypeGeometry.Polygon && entity.TrackPoints.Count < 3)
+                throw new ControlledException("El Track cerrado debe tener al menos 3 puntos.");
 
             DateTime utcNow = DateTime.UtcNow;
 
@@ -125,10 +143,20 @@ namespace WayPrecision.Domain.Services.Tracks
         /// Una tarea que representa la operación asíncrona. El resultado contiene el track actualizado.
         /// </returns>
         /// <exception cref="ArgumentNullException">Se lanza si <paramref name="entity"/> es <c>null</c>.</exception>
-        public async Task<Track> UpdateAsync(Track entity)
+        public async Task<Track?> UpdateAsync(Track? entity)
         {
             if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+                throw new ControlledException("El Track no puede ser nulo.");
+
+            //comprueba si ya existe un track con el mismo nombre
+            string? newName = entity.Name?.Trim();
+            if (string.IsNullOrEmpty(newName))
+                throw new ControlledException("El nombre del Track no puede estar vacío.");
+
+            var allTracks = await _unitOfWork.Tracks.GetAllAsync();
+            if (allTracks.Any(w => string.Equals(w.Name.Trim(), newName, StringComparison.OrdinalIgnoreCase)
+                                    && w.Guid != entity.Guid))
+                throw new ControlledException($"Ya existe un Track con el nombre '{newName}'.");
 
             await _unitOfWork.Tracks.UpdateAsync(entity);
 
@@ -148,7 +176,7 @@ namespace WayPrecision.Domain.Services.Tracks
             Track? entity = await GetByIdAsync(guid);
 
             if (entity == null)
-                throw new NullReferenceException(nameof(entity));
+                throw new ControlledException("El Track que se intenta eliminar no existe.");
 
             foreach (TrackPoint trackPoint in entity.TrackPoints)
             {
