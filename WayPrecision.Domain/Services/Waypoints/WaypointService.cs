@@ -1,6 +1,7 @@
 ﻿using WayPrecision.Domain.Models;
 using System.Linq;
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Exceptions;
 
 namespace WayPrecision.Domain.Services.Waypoints
 {
@@ -49,7 +50,17 @@ namespace WayPrecision.Domain.Services.Waypoints
 
         {
             if (waypoint == null || waypoint.Position == null)
-                return null;
+                throw new ControlledException("El Waypoint y/o su posición no pueden ser nulos.");
+
+            // Comprueba si ya existe un waypoint con el mismo nombre (ignora mayúsculas/minúsculas y espacios)
+            string? newName = waypoint.Name?.Trim();
+
+            if (string.IsNullOrEmpty(newName))
+                throw new ControlledException("El nombre del Waypoint no puede estar vacío.");
+
+            var allWaypoints = await _unitOfWork.Waypoints.GetAllAsync();
+            if (allWaypoints.Any(w => string.Equals(w.Name.Trim(), newName, StringComparison.OrdinalIgnoreCase)))
+                throw new ControlledException($"Ya existe un waypoint con el nombre '{newName}'.");
 
             DateTime utcNow = DateTime.UtcNow;
 
@@ -80,12 +91,22 @@ namespace WayPrecision.Domain.Services.Waypoints
         public async Task<Waypoint?> UpdateAsync(Waypoint waypoint)
         {
             if (waypoint == null)
-                return null;
+                throw new ControlledException("El Waypoint no puede ser nulo.");
 
             // Verifica si existe el waypoint en la base de datos
             var existing = await GetByIdAsync(waypoint.Guid);
             if (existing == null)
-                return null;
+                throw new ControlledException("El Waypoint que se intenta actualizar no existe.");
+
+            // Comprueba si ya existe un waypoint con el mismo nombre (ignora mayúsculas/minúsculas y espacios)
+            string? newName = waypoint.Name?.Trim();
+            if (string.IsNullOrEmpty(newName))
+                throw new ControlledException("El nombre del Waypoint no puede estar vacío.");
+
+            var allWaypoints = await _unitOfWork.Waypoints.GetAllAsync();
+            if (allWaypoints.Any(w => string.Equals(w.Name.Trim(), newName, StringComparison.OrdinalIgnoreCase)
+                                                                           && w.Guid != waypoint.Guid))
+                throw new ControlledException($"Ya existe un waypoint con el nombre '{newName}'.");
 
             await _unitOfWork.Waypoints.UpdateAsync(waypoint);
             await _unitOfWork.SaveChangesAsync();
@@ -100,7 +121,7 @@ namespace WayPrecision.Domain.Services.Waypoints
         {
             Waypoint? waypoint = await GetByIdAsync(guid);
             if (waypoint == null)
-                return await Task.FromResult(false);
+                throw new ControlledException("El Waypoint que se intenta eliminar no existe.");
 
             _unitOfWork.Waypoints.DeleteDeferred(waypoint);
 

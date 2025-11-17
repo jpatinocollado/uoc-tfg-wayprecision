@@ -5,6 +5,7 @@ using WayPrecision.Domain.Services;
 using Xunit;
 using System.Threading.Tasks;
 using WayPrecision.Domain.Services.Configuracion;
+using WayPrecision.Domain.Services.Tracks;
 
 namespace WayPrecision.Test
 {

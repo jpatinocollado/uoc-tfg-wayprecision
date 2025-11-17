@@ -2,6 +2,7 @@
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Waypoints;
 
 namespace WayPrecision.Test
 {
