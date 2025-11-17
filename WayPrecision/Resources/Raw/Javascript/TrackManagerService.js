@@ -46,7 +46,7 @@
             style: setStyleTrack(track.weight, track.color, track.fillColor, track.opacity, track.fillopacity),
             onEachFeature: function onEachFeature(feature, layer) {
                 layer.on('dblclick', function (e) {
-                    e.originalEvent.preventDefault();
+                    L.DomEvent.stopPropagation(e);
                     MapBackendManagerService.PostMessage('editTrack;' + track.id);
                 });
             }
