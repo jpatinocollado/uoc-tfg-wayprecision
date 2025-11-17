@@ -76,17 +76,17 @@
             }
         }
 
-        //funcion de actualizar la posición en mapa
-        function updatePosition(lat, lng, center, angle) {
-            console.log('lat: ' + lat);
-            console.log('lng: ' + lng);
+        ////funcion de actualizar la posición en mapa
+        //function updatePosition(lat, lng, center, angle) {
+        //    console.log('lat: ' + lat);
+        //    console.log('lng: ' + lng);
 
-            if (MapManagerService.GetMap().getZoom() <= 1)
-                MapManagerService.SetZoomMax();
+        //    if (MapManagerService.GetMap().getZoom() <= 1)
+        //        MapManagerService.SetZoomMax();
 
-            MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
+        //    MapGpsManagerService.SetGpsPosition(lat, lng, center, angle);
 
-        }
+        //}
     </script>
 </body>
 </html>

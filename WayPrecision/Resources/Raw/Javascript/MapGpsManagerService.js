@@ -21,6 +21,10 @@
     }
 
     var setGpsPosition = function (lat, lng, center, angle) {
+
+        if (MapManagerService.GetMap().getZoom() <= 1)
+            MapManagerService.SetZoomMax();
+
         var latLang = L.latLng(lat, lng);
 
         let icon = gpsNoDirection;
