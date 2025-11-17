@@ -68,8 +68,6 @@
 
         layerActualPosition.addTo(map);
 
-        let map = MapManagerService.GetMap();
-
         if (baseMaps[baseLayerName]) {
             currentLayer = baseMaps[baseLayerName];
             map.addLayer(currentLayer);
