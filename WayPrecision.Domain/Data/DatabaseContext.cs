@@ -11,7 +11,6 @@ namespace WayPrecision.Domain.Data
         {
             Connection = new SQLiteAsyncConnection(dbPath);
             Connection.CreateTableAsync<Configuration>().Wait();
-            Connection.CreateTableAsync<Unit>().Wait();
             Connection.CreateTableAsync<Track>().Wait();
             Connection.CreateTableAsync<Position>().Wait();
             Connection.CreateTableAsync<TrackPoint>().Wait();

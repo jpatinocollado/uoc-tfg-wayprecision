@@ -10,7 +10,6 @@ namespace WayPrecision.Domain.Data.UnitOfWork
         private bool _inTransaction = false;
 
         public IRepository<Configuration> Configurations { get; }
-        public IRepository<Unit> Units { get; }
         public IRepository<Track> Tracks { get; }
         public IRepository<Position> Positions { get; }
         public IRepository<TrackPoint> TrackPoints { get; }
@@ -21,7 +20,6 @@ namespace WayPrecision.Domain.Data.UnitOfWork
             _connection = context.Connection;
 
             Configurations = new Repository<Configuration>(_connection);
-            Units = new Repository<Unit>(_connection);
             Tracks = new Repository<Track>(_connection);
             Positions = new Repository<Position>(_connection);
             TrackPoints = new Repository<TrackPoint>(_connection);
@@ -64,7 +62,6 @@ namespace WayPrecision.Domain.Data.UnitOfWork
             try
             {
                 totalAffected += await Configurations.CommitAsync();
-                totalAffected += await Units.CommitAsync();
                 totalAffected += await Tracks.CommitAsync();
                 totalAffected += await Positions.CommitAsync();
                 totalAffected += await TrackPoints.CommitAsync();

@@ -32,7 +32,7 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         public override void Init()
         {
-            //Initialize current track
+            //Crea una nueva instancia de Track
             CurrentTrack = new()
             {
                 Guid = Guid.NewGuid().ToString(),
@@ -42,7 +42,7 @@ namespace WayPrecision.Pages.Maps
                 IsOpened = true
             };
 
-            //label total puntos
+            //Mostramos el total de puntos
             MapPage.LbTotalPointsPublic.Text = "Puntos: 0";
 
             //Ponemos visibles los botones del pie de pagina
@@ -50,21 +50,21 @@ namespace WayPrecision.Pages.Maps
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = true;
             MapPage.PnGpsDataPublic.IsVisible = true;
 
-            //Register buttons events
+            //Registramos los eventos de los botones
             MapPage.BtnPlayPublic.Clicked += OnPlayClicked;
             MapPage.BtnPausePublic.Clicked += OnPauseClicked;
             MapPage.BtnStopPublic.Clicked += OnStopClicked;
             MapPage.BtnCancelPublic.Clicked += OnCancelClicked;
 
-            //State Play default
+            //Por defecto entramos en modo Play
             MapPage.BtnPlayPublic.IsEnabled = false;
             MapPage.BtnPausePublic.IsEnabled = true;
             MapPage.BtnStopPublic.IsEnabled = true;
 
-            //Start listening GPS
+            //Comenzamos a escuchar posiciones GPS
             IsListening = true;
 
-            //Clear elements
+            //Limpiamos el mapa de elementos para visualizar solo el Track
             MapPage.ClearElements();
         }
 
@@ -230,7 +230,7 @@ namespace WayPrecision.Pages.Maps
         {
             if (IsListening)
             {
-                //Create new position from last GPS location
+                //Crea una nueva instancia de Position con los datos GPS
                 Position position = new()
                 {
                     Guid = Guid.NewGuid().ToString(),
@@ -242,7 +242,7 @@ namespace WayPrecision.Pages.Maps
                     Timestamp = lastPosition.Timestamp,
                 };
 
-                //Create new track point and add to current track
+                //Crea una asociación con el Track
                 TrackPoint trackPoint = new()
                 {
                     Guid = Guid.NewGuid().ToString(),
@@ -251,14 +251,16 @@ namespace WayPrecision.Pages.Maps
                     Position = position,
                 };
 
-                //Add track point to current track
+                //Añade el punto al Track actual
                 CurrentTrack.TrackPoints.Add(trackPoint);
 
-                //Update label total points
+                //Actualiza el total de puntos
                 MapPage.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
 
-                //Paint Track in map
+                //Borra el dibujo anterior
                 MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
+
+                //Pinta el Track en el mapa
                 MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
             }
 

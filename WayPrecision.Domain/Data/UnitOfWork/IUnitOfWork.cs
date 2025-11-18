@@ -15,11 +15,6 @@ namespace WayPrecision.Domain.Data.UnitOfWork
         IRepository<Configuration> Configurations { get; }
 
         /// <summary>
-        /// Repositorio para la gestión de unidades.
-        /// </summary>
-        IRepository<Unit> Units { get; }
-
-        /// <summary>
         /// Repositorio para la gestión de tracks.
         /// </summary>
         IRepository<Track> Tracks { get; }

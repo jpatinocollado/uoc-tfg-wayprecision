@@ -28,14 +28,16 @@ namespace WayPrecision.Pages.Maps
         {
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = true;
+            //Ocultamos botones de tracking
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = false;
             MapPage.PnGpsDataPublic.IsVisible = false;
 
-            //Register buttons events
+            //Registramos los eventos de los botones
             MapPage.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
             MapPage.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
             MapPage.BtnCreateTrackPublic.Clicked += btnCreateTrackClicked;
 
+            //dibujamos los elementos en el mapa
             MapPage.PaintElements();
         }
 

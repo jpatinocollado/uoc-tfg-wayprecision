@@ -24,6 +24,7 @@ Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
 - **jQuery**: [MIT License](https://jquery.com/license/) Biblioteca JavaScript rápida y concisa. Licencia MIT. [https://jquery.com](https://jquery.com)
 - **jQuery Loading**: [MIT License](https://github.com/CarlosBonetti/jquery-loading/blob/master/LICENSE) Plugin jQuery para mostrar indicadores de carga. Licencia MIT. [https://carlosbonetti.github.io/jquery-loading/](https://carlosbonetti.github.io/jquery-loading/)
 - **Turf.js**: [MIT License](https://github.com/Turfjs/turf/blob/master/LICENSE) Biblioteca JavaScript para operaciones geoespaciales. Licencia MIT. [https://turfjs.org](https://turfjs.org)
+- **jsdelivr**: [MIT License](https://github.com/jsdelivr/jsdelivr/blob/master/LICENSE.md) CDN gratuito y de código abierto para librerías JavaScript. Licencia MIT. [https://www.jsdelivr.com](https://www.jsdelivr.com)
 - **Iconos de la aplicación**: Los iconos utilizados en la aplicación han sido obtenidos de [Flaticon](https://www.flaticon.com/) y se reconocen según la política de atribución de Flaticon:
   - [Law icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/law)
   - [Stop icon icons created by Creative Squad - Flaticon](https://www.flaticon.com/free-icons/stop-icon)

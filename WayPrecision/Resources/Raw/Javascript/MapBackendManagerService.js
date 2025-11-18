@@ -8,7 +8,6 @@
             window.external.notify(message);
         } else if (typeof jsBridge !== "undefined") {
             // Android con AddJavascriptInterface
-            // Android
             jsBridge.postMessage(message);
         } else {
             alert("No se encontró un canal de comunicación con .NET");

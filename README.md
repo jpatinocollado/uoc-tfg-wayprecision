@@ -28,6 +28,7 @@
 - [jQuery](https://jquery.com/) para manipulación del DOM y utilidades en los scripts incluidos
 - [jQuery Loading](https://carlosbonetti.github.io/jquery-loading/) plugin para indicadores de carga
 - [Turf.js](https://turfjs.org/) para operaciones geoespaciales en los scripts (cálculo de áreas, buffers, intersecciones, etc.)
+- [jsdelivr](https://www.jsdelivr.com/) como CDN para librerías JavaScript
 
 ## 📄 Licencia
 
@@ -42,6 +43,7 @@ Además, se utilizan recursos de terceros bajo sus respectivas licencias:
 - **JQuery**: [MIT License](https://jquery.com/license/)
 - **JQuery Loading**: [MIT License](https://github.com/CarlosBonetti/jquery-loading/blob/master/LICENSE)
 - **Turf.js**: [MIT License](https://github.com/Turfjs/turf/blob/master/LICENSE)
+- **jsdelivr**: [MIT License](https://github.com/jsdelivr/jsdelivr/blob/master/LICENSE.md)
 
 ## 🤝 Cómo colaborar
 

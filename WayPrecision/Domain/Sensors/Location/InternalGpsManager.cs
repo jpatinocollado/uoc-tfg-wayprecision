@@ -38,43 +38,33 @@ namespace WayPrecision.Domain.Sensors.Location
                     {
                         // Comprueba y solicita permisos de ubicación si es necesario
                         var permissionStatus = await EnsureLocationPermission();
-                        if (permissionStatus != PermissionStatus.Granted)
+                        if (permissionStatus == PermissionStatus.Granted)
                         {
-                            // Permiso denegado, espera el intervalo antes de reintentar
-                            await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
-                            continue;
-                        }
-
-                        // Ejecutar la petición de ubicación en el hilo principal para evitar errores
-                        var location = await MainThread.InvokeOnMainThreadAsync(async () =>
-                        {
-                            return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts.Token);
-                        });
-
-                        if (location != null)
-                        {
-                            // Dispara el evento PositionChanged con la nueva ubicación
-                            PositionChanged?.Invoke(this, new LocationEventArgs(new Position()
+                            // Ejecutar la petición de ubicación en el hilo principal
+                            var location = await MainThread.InvokeOnMainThreadAsync(async () =>
                             {
-                                Guid = Guid.NewGuid().ToString(),
-                                Latitude = location.Latitude,
-                                Longitude = location.Longitude,
-                                Altitude = location.Altitude,
-                                Accuracy = location.Accuracy,
-                                Course = location.Course,
-                                Timestamp = location.Timestamp.UtcDateTime.ToString("o")
-                            }));
+                                return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts.Token);
+                            });
+
+                            if (location != null)
+                            {
+                                //Crea una nueva Position en base a la ubicación
+                                // Dispara el evento PositionChanged
+                                PositionChanged?.Invoke(this, new LocationEventArgs(new Position()
+                                {
+                                    Guid = Guid.NewGuid().ToString(),
+                                    Latitude = location.Latitude,
+                                    Longitude = location.Longitude,
+                                    Altitude = location.Altitude,
+                                    Accuracy = location.Accuracy,
+                                    Course = location.Course,
+                                    Timestamp = location.Timestamp.UtcDateTime.ToString("o")
+                                }));
+                            }
                         }
                     }
-                    catch (OperationCanceledException)
-                    {
-                        // Cancellation requested - exit loop
-                        break;
-                    }
-                    finally
-                    {
-                        await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
-                    }
+                    catch (OperationCanceledException) { break; }
+                    finally { await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token); }
                 }
             }, _cts.Token);
         }
@@ -98,12 +88,14 @@ namespace WayPrecision.Domain.Sensors.Location
 
         private async Task<PermissionStatus> EnsureLocationPermission()
         {
-            // Ensure permission requests are invoked on the main thread
+            // Asegúrese de que las solicitudes de permiso se invoquen en el hilo principal
             var permissionStatus = await MainThread.InvokeOnMainThreadAsync(async () =>
             {
+                // Verifica el estado del permiso de ubicación
                 var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
                 if (status != PermissionStatus.Granted)
                 {
+                    // Solicita el permiso de ubicación
                     status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
                 }
 
