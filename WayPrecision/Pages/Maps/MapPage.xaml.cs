@@ -454,6 +454,9 @@ namespace WayPrecision
 
                 var waypoints = await _waypointService.GetAllAsync();
                 var tracks = await _trackService.GetAllAsync();
+                var configuration = await _configurationService.GetOrCreateAsync();
+
+                bool smoothTracks = configuration.KalmanFilterEnabled;
 
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
@@ -467,38 +470,34 @@ namespace WayPrecision
                 ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    ExecuteJavaScript(scTracks.GetTrack(track));
-
-                    Track trackClone = track.Clone();
-                    trackClone.ColorBorde = MapMarkerColorEnum.Red;
-                    trackClone.ColorRelleno = MapMarkerColorEnum.Red;
-
-                    var smoother = new GpsPathSmoother
+                    if (configuration.KalmanFilterEnabled)
                     {
-                        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                        MaxJumpMeters = 10,                    // saltos razonables
-                        MovingAverageWindow = 5,               // más estable
-                        ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
-                    };
-
-                    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
-
-                    foreach (var pos in positions)
-                    {
-                        pos.Guid = Guid.NewGuid().ToString();
-                        TrackPoint smoothedTrackPoint = new()
+                        var smoother = new GpsPathSmoother
                         {
-                            Guid = Guid.NewGuid().ToString(),
-                            TrackGuid = trackClone.Guid,
-                            PositionGuid = pos.Guid,
-                            Position = pos,
+                            MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                            MaxJumpMeters = 10,                    // saltos razonables
+                            MovingAverageWindow = 5,               // más estable
+                            ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                            MeasurementNoiseVariance = 8e-5        // ruido GPS realista
                         };
-                        trackClone.TrackPoints.Add(smoothedTrackPoint);
+                        List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
+
+                        track.TrackPoints.Clear();
+                        foreach (var pos in positions)
+                        {
+                            pos.Guid = Guid.NewGuid().ToString();
+                            TrackPoint smoothedTrackPoint = new()
+                            {
+                                Guid = Guid.NewGuid().ToString(),
+                                TrackGuid = track.Guid,
+                                PositionGuid = pos.Guid,
+                                Position = pos,
+                            };
+                            track.TrackPoints.Add(smoothedTrackPoint);
+                        }
                     }
 
-                    //Pinta el Track en el mapa
-                    ExecuteJavaScript(scTracks.GetTrack(trackClone));
+                    ExecuteJavaScript(scTracks.GetTrack(track));
                 }
             });
         }

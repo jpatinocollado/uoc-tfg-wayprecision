@@ -14,5 +14,7 @@ namespace WayPrecision.Domain.Models
         public string AreaUnits { get; set; } = String.Empty;
 
         public string LengthUnits { get; set; } = String.Empty;
+
+        public bool KalmanFilterEnabled { get; set; } = false;
     }
 }

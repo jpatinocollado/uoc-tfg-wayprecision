@@ -27,6 +27,7 @@ public partial class SettingsPage : ContentPage
         // Guardar configuración al hacer clic en el botón
         SaveButton.Clicked += async (s, e) => await SaveConfigurationAsync();
 
+        // Cancelar y volver atrás al hacer clic en el botón
         CancelarButton.Clicked += async (s, e) => await CancelAsync();
     }
 
@@ -57,6 +58,8 @@ public partial class SettingsPage : ContentPage
 
         AreaUnitsPicker.SelectedIndex = areaOptions.FindIndex(x => x.Key == _currentConfig.AreaUnits);
         LengthUnitsPicker.SelectedIndex = lengthOptions.FindIndex(x => x.Key == _currentConfig.LengthUnits);
+
+        KalmanSwitch.IsToggled = _currentConfig.KalmanFilterEnabled;
     }
 
     private async Task SaveConfigurationAsync()
@@ -97,6 +100,9 @@ public partial class SettingsPage : ContentPage
         // Guardar las unidades seleccionadas
         if (LengthUnitsPicker.SelectedIndex >= 0)
             _currentConfig.LengthUnits = ((UnitOption)LengthUnitsPicker.SelectedItem).Key;
+
+        // Guardar el estado del filtro de Kalman
+        _currentConfig.KalmanFilterEnabled = KalmanSwitch.IsToggled;
 
         // Guardar la configuración
         await _configurationService.SaveAsync(_currentConfig);
