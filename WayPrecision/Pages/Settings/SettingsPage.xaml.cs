@@ -53,6 +53,7 @@ public partial class SettingsPage : ContentPage
         _currentConfig = await _configurationService.GetOrCreateAsync();
 
         GpsIntervalEntry.Text = _currentConfig.GpsInterval.ToString();
+        GpsAccuracyEntry.Text = _currentConfig.GpsAccuracy.ToString();
 
         AreaUnitsPicker.SelectedIndex = areaOptions.FindIndex(x => x.Key == _currentConfig.AreaUnits);
         LengthUnitsPicker.SelectedIndex = lengthOptions.FindIndex(x => x.Key == _currentConfig.LengthUnits);
@@ -63,30 +64,48 @@ public partial class SettingsPage : ContentPage
         if (_currentConfig == null)
             return;
 
+        // Validar el intervalo GPS
         if (!int.TryParse(GpsIntervalEntry.Text, out int gpsInterval))
         {
             await DisplayAlert("Error", "El intervalo GPS debe ser un número entero válido.", "OK");
             return;
         }
-        if (gpsInterval <= 0 || gpsInterval > 30)
+        if (gpsInterval <= 0 || gpsInterval > 15)
         {
-            await DisplayAlert("Error", "El intervalo GPS debe ser mayor que 0 y menor o igual a 30.", "OK");
+            await DisplayAlert("Error", "El intervalo GPS debe ser mayor que 0 y menor o igual a 15 segundos.", "OK");
             return;
         }
         _currentConfig.GpsInterval = gpsInterval;
 
+        // Validar la precisión mínima
+        if (!int.TryParse(GpsAccuracyEntry.Text, out int gpsAccuracy))
+        {
+            await DisplayAlert("Error", "La precisión mínima del GPS debe ser un número entero válido.", "OK");
+            return;
+        }
+        if (gpsAccuracy <= 0 || gpsAccuracy > 20)
+        {
+            await DisplayAlert("Error", "La precisión mínima del GPS debe ser mayor que 0 y menor o igual a 20 segundos.", "OK");
+            return;
+        }
+        _currentConfig.GpsAccuracy = gpsAccuracy;
+
+        // Guardar las unidades seleccionadas
         if (AreaUnitsPicker.SelectedIndex >= 0)
             _currentConfig.AreaUnits = ((UnitOption)AreaUnitsPicker.SelectedItem).Key;
 
+        // Guardar las unidades seleccionadas
         if (LengthUnitsPicker.SelectedIndex >= 0)
             _currentConfig.LengthUnits = ((UnitOption)LengthUnitsPicker.SelectedItem).Key;
 
+        // Guardar la configuración
         await _configurationService.SaveAsync(_currentConfig);
 
+        // Notificar al usuario
         await DisplayAlert("Configuración", "Configuración guardada correctamente.", "OK");
 
+        // Volver a la página anterior
         await Navigation.PopAsync();
-        //await Shell.Current.GoToAsync($"//MainPage");
     }
 
     private async Task CancelAsync()

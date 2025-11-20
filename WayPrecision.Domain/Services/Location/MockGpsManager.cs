@@ -2,13 +2,14 @@
 
 namespace WayPrecision.Domain.Services.Location
 {
-    internal class MockGpsManager : IGpsManager
+    public class MockGpsManager : IGpsManager
     {
         public event EventHandler<LocationEventArgs> PositionChanged;
 
         private CancellationTokenSource _cts;
         private bool _isListening;
         private TimeSpan GpsInterval;
+        private int GpsMinimalAccuracy;
 
         private int index = 0;
         private readonly List<LocationEventArgs> Locations = [];
@@ -28,30 +29,35 @@ namespace WayPrecision.Domain.Services.Location
                 Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.66215253129646,
                 Longitude = 0.5533226915521051,
+                Accuracy = 5,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
                 Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.662429274617224,
                 Longitude = 0.5539554704481465,
+                Accuracy = 4,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
                 Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.66162310597749,
                 Longitude = 0.5542021469669579,
+                Accuracy = 6,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
                 Guid = Guid.NewGuid().ToString(),
                 Latitude = 41.661358391685724,
                 Longitude = 0.5535800931369118,
+                Accuracy = 20,
             }));
         }
 
-        public async Task StartListeningAsync(TimeSpan gpsInterval)
+        public async Task StartListeningAsync(TimeSpan gpsInterval, int gpsMinimalAccuracy)
         {
             GpsInterval = gpsInterval;
+            GpsMinimalAccuracy = gpsMinimalAccuracy;
 
             if (_cts is null || _cts.IsCancellationRequested)
                 _cts = new CancellationTokenSource();
@@ -72,7 +78,10 @@ namespace WayPrecision.Domain.Services.Location
                         index = 0;
 
                     location.Position.Timestamp = DateTime.UtcNow.ToString("o");
-                    PositionChanged?.Invoke(this, location);
+
+                    if (location.Position.Accuracy <= GpsMinimalAccuracy)
+                        PositionChanged?.Invoke(this, location);
+
                     await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
                 }
             }, _cts.Token);
@@ -94,6 +103,12 @@ namespace WayPrecision.Domain.Services.Location
         public Task ChangeGpsInterval(TimeSpan gpsInterval)
         {
             GpsInterval = gpsInterval;
+            return Task.CompletedTask;
+        }
+
+        public Task ChangeGpsMinimalAccuracy(int gpsMinimalAccuracy)
+        {
+            GpsMinimalAccuracy = gpsMinimalAccuracy;
             return Task.CompletedTask;
         }
     }
