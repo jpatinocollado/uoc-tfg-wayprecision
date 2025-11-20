@@ -87,7 +87,7 @@ namespace WayPrecision.Pages.Maps
                         Accuracy = MapPage._lastPosition.Accuracy,
                         Altitude = MapPage._lastPosition.Altitude,
                         Course = MapPage._lastPosition.Course,
-                        Timestamp = dateTime.ToString("o"),
+                        Timestamp = dateTime
                     }
                 };
 

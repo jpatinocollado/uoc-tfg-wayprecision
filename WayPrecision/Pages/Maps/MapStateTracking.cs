@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
-using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
 
 namespace WayPrecision.Pages.Maps
@@ -16,6 +16,8 @@ namespace WayPrecision.Pages.Maps
 
         private Track CurrentTrack;
         private bool IsListening = false;
+
+        private Position? LastPosition = null;
 
         /// <summary>
         /// Inicializa una nueva instancia de <see cref="MapStateTracking"/>.
@@ -260,8 +262,54 @@ namespace WayPrecision.Pages.Maps
                 //Borra el dibujo anterior
                 MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
-                //Pinta el Track en el mapa
-                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
+                if (CurrentTrack.TotalPoints >= 2)
+                {
+                    //Pinta el Track en el mapa
+                    MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
+
+                    //clonamos el track para no tener problemas de referencias
+                    Track trackClone = CurrentTrack.Clone();
+
+                    //cambiamos el color
+                    trackClone.ColorBorde = MapMarkerColorEnum.Red;
+                    trackClone.ColorRelleno = MapMarkerColorEnum.Red;
+
+                    var smoother = new GpsPathSmoother
+                    {
+                        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                        MaxJumpMeters = 10,                    // saltos razonables
+                        MovingAverageWindow = 5,               // más estable
+                        ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+                    };
+
+                    var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
+
+                    smoother.UpdateParameters(
+                        intervalSeconds: interval,
+                        horizontalAccuracyMeters: position.Accuracy
+                    );
+
+                    List<Position> positions = smoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
+
+                    foreach (var pos in positions)
+                    {
+                        pos.Guid = Guid.NewGuid().ToString();
+                        TrackPoint smoothedTrackPoint = new()
+                        {
+                            Guid = Guid.NewGuid().ToString(),
+                            TrackGuid = trackClone.Guid,
+                            PositionGuid = pos.Guid,
+                            Position = pos,
+                        };
+                        trackClone.TrackPoints.Add(smoothedTrackPoint);
+                    }
+
+                    //Pinta el Track en el mapa
+                    MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(trackClone));
+                }
+
+                LastPosition = position;
             }
 
             await Task.CompletedTask;

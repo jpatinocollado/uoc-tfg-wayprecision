@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using System.Net.Http;
-using Microsoft.Maui.Networking;
+using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
@@ -21,7 +21,9 @@ namespace WayPrecision
         internal Position? _lastPosition = null;
 
         internal MapState State;
-        internal bool isWebViewReady = false;
+        internal bool isWebViewReady => (isWebViewNavigated && isWebViewLoaded);
+        internal bool isWebViewNavigated = false;
+        internal bool isWebViewLoaded = false;
         internal bool _locationEnable = false;
         internal bool _locationCenterEnable = false;
 
@@ -71,11 +73,11 @@ namespace WayPrecision
             // Subscribe connectivity changes
             Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
-            // Check initial connectivity
-            CheckInitialConnectivity();
-
             //Transition to initial state
             TransitionTo(new MapStateDefault(_trackService));
+
+            // Check initial connectivity
+            CheckInitialConnectivity();
         }
 
         #region MAP INITIALIZATION
@@ -188,8 +190,10 @@ namespace WayPrecision
             }
             else
             {
-                if (!_firstLoadExecuted && isWebViewReady)
+                if (!_firstLoadExecuted && isWebViewReady && isWebViewNavigated)
+                {
                     MapWebView.Reload();
+                }
             }
         }
 
@@ -213,12 +217,14 @@ namespace WayPrecision
 
         private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
-            isWebViewReady = true;
+            isWebViewLoaded = true;
+            //isWebViewReady = true;
         }
 
         private void OnMapWebViewNavigated(object? sender, WebNavigatedEventArgs e)
         {
-            isWebViewReady = true;
+            ///*isWebViewReady*/ = true;
+            isWebViewNavigated = true;
         }
 
         public void ExecuteJavaScript(string script)
@@ -385,7 +391,7 @@ namespace WayPrecision
                     {
                         Latitude = lat,
                         Longitude = lng,
-                        Timestamp = dateTime.ToString("o"),
+                        Timestamp = dateTime
                     }
                 };
 
@@ -462,6 +468,37 @@ namespace WayPrecision
                 foreach (var track in tracks)
                 {
                     ExecuteJavaScript(scTracks.GetTrack(track));
+
+                    Track trackClone = track.Clone();
+                    trackClone.ColorBorde = MapMarkerColorEnum.Red;
+                    trackClone.ColorRelleno = MapMarkerColorEnum.Red;
+
+                    var smoother = new GpsPathSmoother
+                    {
+                        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                        MaxJumpMeters = 10,                    // saltos razonables
+                        MovingAverageWindow = 5,               // más estable
+                        ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+                    };
+
+                    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
+
+                    foreach (var pos in positions)
+                    {
+                        pos.Guid = Guid.NewGuid().ToString();
+                        TrackPoint smoothedTrackPoint = new()
+                        {
+                            Guid = Guid.NewGuid().ToString(),
+                            TrackGuid = trackClone.Guid,
+                            PositionGuid = pos.Guid,
+                            Position = pos,
+                        };
+                        trackClone.TrackPoints.Add(smoothedTrackPoint);
+                    }
+
+                    //Pinta el Track en el mapa
+                    ExecuteJavaScript(scTracks.GetTrack(trackClone));
                 }
             });
         }

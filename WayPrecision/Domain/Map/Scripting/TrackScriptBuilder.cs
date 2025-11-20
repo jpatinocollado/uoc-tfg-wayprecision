@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Models;
+﻿using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Map.Scripting
 {
@@ -55,8 +56,8 @@ namespace WayPrecision.Domain.Map.Scripting
                                $"visible: {track.IsVisible.ToString().ToLower()}, " +
                                $"length: '{track.LengthLocal}', " +
                                $"area: '{track.AreaLocal}', " +
-                               "color: '#31882A', " +
-                               "fillColor: '#2AAD27', " +
+                               $"color: '{MapColorConverter.GetOutsideHexadecimal(track.ColorBorde)}', " +
+                               $"fillColor: '{MapColorConverter.GetInsideHexadecimal(track.ColorRelleno)}', " +
                                "opacity: 1.0, " +
                                "fillopacity: 0.5, " +
                                $"weight: {weight}, " +

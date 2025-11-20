@@ -2,7 +2,7 @@
 
 namespace WayPrecision.Domain.Services.Location
 {
-    internal class MockGpsManager : IGpsManager
+    public class MockGpsManager : IGpsManager
     {
         public event EventHandler<LocationEventArgs> PositionChanged;
 
@@ -71,7 +71,7 @@ namespace WayPrecision.Domain.Services.Location
                     if (index >= Locations.Count)
                         index = 0;
 
-                    location.Position.Timestamp = DateTime.UtcNow.ToString("o");
+                    location.Position.Timestamp = DateTime.UtcNow;
                     PositionChanged?.Invoke(this, location);
                     await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
                 }

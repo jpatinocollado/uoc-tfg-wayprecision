@@ -58,7 +58,7 @@ namespace WayPrecision.Domain.Sensors.Location
                                     Altitude = location.Altitude,
                                     Accuracy = location.Accuracy,
                                     Course = location.Course,
-                                    Timestamp = location.Timestamp.UtcDateTime.ToString("o")
+                                    Timestamp = location.Timestamp.UtcDateTime
                                 }));
                             }
                         }

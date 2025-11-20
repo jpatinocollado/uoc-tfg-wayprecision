@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using SQLite;
+using WayPrecision.Domain.Helpers.Colors;
 
 namespace WayPrecision.Domain.Models
 {
@@ -10,6 +11,8 @@ namespace WayPrecision.Domain.Models
         public Track()
         {
             _isVisible = true;
+            ColorBorde = MapMarkerColorEnum.Green;
+            ColorRelleno = MapMarkerColorEnum.Green;
         }
 
         public void SetConfiguration(Configuration configuration)
@@ -150,5 +153,31 @@ namespace WayPrecision.Domain.Models
 
         [Ignore]
         public virtual List<TrackPoint> TrackPoints { get; set; } = new List<TrackPoint>();
+
+        [Ignore]
+        public MapMarkerColorEnum ColorBorde { get; set; }
+
+        [Ignore]
+        public MapMarkerColorEnum ColorRelleno { get; set; }
+
+        public Track Clone()
+        {
+            return new Track
+            {
+                Guid = this.Guid,
+                Name = this.Name,
+                Observation = this.Observation,
+                Created = this.Created,
+                Finalized = this.Finalized,
+                IsOpened = this.IsOpened,
+                IsVisible = this.IsVisible,
+                AreaUnits = this.AreaUnits,
+                LengthUnits = this.LengthUnits,
+                ColorBorde = this.ColorBorde,
+                ColorRelleno = this.ColorRelleno,
+                TypeGeometry = this.TypeGeometry,
+                TrackPoints = new List<TrackPoint>()
+            };
+        }
     }
 }
