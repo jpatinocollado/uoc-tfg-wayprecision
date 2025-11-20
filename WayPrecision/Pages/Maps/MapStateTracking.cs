@@ -46,6 +46,10 @@ namespace WayPrecision.Pages.Maps
             //Mostramos el total de puntos
             MapPage.LbTotalPointsPublic.Text = "Puntos: 0";
 
+            //Bloqueamos el menú
+            Shell.SetNavBarIsVisible(MapPage, true);
+            Shell.SetFlyoutBehavior(MapPage, FlyoutBehavior.Disabled);
+
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = false;
             MapPage.BtnStackLayoutTrackingPublic.IsVisible = true;
