@@ -4,15 +4,23 @@
              x:Class="WayPrecision.SettingsPage"
              Title="Configuración">
     <Grid RowDefinitions="*,Auto,Auto" Padding="20">
+        <ScrollView>
         <!-- Contenido principal en la parte superior -->
         <VerticalStackLayout Grid.Row="0" Spacing="10">
 
             <Label Text="Intervalo de posición GPS" FontAttributes="Bold" />
-            <Label Text="Rango: 1 – 30 segundos." FontAttributes="Italic" />
+            <Label Text="Rango: 1 – 15 segundos." FontAttributes="Italic" />
             <Label Text="Intervalos más cortos mejoran la precisión pero consumen más batería." FontAttributes="Italic" />
             <Entry x:Name="GpsIntervalEntry"
                Keyboard="Numeric"
                Placeholder="Introduce el intervalo en segundos" />
+
+            <Label Text="Precisión mínima requerida" FontAttributes="Bold" />
+            <Label Text="Rango: 1 – 20 metros." FontAttributes="Italic" />
+            <Label Text="Mayor precisión mejora el cálculo geométrico pero rechaza más posiciones." FontAttributes="Italic" />
+            <Entry x:Name="GpsAccuracyEntry"
+               Keyboard="Numeric"
+               Placeholder="Introduce la precisión en metros" />
 
             <Label Text="Unidad de área" FontAttributes="Bold" Padding="0,10,0,0" />
             <Picker x:Name="AreaUnitsPicker" />
@@ -21,6 +29,7 @@
             <Picker x:Name="LengthUnitsPicker" />
         </VerticalStackLayout>
 
+            </ScrollView>
         <!-- Botón anclado abajo -->
         <Button Grid.Row="1"
             Text="Guardar"

@@ -26,6 +26,10 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         public override void Init()
         {
+            //desbloqueamos el menú
+            Shell.SetNavBarIsVisible(MapPage, false);
+            Shell.SetFlyoutBehavior(MapPage, FlyoutBehavior.Flyout);
+
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = true;
             //Ocultamos botones de tracking
