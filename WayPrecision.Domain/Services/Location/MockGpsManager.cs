@@ -30,6 +30,7 @@ namespace WayPrecision.Domain.Services.Location
                 Latitude = 41.66215253129646,
                 Longitude = 0.5533226915521051,
                 Accuracy = 5,
+                Course = 85.66,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
@@ -37,6 +38,7 @@ namespace WayPrecision.Domain.Services.Location
                 Latitude = 41.662429274617224,
                 Longitude = 0.5539554704481465,
                 Accuracy = 4,
+                Course = 120.12,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
@@ -44,6 +46,7 @@ namespace WayPrecision.Domain.Services.Location
                 Latitude = 41.66162310597749,
                 Longitude = 0.5542021469669579,
                 Accuracy = 6,
+                Course = 150.45,
             }));
             Locations.Add(new LocationEventArgs(new Position()
             {
@@ -51,6 +54,7 @@ namespace WayPrecision.Domain.Services.Location
                 Latitude = 41.661358391685724,
                 Longitude = 0.5535800931369118,
                 Accuracy = 20,
+                Course = 200.78,
             }));
         }
 
