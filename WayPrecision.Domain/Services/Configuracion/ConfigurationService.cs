@@ -58,14 +58,8 @@ namespace WayPrecision.Domain.Services.Configuracion
                 Guid = Guid.NewGuid().ToString(),
                 AreaUnits = UnitEnum.MetrosCuadrados.ToString(),
                 LengthUnits = UnitEnum.Metros.ToString(),
-                GpsInterval = 5
-                //Created = DateTime.UtcNow.ToString("o"),
-                //Updated = DateTime.UtcNow.ToString("o"),
-                //Language = "es-ES",
-                //Units = "metric",
-                //MapProvider = "OpenStreetMap",
-                //AutoSaveTracks = true,
-                //Theme = "light"
+                GpsInterval = 3,
+                GpsAccuracy = 10
             };
         }
     }

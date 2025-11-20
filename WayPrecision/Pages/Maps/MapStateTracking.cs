@@ -1,4 +1,6 @@
-﻿using WayPrecision.Domain.Helpers.Colors;
+﻿using System.Threading.Tasks;
+using WayPrecision.Domain.Exceptions;
+using WayPrecision.Domain.Helpers.Colors;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
@@ -46,6 +48,10 @@ namespace WayPrecision.Pages.Maps
 
             //Mostramos el total de puntos
             MapPage.LbTotalPointsPublic.Text = "Puntos: 0";
+
+            //Bloqueamos el menú
+            Shell.SetNavBarIsVisible(MapPage, true);
+            Shell.SetFlyoutBehavior(MapPage, FlyoutBehavior.Disabled);
 
             //Ponemos visibles los botones del pie de pagina
             MapPage.BtnStackLayoutDefaultPublic.IsVisible = false;
@@ -121,74 +127,62 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private async void OnStopClicked(object? sender, EventArgs e)
         {
-            //al hacer stop, procedemos a finalizar el track, lo primero es ponerlo en pausa
-            OnPauseClicked(null, new EventArgs());
-
-            //Finalize current track
-            CurrentTrack.Finalized = DateTime.UtcNow.ToString("o");
-
-            //contrlamos si se cierra el track
-            bool cerrarTrack = false;
-            if (CurrentTrack.TrackPoints.Count == 0)
+            try
             {
-                //Display alert if there are no track points
-                await MapPage.DisplayAlert(
-                    "Finalizar Track",
-                    "El track no tiene puntos y se cerrará automáticamente.",
-                    "Aceptar"
-                );
+                //al hacer stop, procedemos a finalizar el track, lo primero es ponerlo en pausa
+                OnPauseClicked(null, new EventArgs());
+
+                //Finalize current track
+                CurrentTrack.Finalized = DateTime.UtcNow.ToString("o");
+
+                // Pregunta al usuario si quiere cerrar el track
+                bool cerrarTrack = await MapPage.DisplayAlert(
+                        "Finalizar Track",
+                        "¿Quieres cerrar el track?",
+                        "Sí",
+                        "No"
+                    );
+
+                if (cerrarTrack)
+                {
+                    CurrentTrack.IsOpened = false;
+                    CurrentTrack.TypeGeometry = TypeGeometry.Polygon;
+                }
+                else
+                {
+                    CurrentTrack.IsOpened = true;
+                    CurrentTrack.TypeGeometry = TypeGeometry.LineString;
+                }
+
+                string nameTrack = string.Empty;
+
+                while (string.IsNullOrWhiteSpace(nameTrack))
+                    nameTrack = await MapPage.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
+
+                CurrentTrack.Name = nameTrack;
+                CurrentTrack = await _service.CreateAsync(CurrentTrack);
+
+                await MapPage.ShowLoading("Calculando <br/> geometrías...");
 
                 MapPage.TransitionTo(new MapStateDefault(_service));
+
+                // espera 10 segundos para que se calculen las medidas
+                await Task.Delay(4000);
+
+                await MapPage.HideLoading();
+
+                MapPage.EditTrack(CurrentTrack.Guid);
             }
-            else if (CurrentTrack.TrackPoints.Count <= 2)
+            catch (ControlledException cex)
             {
-                //Display alert, el track se creará como una linea
-                await MapPage.DisplayAlert(
-                     "Finalizar Track",
-                     "El track tiene 2 o menos puntos y se creará como una línea.",
-                     "Aceptar"
-                 );
+                await MapPage.HideLoading();
+                await MapPage.DisplayAlert("Error", cex.Message, "OK");
             }
-            else
+            catch (Exception ex)
             {
-                // Pregunta al usuario si quiere cerrar el track
-                cerrarTrack = await MapPage.DisplayAlert(
-                    "Finalizar Track",
-                    "¿Quieres cerrar el track?",
-                    "Sí",
-                    "No"
-                );
+                await MapPage.HideLoading();
+                await MapPage.DisplayAlert("Error", $"Error al guardar el Track: {ex.Message}", "OK");
             }
-
-            if (cerrarTrack)
-            {
-                CurrentTrack.IsOpened = false;
-                CurrentTrack.TypeGeometry = TypeGeometry.Polygon;
-            }
-            else
-            {
-                CurrentTrack.IsOpened = true;
-                CurrentTrack.TypeGeometry = TypeGeometry.LineString;
-            }
-
-            string nameTrack = string.Empty;
-
-            while (string.IsNullOrWhiteSpace(nameTrack))
-                nameTrack = await MapPage.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
-
-            CurrentTrack.Name = nameTrack;
-            CurrentTrack = await _service.CreateAsync(CurrentTrack);
-
-            await MapPage.ShowLoading("Calculando <br/> geometrías...");
-
-            MapPage.TransitionTo(new MapStateDefault(_service));
-
-            // espera 10 segundos para que se calculen las medidas
-            await Task.Delay(4000);
-
-            await MapPage.HideLoading();
-
-            MapPage.EditTrack(CurrentTrack.Guid);
         }
 
         /// <summary>
