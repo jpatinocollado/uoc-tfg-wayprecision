@@ -1,7 +1,7 @@
 ﻿using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
-using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Pages.Maps
 {
@@ -11,14 +11,16 @@ namespace WayPrecision.Pages.Maps
     public class MapStateDefault : MapState
     {
         private readonly IService<Track> _service;
+        private readonly IConfigurationService _configurationService;
 
         /// <summary>
         /// Inicializa una nueva instancia de <see cref="MapStateDefault"/>.
         /// </summary>
         /// <param name="service">Servicio para la gestión de tracks.</param>
-        public MapStateDefault(IService<Track> service)
+        public MapStateDefault(IService<Track> service, IConfigurationService configurationService)
         {
             _service = service;
+            _configurationService = configurationService;
         }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace WayPrecision.Pages.Maps
             // Lógica para crear un track
             if (MapPage._locationEnable && MapPage._lastPosition != null)
             {
-                MapPage.TransitionTo(new MapStateTracking(_service));
+                MapPage.TransitionTo(new MapStateTracking(_service, _configurationService));
             }
             else
                 MapPage.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");

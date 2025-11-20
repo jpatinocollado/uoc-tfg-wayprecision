@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using WayPrecision.Domain.Exceptions;
-using WayPrecision.Domain.Helpers.Colors;
+﻿using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Pages.Maps
 {
@@ -15,6 +14,9 @@ namespace WayPrecision.Pages.Maps
     {
         private readonly TrackScriptBuilder _trackScriptBuilder;
         private readonly IService<Track> _service;
+        private readonly IConfigurationService _configurationService;
+        private readonly Configuration configuration;
+        private readonly GpsPathSmoother _gpsPathSmoother;
 
         private Track CurrentTrack;
         private bool IsListening = false;
@@ -25,10 +27,22 @@ namespace WayPrecision.Pages.Maps
         /// Inicializa una nueva instancia de <see cref="MapStateTracking"/>.
         /// </summary>
         /// <param name="service">Servicio para la gestión de tracks.</param>
-        public MapStateTracking(IService<Track> service)
+        public MapStateTracking(IService<Track> service, IConfigurationService configurationService)
         {
             _trackScriptBuilder = new TrackScriptBuilder();
             _service = service;
+
+            _configurationService = configurationService;
+            configuration = _configurationService.GetOrCreateAsync().GetAwaiter().GetResult();
+
+            _gpsPathSmoother = new GpsPathSmoother
+            {
+                MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                MaxJumpMeters = 10,                    // saltos razonables
+                MovingAverageWindow = 5,               // más estable
+                ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+            };
         }
 
         /// <summary>
@@ -164,7 +178,7 @@ namespace WayPrecision.Pages.Maps
 
                 await MapPage.ShowLoading("Calculando <br/> geometrías...");
 
-                MapPage.TransitionTo(new MapStateDefault(_service));
+                MapPage.TransitionTo(new MapStateDefault(_service, _configurationService));
 
                 // espera 10 segundos para que se calculen las medidas
                 await Task.Delay(4000);
@@ -208,7 +222,7 @@ namespace WayPrecision.Pages.Maps
             if (cancelarTrack)
             {
                 //Hacemos la transición de estado sin guardar el track
-                MapPage.TransitionTo(new MapStateDefault(_service));
+                MapPage.TransitionTo(new MapStateDefault(_service, _configurationService));
             }
             else
             {
@@ -256,52 +270,31 @@ namespace WayPrecision.Pages.Maps
                 //Borra el dibujo anterior
                 MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
-                if (CurrentTrack.TotalPoints >= 2)
+                if (CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
                 {
-                    //Pinta el Track en el mapa
-                    MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
-
-                    //clonamos el track para no tener problemas de referencias
-                    Track trackClone = CurrentTrack.Clone();
-
-                    //cambiamos el color
-                    trackClone.ColorBorde = MapMarkerColorEnum.Red;
-                    trackClone.ColorRelleno = MapMarkerColorEnum.Red;
-
-                    var smoother = new GpsPathSmoother
-                    {
-                        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                        MaxJumpMeters = 10,                    // saltos razonables
-                        MovingAverageWindow = 5,               // más estable
-                        ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
-                    };
-
                     var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
 
-                    smoother.UpdateParameters(
-                        intervalSeconds: interval,
-                        horizontalAccuracyMeters: position.Accuracy
-                    );
+                    _gpsPathSmoother.UpdateParameters(interval, position.Accuracy);
 
-                    List<Position> positions = smoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
+                    List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
 
+                    CurrentTrack.TrackPoints.Clear();
                     foreach (var pos in positions)
                     {
                         pos.Guid = Guid.NewGuid().ToString();
                         TrackPoint smoothedTrackPoint = new()
                         {
                             Guid = Guid.NewGuid().ToString(),
-                            TrackGuid = trackClone.Guid,
+                            TrackGuid = CurrentTrack.Guid,
                             PositionGuid = pos.Guid,
                             Position = pos,
                         };
-                        trackClone.TrackPoints.Add(smoothedTrackPoint);
+                        CurrentTrack.TrackPoints.Add(smoothedTrackPoint);
                     }
-
-                    //Pinta el Track en el mapa
-                    MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(trackClone));
                 }
+
+                //Pinta el Track en el mapa
+                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
 
                 LastPosition = position;
             }
