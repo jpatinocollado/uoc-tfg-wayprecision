@@ -470,32 +470,32 @@ namespace WayPrecision
                 ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    //if (configuration.KalmanFilterEnabled)
-                    //{
-                    //    var smoother = new GpsPathSmoother
-                    //    {
-                    //        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                    //        MaxJumpMeters = 10,                    // saltos razonables
-                    //        MovingAverageWindow = 5,               // más estable
-                    //        ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                    //        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
-                    //    };
-                    //    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
+                    if (configuration.KalmanFilterEnabled)
+                    {
+                        var smoother = new GpsPathSmoother
+                        {
+                            MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                            MaxJumpMeters = 10,                    // saltos razonables
+                            MovingAverageWindow = 5,               // más estable
+                            ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                            MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+                        };
+                        List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
 
-                    //    track.TrackPoints.Clear();
-                    //    foreach (var pos in positions)
-                    //    {
-                    //        pos.Guid = Guid.NewGuid().ToString();
-                    //        TrackPoint smoothedTrackPoint = new()
-                    //        {
-                    //            Guid = Guid.NewGuid().ToString(),
-                    //            TrackGuid = track.Guid,
-                    //            PositionGuid = pos.Guid,
-                    //            Position = pos,
-                    //        };
-                    //        track.TrackPoints.Add(smoothedTrackPoint);
-                    //    }
-                    //}
+                        track.TrackPoints.Clear();
+                        foreach (var pos in positions)
+                        {
+                            pos.Guid = Guid.NewGuid().ToString();
+                            TrackPoint smoothedTrackPoint = new()
+                            {
+                                Guid = Guid.NewGuid().ToString(),
+                                TrackGuid = track.Guid,
+                                PositionGuid = pos.Guid,
+                                Position = pos,
+                            };
+                            track.TrackPoints.Add(smoothedTrackPoint);
+                        }
+                    }
 
                     ExecuteJavaScript(scTracks.GetTrack(track));
                 }

@@ -137,7 +137,7 @@ namespace WayPrecision.Domain.Helpers.Gps.Smoothing
         }
 
         // Cálculo de longitud total de una trayectoria
-        public static double PathLengthMeters(IList<Position> pts)
+        private static double PathLengthMeters(IList<Position> pts)
         {
             double sum = 0;
             for (int i = 1; i < pts.Count; i++)
