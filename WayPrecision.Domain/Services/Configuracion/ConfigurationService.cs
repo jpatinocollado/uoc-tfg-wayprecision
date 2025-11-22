@@ -59,7 +59,10 @@ namespace WayPrecision.Domain.Services.Configuracion
                 AreaUnits = UnitEnum.MetrosCuadrados.ToString(),
                 LengthUnits = UnitEnum.Metros.ToString(),
                 GpsInterval = 3,
-                GpsAccuracy = 10
+                GpsAccuracy = 10,
+                MovingAverageFilterEnabled = true,
+                OutliersFilterEnabled = true,
+                KalmanFilterEnabled = true
             };
         }
     }

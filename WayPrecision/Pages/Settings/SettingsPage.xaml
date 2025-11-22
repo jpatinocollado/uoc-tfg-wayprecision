@@ -47,7 +47,25 @@
                 <Label Text="Trazados" FontAttributes="Bold" FontSize="Medium" />
                 <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,4,0,8" />
 
-                <Label Text="Suavizado Kalman" FontAttributes="Bold" />
+                <Label Text="Filtro de Outliers" FontAttributes="Bold" />
+                <Label Text="Aplica un filtro que elimina posiciones GPS erráticas que generan saltos improbables en la ruta para ofrecer trazados más fiables." FontAttributes="Italic" />
+
+                <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Switch x:Name="OutliersSwitch"
+                     IsToggled="False"
+                     Grid.Column="0"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                            OnColor="{StaticResource Primary300}"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar filtro de Outliers"
+                           Grid.Column="0"
+                           VerticalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <Label Text="Filtro de Kalman" FontAttributes="Bold" />
                 <Label Text="Aplica un filtro para reducir el ruido del GPS y suavizar la ruta haciendo que el recorrido se vea más natural, sin zigzags ni cambios bruscos." FontAttributes="Italic" />
 
                 <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
@@ -58,8 +76,26 @@
                      HorizontalOptions="End"
                      VerticalOptions="Center"
                             OnColor="{StaticResource Primary300}"
-                            ThumbColor="{StaticResource Primary500}"/>
-                    <Label Text="Habilitar Suavizado Kalman"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar filtro de Kalman"
+                           Grid.Column="0"
+                           VerticalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <Label Text="Filtro Moving Average" FontAttributes="Bold" />
+                <Label Text="Aplica un filtro que suaviza la trayectoria con el promedio de las últimas N posiciones para reducir el ruido y pequeños saltos, manteniendo la forma general del trazado." FontAttributes="Italic" />
+
+                <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Switch x:Name="MovingAvegareSwitch"
+                     IsToggled="False"
+                     Grid.Column="0"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                            OnColor="{StaticResource Primary300}"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar Moving Average"
                            Grid.Column="0"
                            VerticalTextAlignment="Center"
                            VerticalOptions="Center" />

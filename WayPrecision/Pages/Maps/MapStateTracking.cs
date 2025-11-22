@@ -37,10 +37,13 @@ namespace WayPrecision.Pages.Maps
 
             _gpsPathSmoother = new GpsPathSmoother
             {
+                OutliersEnabled = configuration.OutliersFilterEnabled,
+                MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
+                KalmanEnabled = configuration.KalmanFilterEnabled,
                 MinAccuracyMeters = configuration.GpsAccuracy,
                 MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
                 MaxJumpMeters = 10,                    // saltos razonables
-                MovingAverageWindow = 5,               // más estable
+                MovingAverageWindow = 5,                // más estable
                 ProcessNoiseVariance = 5e-4,           // movimiento suave real
                 MeasurementNoiseVariance = 8e-5        // ruido GPS realista
             };

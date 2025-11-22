@@ -15,6 +15,8 @@ namespace WayPrecision.Domain.Models
 
         public string LengthUnits { get; set; } = String.Empty;
 
-        public bool KalmanFilterEnabled { get; set; } = false;
+        public bool KalmanFilterEnabled { get; set; } = true;
+        public bool MovingAverageFilterEnabled { get; set; } = true;
+        public bool OutliersFilterEnabled { get; set; } = true;
     }
 }

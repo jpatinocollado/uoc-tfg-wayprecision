@@ -59,7 +59,9 @@ public partial class SettingsPage : ContentPage
         AreaUnitsPicker.SelectedIndex = areaOptions.FindIndex(x => x.Key == _currentConfig.AreaUnits);
         LengthUnitsPicker.SelectedIndex = lengthOptions.FindIndex(x => x.Key == _currentConfig.LengthUnits);
 
+        OutliersSwitch.IsToggled = _currentConfig.OutliersFilterEnabled;
         KalmanSwitch.IsToggled = _currentConfig.KalmanFilterEnabled;
+        MovingAvegareSwitch.IsToggled = _currentConfig.MovingAverageFilterEnabled;
     }
 
     private async Task SaveConfigurationAsync()
@@ -101,8 +103,10 @@ public partial class SettingsPage : ContentPage
         if (LengthUnitsPicker.SelectedIndex >= 0)
             _currentConfig.LengthUnits = ((UnitOption)LengthUnitsPicker.SelectedItem).Key;
 
-        // Guardar el estado del filtro de Kalman
+        // Guardar el estado de los filtros de trazado
         _currentConfig.KalmanFilterEnabled = KalmanSwitch.IsToggled;
+        _currentConfig.OutliersFilterEnabled = OutliersSwitch.IsToggled;
+        _currentConfig.MovingAverageFilterEnabled = MovingAvegareSwitch.IsToggled;
 
         // Guardar la configuración
         await _configurationService.SaveAsync(_currentConfig);
