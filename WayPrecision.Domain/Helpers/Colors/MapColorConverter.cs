@@ -22,25 +22,6 @@ namespace WayPrecision.Domain.Helpers.Colors
         private const string sPurple = "Porpra";
         private const string sYellow = "Groc";
 
-        //public static string[] GetMapMarkerColors()
-        //{
-        //    List<string> result = new List<string>();
-        //    var enumType = typeof(MapMarkerColorEnum);
-        //    Array values = Enum.GetValues(enumType);
-
-        //    for (int i = 0; i < values.Length; i++)
-        //    {
-        //        var value = values.GetValue(i);
-        //        var memberInfos = enumType.GetMember(((MapMarkerColorEnum)value).ToString());
-        //        var enumValueMemberInfo = memberInfos.FirstOrDefault(m => m.DeclaringType == enumType);
-        //        var valueAttributes = enumValueMemberInfo.GetCustomAttributes(typeof(ExcludeMapIconAttribute), false);
-        //        if (valueAttributes.Length <= 0)
-        //            result.Add(value.ToString());
-        //    }
-
-        //    return result.ToArray();
-        //}
-
         public static string ToString(MapMarkerColorEnum color)
         {
             return color.ToString().ToLower();
@@ -229,39 +210,5 @@ namespace WayPrecision.Domain.Helpers.Colors
             }
             return MapMarkerColorEnum.Black;
         }
-
-        //public static string[] GetTranslatedMapMarkerColors()
-        //{
-        //    List<string> result = new List<string>();
-        //    Array values = typeof(MapMarkerColorEnum).GetFields(BindingFlags.Public |
-        //                                                        BindingFlags.Static)
-        //                  .Where(field => !field.IsDefined(typeof(ExcludeMapIconAttribute), false))
-        //                  .Select(field => (MapMarkerColorEnum)field.GetValue(null))
-        //                  .ToArray();
-
-        //    for (int i = 0; i < values.Length; i++)
-        //    {
-        //        var value = values.GetValue(i);
-        //        result.Add(Translate((MapMarkerColorEnum)value));
-        //    }
-        //    return result.ToArray();
-        //}
-
-        //public static string[] GetTranslatedComboMarkerColors()
-        //{
-        //    List<string> result = new List<string>();
-        //    Array values = typeof(MapMarkerColorEnum).GetFields(BindingFlags.Public |
-        //                                                        BindingFlags.Static)
-        //                  .Where(field => field.IsDefined(typeof(ComboMapIconAttribute), false))
-        //                  .Select(field => (MapMarkerColorEnum)field.GetValue(null))
-        //                  .ToArray();
-
-        //    for (int i = 0; i < values.Length; i++)
-        //    {
-        //        var value = values.GetValue(i);
-        //        result.Add(Translate((MapMarkerColorEnum)value));
-        //    }
-        //    return result.ToArray();
-        //}
     }
 }
