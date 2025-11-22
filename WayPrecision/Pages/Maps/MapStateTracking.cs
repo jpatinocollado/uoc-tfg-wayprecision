@@ -65,33 +65,33 @@ namespace WayPrecision.Pages.Maps
             };
 
             //Mostramos el total de puntos
-            MapPage.LbTotalPointsPublic.Text = "Puntos: 0";
+            Context.LbTotalPointsPublic.Text = "Puntos: 0";
 
             //Bloqueamos el menú
             Shell.SetNavBarIsVisible(MapPage, true);
             Shell.SetFlyoutBehavior(MapPage, FlyoutBehavior.Disabled);
 
             //Ponemos visibles los botones del pie de pagina
-            MapPage.BtnStackLayoutDefaultPublic.IsVisible = false;
-            MapPage.BtnStackLayoutTrackingPublic.IsVisible = true;
-            MapPage.PnGpsDataPublic.IsVisible = true;
+            Context.BtnStackLayoutDefaultPublic.IsVisible = false;
+            Context.BtnStackLayoutTrackingPublic.IsVisible = true;
+            Context.PnGpsDataPublic.IsVisible = true;
 
             //Registramos los eventos de los botones
-            MapPage.BtnPlayPublic.Clicked += OnPlayClicked;
-            MapPage.BtnPausePublic.Clicked += OnPauseClicked;
-            MapPage.BtnStopPublic.Clicked += OnStopClicked;
-            MapPage.BtnCancelPublic.Clicked += OnCancelClicked;
+            Context.BtnPlayPublic.Clicked += OnPlayClicked;
+            Context.BtnPausePublic.Clicked += OnPauseClicked;
+            Context.BtnStopPublic.Clicked += OnStopClicked;
+            Context.BtnCancelPublic.Clicked += OnCancelClicked;
 
             //Por defecto entramos en modo Play
-            MapPage.BtnPlayPublic.IsEnabled = false;
-            MapPage.BtnPausePublic.IsEnabled = true;
-            MapPage.BtnStopPublic.IsEnabled = true;
+            Context.BtnPlayPublic.IsEnabled = false;
+            Context.BtnPausePublic.IsEnabled = true;
+            Context.BtnStopPublic.IsEnabled = true;
 
             //Comenzamos a escuchar posiciones GPS
             IsListening = true;
 
             //Limpiamos el mapa de elementos para visualizar solo el Track
-            MapPage.ClearElements();
+            Context.ClearElements();
         }
 
         /// <summary>
@@ -100,10 +100,10 @@ namespace WayPrecision.Pages.Maps
         public override void Close()
         {
             //Unregister buttons events
-            MapPage.BtnPlayPublic.Clicked -= OnPlayClicked;
-            MapPage.BtnPausePublic.Clicked -= OnPauseClicked;
-            MapPage.BtnStopPublic.Clicked -= OnStopClicked;
-            MapPage.BtnCancelPublic.Clicked -= OnCancelClicked;
+            Context.BtnPlayPublic.Clicked -= OnPlayClicked;
+            Context.BtnPausePublic.Clicked -= OnPauseClicked;
+            Context.BtnStopPublic.Clicked -= OnStopClicked;
+            Context.BtnCancelPublic.Clicked -= OnCancelClicked;
         }
 
         /// <summary>
@@ -117,9 +117,9 @@ namespace WayPrecision.Pages.Maps
             IsListening = true;
 
             //Update buttons state
-            MapPage.BtnPlayPublic.IsEnabled = false;
-            MapPage.BtnPausePublic.IsEnabled = true;
-            MapPage.BtnStopPublic.IsEnabled = true;
+            Context.BtnPlayPublic.IsEnabled = false;
+            Context.BtnPausePublic.IsEnabled = true;
+            Context.BtnStopPublic.IsEnabled = true;
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace WayPrecision.Pages.Maps
             IsListening = false;
 
             //Update buttons state
-            MapPage.BtnPlayPublic.IsEnabled = true;
-            MapPage.BtnPausePublic.IsEnabled = false;
-            MapPage.BtnStopPublic.IsEnabled = true;
+            Context.BtnPlayPublic.IsEnabled = true;
+            Context.BtnPausePublic.IsEnabled = false;
+            Context.BtnStopPublic.IsEnabled = true;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace WayPrecision.Pages.Maps
                 CurrentTrack.Finalized = DateTime.UtcNow.ToString("o");
 
                 // Pregunta al usuario si quiere cerrar el track
-                bool cerrarTrack = await MapPage.DisplayAlert(
+                bool cerrarTrack = await Context.DisplayAlert(
                         "Finalizar Track",
                         "¿Quieres cerrar el track?",
                         "Sí",
@@ -175,31 +175,31 @@ namespace WayPrecision.Pages.Maps
                 string nameTrack = string.Empty;
 
                 while (string.IsNullOrWhiteSpace(nameTrack))
-                    nameTrack = await MapPage.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
+                    nameTrack = await Context.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
 
                 CurrentTrack.Name = nameTrack;
                 CurrentTrack = await _service.CreateAsync(CurrentTrack);
 
-                await MapPage.ShowLoading("Calculando <br/> geometrías...");
+                await Context.ShowLoading("Calculando <br/> geometrías...");
 
-                MapPage.TransitionTo(new MapStateDefault(_service, _configurationService));
+                Context.TransitionTo(new MapStateDefault(_service, _configurationService));
 
                 // espera 10 segundos para que se calculen las medidas
                 await Task.Delay(4000);
 
-                await MapPage.HideLoading();
+                await Context.HideLoading();
 
-                MapPage.EditTrack(CurrentTrack.Guid);
+                Context.EditTrack(CurrentTrack.Guid);
             }
             catch (ControlledException cex)
             {
-                await MapPage.HideLoading();
-                await MapPage.DisplayAlert("Error", cex.Message, "OK");
+                await Context.HideLoading();
+                await Context.DisplayAlert("Error", cex.Message, "OK");
             }
             catch (Exception ex)
             {
-                await MapPage.HideLoading();
-                await MapPage.DisplayAlert("Error", $"Error al guardar el Track: {ex.Message}", "OK");
+                await Context.HideLoading();
+                await Context.DisplayAlert("Error", $"Error al guardar el Track: {ex.Message}", "OK");
             }
         }
 
@@ -216,7 +216,7 @@ namespace WayPrecision.Pages.Maps
             OnPauseClicked(null, new EventArgs());
 
             //preguntamos si quiere cancelar el Track
-            bool cancelarTrack = await MapPage.DisplayAlert(
+            bool cancelarTrack = await Context.DisplayAlert(
                 "Finalizar Track",
                 "¿Quieres Cancelar el track?",
                 "Sí",
@@ -226,7 +226,7 @@ namespace WayPrecision.Pages.Maps
             if (cancelarTrack)
             {
                 //Hacemos la transición de estado sin guardar el track
-                MapPage.TransitionTo(new MapStateDefault(_service, _configurationService));
+                Context.TransitionTo(new MapStateDefault(_service, _configurationService));
             }
             else
             {
@@ -269,12 +269,12 @@ namespace WayPrecision.Pages.Maps
                 CurrentTrack.TrackPoints.Add(trackPoint);
 
                 //Actualiza el total de puntos
-                MapPage.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
+                Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
 
                 //Borra el dibujo anterior
-                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
+                Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
-                if (CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
+                if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
                 {
                     var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
 
@@ -298,7 +298,7 @@ namespace WayPrecision.Pages.Maps
                 }
 
                 //Pinta el Track en el mapa
-                MapPage.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
+                Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
 
                 LastPosition = position;
             }

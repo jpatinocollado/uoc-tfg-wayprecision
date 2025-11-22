@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -54,8 +53,6 @@ public partial class WaypointsPage : ContentPage
             if (!waypoint.IsVisible)
                 OnEyeClicked(sender, new EventArgs());
 
-            //Task.Delay(1500).Wait();
-
             //navega a la página del mapa y muestra el waypoint
             await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
         }
@@ -67,7 +64,6 @@ public partial class WaypointsPage : ContentPage
         {
             waypoint.IsVisible = !waypoint.IsVisible;
             await _service.UpdateAsync(waypoint);
-
         }
     }
 }

@@ -55,8 +55,6 @@ public partial class TracksPage : ContentPage
             if (!track.IsVisible)
                 OnEyeClicked(sender, new EventArgs());
 
-            //Task.Delay(500).Wait();
-
             //navega a la página del mapa y muestra el track
             await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
         }

@@ -14,6 +14,8 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         protected MainPage? MapPage = null;
 
+        internal MainPage Context => MapPage ?? throw new InvalidOperationException("El contexto del mapa no ha sido establecido.");
+
         /// <summary>
         /// Asocia el contexto de la página principal al estado del mapa.
         /// </summary>
