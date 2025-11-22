@@ -354,7 +354,7 @@ namespace WayPrecision
             if (value)
             {
                 Configuration configuration = await _configurationService.GetOrCreateAsync();
-                _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval), configuration.GpsAccuracy);
+                _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
             }
             else
             {

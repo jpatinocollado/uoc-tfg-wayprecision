@@ -37,6 +37,7 @@ namespace WayPrecision.Pages.Maps
 
             _gpsPathSmoother = new GpsPathSmoother
             {
+                MinAccuracyMeters = configuration.GpsAccuracy,
                 MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
                 MaxJumpMeters = 10,                    // saltos razonables
                 MovingAverageWindow = 5,               // más estable

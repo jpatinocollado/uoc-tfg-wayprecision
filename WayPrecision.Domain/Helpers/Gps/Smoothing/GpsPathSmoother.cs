@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using WayPrecision.Domain.Helpers.Gps.Kalman;
+﻿using WayPrecision.Domain.Helpers.Gps.Kalman;
 using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Helpers.Gps.Smoothing
@@ -9,6 +7,8 @@ namespace WayPrecision.Domain.Helpers.Gps.Smoothing
     public class GpsPathSmoother
     {
         // Parámetros configurables
+        public int MinAccuracyMeters { get; set; } = 10; // precisión mínima aceptable
+
         public double MaxAcceptableSpeedMetersPerSec { get; set; } = 3.0; // caminar
 
         public double MaxJumpMeters { get; set; } = 10.0; // saltos razonables
@@ -122,6 +122,12 @@ namespace WayPrecision.Domain.Helpers.Gps.Smoothing
                 {
                     outList.Add(p);
                     last = p;
+                    continue;
+                }
+
+                if (p.Accuracy.HasValue && p.Accuracy.Value > MinAccuracyMeters)
+                {
+                    // descartar p por baja precisión
                     continue;
                 }
 
