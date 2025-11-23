@@ -47,6 +47,11 @@
                 <Label Text="Trazados" FontAttributes="Bold" FontSize="Medium" />
                 <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,4,0,8" />
 
+                <Label Text="Modo de Tracking"  FontAttributes="Bold" />
+                <Label Text="GPS: el seguimiento del track se realiza en función de la señal GPS (Se recomienda activar todos los filtros)" FontAttributes="Italic" />
+                <Label Text="Manual: permite dibujar el track haciendo doble click en el mapa para añadir puntos (Se recomienda desactivar todos los filtros)" FontAttributes="Italic" />
+                <Picker x:Name="TrackingModePicker" />
+
                 <Label Text="Filtro de Outliers" FontAttributes="Bold" />
                 <Label Text="Aplica un filtro que elimina posiciones GPS erráticas que generan saltos improbables en la ruta para ofrecer trazados más fiables." FontAttributes="Italic" />
 

@@ -41,6 +41,17 @@ namespace WayPrecision.Pages.Maps
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public abstract Task AddPosition(Position lastPosition);
 
+        public Task EvaluateJavascriptMessage(string message)
+        {
+            string[] messages = message.Split(';');
+            string evento = messages[0];
+            string[] args = [.. messages.Skip(1)];
+
+            return EvaluateJavascriptMessage(evento, args);
+        }
+
+        public abstract Task EvaluateJavascriptMessage(string evento, params string[] args);
+
         /// <summary>
         /// Libera los recursos utilizados por la instancia.
         /// </summary>

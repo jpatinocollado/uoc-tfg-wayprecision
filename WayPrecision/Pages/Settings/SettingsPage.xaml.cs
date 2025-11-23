@@ -30,6 +30,8 @@ public partial class SettingsPage : ContentPage
 
         // Cancelar y volver atrás al hacer clic en el botón
         CancelarButton.Clicked += async (s, e) => await CancelAsync();
+
+        TrackingModePicker.SelectedIndexChanged += async (s, e) => await TrackModeChanged();
     }
 
     private async Task LoadConfigurationAsync()
@@ -37,22 +39,30 @@ public partial class SettingsPage : ContentPage
         try
         {
             var areaOptions = new List<UnitOption>
-    {
-        new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "Metros Cuadrados (m²)" },
-        new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "Kilómetros Cuadrados (km²)" },
-        new() { Key = UnitEnum.Hectareas.ToString(), Display = "Hectáreas (ha)" }
-    };
+            {
+                new() { Key = UnitEnum.MetrosCuadrados.ToString(), Display = "Metros Cuadrados (m²)" },
+                new() { Key = UnitEnum.KilometrosCuadrados.ToString(), Display = "Kilómetros Cuadrados (km²)" },
+                new() { Key = UnitEnum.Hectareas.ToString(), Display = "Hectáreas (ha)" }
+            };
             var lengthOptions = new List<UnitOption>
-    {
-        new() { Key = UnitEnum.Metros.ToString(), Display = "Metros (m)" },
-        new() { Key = UnitEnum.Kilometros.ToString(), Display = "Kilómetros (km)" }
-    };
+            {
+                new() { Key = UnitEnum.Metros.ToString(), Display = "Metros (m)" },
+                new() { Key = UnitEnum.Kilometros.ToString(), Display = "Kilómetros (km)" }
+            };
+            var trackkingModel = new List<UnitOption>
+            {
+                new (){ Key = TrackingModeEnum.GPS.ToString(), Display = "GPS" },
+                new (){ Key = TrackingModeEnum.Manual.ToString(), Display = "Manual" }
+            };
 
             AreaUnitsPicker.ItemsSource = areaOptions;
             AreaUnitsPicker.ItemDisplayBinding = new Binding("Display");
 
             LengthUnitsPicker.ItemsSource = lengthOptions;
             LengthUnitsPicker.ItemDisplayBinding = new Binding("Display");
+
+            TrackingModePicker.ItemsSource = trackkingModel;
+            TrackingModePicker.ItemDisplayBinding = new Binding("Display");
 
             _currentConfig = await _configurationService.GetOrCreateAsync();
 
@@ -61,6 +71,7 @@ public partial class SettingsPage : ContentPage
 
             AreaUnitsPicker.SelectedIndex = areaOptions.FindIndex(x => x.Key == _currentConfig.AreaUnits);
             LengthUnitsPicker.SelectedIndex = lengthOptions.FindIndex(x => x.Key == _currentConfig.LengthUnits);
+            TrackingModePicker.SelectedIndex = trackkingModel.FindIndex(x => x.Key == _currentConfig.TrackingMode);
 
             OutliersSwitch.IsToggled = _currentConfig.OutliersFilterEnabled;
             KalmanSwitch.IsToggled = _currentConfig.KalmanFilterEnabled;
@@ -113,6 +124,10 @@ public partial class SettingsPage : ContentPage
             if (LengthUnitsPicker.SelectedIndex >= 0)
                 _currentConfig.LengthUnits = ((UnitOption)LengthUnitsPicker.SelectedItem).Key;
 
+            // Guardar el modo de rastreo seleccionado
+            if (TrackingModePicker.SelectedIndex >= 0)
+                _currentConfig.TrackingMode = ((UnitOption)TrackingModePicker.SelectedItem).Key;
+
             // Guardar el estado de los filtros de trazado
             _currentConfig.KalmanFilterEnabled = KalmanSwitch.IsToggled;
             _currentConfig.OutliersFilterEnabled = OutliersSwitch.IsToggled;
@@ -142,6 +157,37 @@ public partial class SettingsPage : ContentPage
         catch (Exception ex)
         {
             GlobalExceptionManager.HandleException(ex, this);
+        }
+    }
+
+    private async Task TrackModeChanged()
+    {
+        TrackingModeEnum trackMode = TrackingModeEnum.GPS;
+
+        if (TrackingModePicker.SelectedIndex >= 0)
+        {
+            var key = ((UnitOption)TrackingModePicker.SelectedItem).Key;
+            if (!Enum.TryParse<TrackingModeEnum>(key, ignoreCase: true, out var parsed))
+                parsed = TrackingModeEnum.GPS;
+            trackMode = parsed;
+        }
+
+        switch (trackMode)
+        {
+            case TrackingModeEnum.GPS:
+                OutliersSwitch.IsToggled = true;
+                KalmanSwitch.IsToggled = true;
+                MovingAvegareSwitch.IsToggled = true;
+                break;
+
+            case TrackingModeEnum.Manual:
+                OutliersSwitch.IsToggled = false;
+                KalmanSwitch.IsToggled = false;
+                MovingAvegareSwitch.IsToggled = false;
+                break;
+
+            default:
+                break;
         }
     }
 }

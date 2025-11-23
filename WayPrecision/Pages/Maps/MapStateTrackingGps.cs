@@ -10,10 +10,10 @@ namespace WayPrecision.Pages.Maps
     /// <summary>
     /// Estado del mapa encargado de gestionar la grabación y seguimiento de un track GPS.
     /// </summary>
-    public class MapStateTracking : MapState
+    public class MapStateTrackingGps : MapState
     {
         private readonly TrackScriptBuilder _trackScriptBuilder;
-        private readonly IService<Track> _service;
+        private readonly IService<Track> _trackService;
         private readonly IConfigurationService _configurationService;
         private Configuration configuration;
         private GpsPathSmoother _gpsPathSmoother;
@@ -24,14 +24,14 @@ namespace WayPrecision.Pages.Maps
         private Position? LastPosition = null;
 
         /// <summary>
-        /// Inicializa una nueva instancia de <see cref="MapStateTracking"/>.
+        /// Inicializa una nueva instancia de <see cref="MapStateTrackingGps"/>.
         /// </summary>
         /// <param name="service">Servicio para la gestión de tracks.</param>
-        public MapStateTracking(IService<Track> service, IConfigurationService configurationService)
+        public MapStateTrackingGps(IService<Track> trackService, IConfigurationService configurationService)
         {
             _trackScriptBuilder = new TrackScriptBuilder();
             _configurationService = configurationService;
-            _service = service;
+            _trackService = trackService;
         }
 
         /// <summary>
@@ -191,11 +191,11 @@ namespace WayPrecision.Pages.Maps
                     nameTrack = await Context.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
 
                 CurrentTrack.Name = nameTrack;
-                CurrentTrack = await _service.CreateAsync(CurrentTrack);
+                CurrentTrack = await _trackService.CreateAsync(CurrentTrack);
 
                 await Context.ShowLoading("Calculando <br/> geometrías...");
 
-                Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                Context.TransitionTo(new MapStateDefault(_trackService, _configurationService));
 
                 // espera 10 segundos para que se calculen las medidas
                 await Task.Delay(4000);
@@ -239,7 +239,7 @@ namespace WayPrecision.Pages.Maps
                 if (cancelarTrack)
                 {
                     //Hacemos la transición de estado sin guardar el track
-                    Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                    Context.TransitionTo(new MapStateDefault(_trackService, _configurationService));
                 }
                 else
                 {
@@ -329,6 +329,11 @@ namespace WayPrecision.Pages.Maps
             }
 
             await Task.CompletedTask;
+        }
+
+        public override Task EvaluateJavascriptMessage(string evento, params string[] args)
+        {
+            return Task.CompletedTask;
         }
     }
 }

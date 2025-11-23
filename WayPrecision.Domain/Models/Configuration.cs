@@ -18,5 +18,6 @@ namespace WayPrecision.Domain.Models
         public bool KalmanFilterEnabled { get; set; } = true;
         public bool MovingAverageFilterEnabled { get; set; } = true;
         public bool OutliersFilterEnabled { get; set; } = true;
+        public string TrackingMode { get; set; }
     }
 }

@@ -49,8 +49,8 @@ namespace WayPrecision
             // Registra los servicios en el contenedor de dependencias
             builder.Services.AddScoped(_ => new DatabaseContext(dbPath)); // Contexto de base de datos
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Patrón UnitOfWork
-            //builder.Services.AddScoped<IGpsManager, InternalGpsManager>(); // Servicio de GPS
-            builder.Services.AddScoped<IGpsManager, MockGpsManager>(); // Servicio de comunicacion del sensor GPS
+            builder.Services.AddScoped<IGpsManager, InternalGpsManager>(); // Servicio de GPS
+            //builder.Services.AddScoped<IGpsManager, MockGpsManager>(); // Servicio de comunicacion del sensor GPS
             builder.Services.AddScoped<IConfigurationService, ConfigurationService>(); // Servicio de configuración
             builder.Services.AddScoped<IService<Waypoint>, WaypointService>(); // Servicio para la gestión de los waypoints
             builder.Services.AddScoped<IService<Track>, TrackService>(); // Servicio para la gestión de los tracks
