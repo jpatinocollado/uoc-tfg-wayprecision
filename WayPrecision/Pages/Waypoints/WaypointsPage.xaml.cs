@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -23,47 +24,82 @@ public partial class WaypointsPage : ContentPage
 
     protected override void OnAppearing()
     {
-        base.OnAppearing();
+        try
+        {
+            base.OnAppearing();
 
-        _ = LoadWaypoints();
+            _ = LoadWaypoints();
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 
     private async Task LoadWaypoints()
     {
-        var waypoints = await _service.GetAllAsync();
-        Waypoints.Clear();
-        foreach (var waypoint in waypoints)
-            Waypoints.Add(waypoint);
+        try
+        {
+            var waypoints = await _service.GetAllAsync();
+            Waypoints.Clear();
+            foreach (var waypoint in waypoints)
+                Waypoints.Add(waypoint);
 
-        Title = $"Waypoints ({waypoints.Count})";
+            Title = $"Waypoints ({waypoints.Count})";
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 
     private async void OnEditClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+        try
         {
-            await Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Edited));
+            if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+            {
+                await Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Edited));
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void OnViewOnMapClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
+        try
         {
-            if (!waypoint.IsVisible)
-                OnEyeClicked(sender, new EventArgs());
+            if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
+            {
+                if (!waypoint.IsVisible)
+                    OnEyeClicked(sender, new EventArgs());
 
-            //navega a la página del mapa y muestra el waypoint
-            await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+                //navega a la página del mapa y muestra el waypoint
+                await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void OnEyeClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+        try
         {
-            waypoint.IsVisible = !waypoint.IsVisible;
-            await _service.UpdateAsync(waypoint);
+            if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+            {
+                waypoint.IsVisible = !waypoint.IsVisible;
+                await _service.UpdateAsync(waypoint);
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 }

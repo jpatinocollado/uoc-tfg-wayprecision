@@ -49,13 +49,13 @@ public partial class WaypointDetailPage : ContentPage
     /// </summary>
     private async void OnDeleteWaypointClicked(object sender, EventArgs e)
     {
-        // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
-        bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este waypoint?", "Sí", "No");
-        if (!confirm)
-            return;
-
         try
         {
+            // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
+            bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este waypoint?", "Sí", "No");
+            if (!confirm)
+                return;
+
             Waypoint waypoint = (Waypoint)BindingContext;
             // Lógica para eliminar el waypoint usando _unitOfWork, por ejemplo:
             await service.DeleteAsync(waypoint.Guid);
@@ -65,9 +65,9 @@ public partial class WaypointDetailPage : ContentPage
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
         }
-        catch (ControlledException ex)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", ex.Message, "OK");
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
@@ -101,15 +101,22 @@ public partial class WaypointDetailPage : ContentPage
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
         }
-        catch (ControlledException ex)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", ex.Message, "OK");
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)
     {
-        Waypoint waypoint = (Waypoint)BindingContext;
-        await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+        try
+        {
+            Waypoint waypoint = (Waypoint)BindingContext;
+            await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 }

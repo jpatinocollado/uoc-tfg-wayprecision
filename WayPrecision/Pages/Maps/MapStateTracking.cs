@@ -15,8 +15,8 @@ namespace WayPrecision.Pages.Maps
         private readonly TrackScriptBuilder _trackScriptBuilder;
         private readonly IService<Track> _service;
         private readonly IConfigurationService _configurationService;
-        private readonly Configuration configuration;
-        private readonly GpsPathSmoother _gpsPathSmoother;
+        private Configuration configuration;
+        private GpsPathSmoother _gpsPathSmoother;
 
         private Track CurrentTrack;
         private bool IsListening = false;
@@ -30,11 +30,16 @@ namespace WayPrecision.Pages.Maps
         public MapStateTracking(IService<Track> service, IConfigurationService configurationService)
         {
             _trackScriptBuilder = new TrackScriptBuilder();
-            _service = service;
-
             _configurationService = configurationService;
-            configuration = _configurationService.GetOrCreateAsync().GetAwaiter().GetResult();
+            _service = service;
+        }
 
+        /// <summary>
+        /// Inicializa el estado de seguimiento, crea el track y configura los controles y eventos.
+        /// </summary>
+        public override async void Init()
+        {
+            configuration = await _configurationService.GetOrCreateAsync();
             _gpsPathSmoother = new GpsPathSmoother
             {
                 OutliersEnabled = configuration.OutliersFilterEnabled,
@@ -47,13 +52,7 @@ namespace WayPrecision.Pages.Maps
                 ProcessNoiseVariance = 5e-4,           // movimiento suave real
                 MeasurementNoiseVariance = 8e-5        // ruido GPS realista
             };
-        }
 
-        /// <summary>
-        /// Inicializa el estado de seguimiento, crea el track y configura los controles y eventos.
-        /// </summary>
-        public override void Init()
-        {
             //Crea una nueva instancia de Track
             CurrentTrack = new()
             {
@@ -113,13 +112,20 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private void OnPlayClicked(object? sender, EventArgs e)
         {
-            //start listening GPS
-            IsListening = true;
+            try
+            {
+                //start listening GPS
+                IsListening = true;
 
-            //Update buttons state
-            Context.BtnPlayPublic.IsEnabled = false;
-            Context.BtnPausePublic.IsEnabled = true;
-            Context.BtnStopPublic.IsEnabled = true;
+                //Update buttons state
+                Context.BtnPlayPublic.IsEnabled = false;
+                Context.BtnPausePublic.IsEnabled = true;
+                Context.BtnStopPublic.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
         }
 
         /// <summary>
@@ -129,13 +135,20 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private void OnPauseClicked(object? sender, EventArgs e)
         {
-            //stop listening GPS
-            IsListening = false;
+            try
+            {
+                //stop listening GPS
+                IsListening = false;
 
-            //Update buttons state
-            Context.BtnPlayPublic.IsEnabled = true;
-            Context.BtnPausePublic.IsEnabled = false;
-            Context.BtnStopPublic.IsEnabled = true;
+                //Update buttons state
+                Context.BtnPlayPublic.IsEnabled = true;
+                Context.BtnPausePublic.IsEnabled = false;
+                Context.BtnStopPublic.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
         }
 
         /// <summary>
@@ -191,15 +204,13 @@ namespace WayPrecision.Pages.Maps
 
                 Context.EditTrack(CurrentTrack.Guid);
             }
-            catch (ControlledException cex)
-            {
-                await Context.HideLoading();
-                await Context.DisplayAlert("Error", cex.Message, "OK");
-            }
             catch (Exception ex)
             {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
+            finally
+            {
                 await Context.HideLoading();
-                await Context.DisplayAlert("Error", $"Error al guardar el Track: {ex.Message}", "OK");
             }
         }
 
@@ -210,29 +221,36 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private async void OnCancelClicked(object? sender, EventArgs e)
         {
-            bool reanudarTrack = IsListening;
-
-            //al cancelar el track, lo primero es ponerlo en pausa
-            OnPauseClicked(null, new EventArgs());
-
-            //preguntamos si quiere cancelar el Track
-            bool cancelarTrack = await Context.DisplayAlert(
-                "Finalizar Track",
-                "¿Quieres Cancelar el track?",
-                "Sí",
-                "No"
-            );
-
-            if (cancelarTrack)
+            try
             {
-                //Hacemos la transición de estado sin guardar el track
-                Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                bool reanudarTrack = IsListening;
+
+                //al cancelar el track, lo primero es ponerlo en pausa
+                OnPauseClicked(null, new EventArgs());
+
+                //preguntamos si quiere cancelar el Track
+                bool cancelarTrack = await Context.DisplayAlert(
+                    "Finalizar Track",
+                    "¿Quieres Cancelar el track?",
+                    "Sí",
+                    "No"
+                );
+
+                if (cancelarTrack)
+                {
+                    //Hacemos la transición de estado sin guardar el track
+                    Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                }
+                else
+                {
+                    //Si hay que reanudar el Track simulamos pulsar Pause
+                    if (reanudarTrack)
+                        OnPlayClicked(null, new EventArgs());
+                }
             }
-            else
+            catch (Exception ex)
             {
-                //Si hay que reanudar el Track simulamos pulsar Pause
-                if (reanudarTrack)
-                    OnPlayClicked(null, new EventArgs());
+                GlobalExceptionManager.HandleException(ex, this.Context);
             }
         }
 
@@ -242,65 +260,72 @@ namespace WayPrecision.Pages.Maps
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public override async Task AddPosition(Position lastPosition)
         {
-            if (IsListening)
+            try
             {
-                //Crea una nueva instancia de Position con los datos GPS
-                Position position = new()
+                if (IsListening)
                 {
-                    Guid = Guid.NewGuid().ToString(),
-                    Latitude = lastPosition.Latitude,
-                    Longitude = lastPosition.Longitude,
-                    Accuracy = lastPosition.Accuracy,
-                    Altitude = lastPosition.Altitude,
-                    Course = lastPosition.Course,
-                    Timestamp = lastPosition.Timestamp,
-                };
-
-                //Crea una asociación con el Track
-                TrackPoint trackPoint = new()
-                {
-                    Guid = Guid.NewGuid().ToString(),
-                    TrackGuid = CurrentTrack.Guid,
-                    PositionGuid = position.Guid,
-                    Position = position,
-                };
-
-                //Añade el punto al Track actual
-                CurrentTrack.TrackPoints.Add(trackPoint);
-
-                //Actualiza el total de puntos
-                Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
-
-                //Borra el dibujo anterior
-                Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
-
-                if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
-                {
-                    var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
-
-                    _gpsPathSmoother.UpdateParameters(interval, position.Accuracy);
-
-                    List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
-
-                    CurrentTrack.TrackPoints.Clear();
-                    foreach (var pos in positions)
+                    //Crea una nueva instancia de Position con los datos GPS
+                    Position position = new()
                     {
-                        pos.Guid = Guid.NewGuid().ToString();
-                        TrackPoint smoothedTrackPoint = new()
+                        Guid = Guid.NewGuid().ToString(),
+                        Latitude = lastPosition.Latitude,
+                        Longitude = lastPosition.Longitude,
+                        Accuracy = lastPosition.Accuracy,
+                        Altitude = lastPosition.Altitude,
+                        Course = lastPosition.Course,
+                        Timestamp = lastPosition.Timestamp,
+                    };
+
+                    //Crea una asociación con el Track
+                    TrackPoint trackPoint = new()
+                    {
+                        Guid = Guid.NewGuid().ToString(),
+                        TrackGuid = CurrentTrack.Guid,
+                        PositionGuid = position.Guid,
+                        Position = position,
+                    };
+
+                    //Añade el punto al Track actual
+                    CurrentTrack.TrackPoints.Add(trackPoint);
+
+                    //Actualiza el total de puntos
+                    Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
+
+                    //Borra el dibujo anterior
+                    Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
+
+                    if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
+                    {
+                        var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
+
+                        _gpsPathSmoother.UpdateParameters(interval, position.Accuracy);
+
+                        List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
+
+                        CurrentTrack.TrackPoints.Clear();
+                        foreach (var pos in positions)
                         {
-                            Guid = Guid.NewGuid().ToString(),
-                            TrackGuid = CurrentTrack.Guid,
-                            PositionGuid = pos.Guid,
-                            Position = pos,
-                        };
-                        CurrentTrack.TrackPoints.Add(smoothedTrackPoint);
+                            pos.Guid = Guid.NewGuid().ToString();
+                            TrackPoint smoothedTrackPoint = new()
+                            {
+                                Guid = Guid.NewGuid().ToString(),
+                                TrackGuid = CurrentTrack.Guid,
+                                PositionGuid = pos.Guid,
+                                Position = pos,
+                            };
+                            CurrentTrack.TrackPoints.Add(smoothedTrackPoint);
+                        }
                     }
+
+                    //Pinta el Track en el mapa
+                    Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
+
+                    LastPosition = position;
                 }
-
-                //Pinta el Track en el mapa
-                Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
-
-                LastPosition = position;
+            }
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
             }
 
             await Task.CompletedTask;

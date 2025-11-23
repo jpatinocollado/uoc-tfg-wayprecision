@@ -32,7 +32,7 @@ namespace WayPrecision.Domain.Services.Configuracion
                 await _unitOfWork.Configurations.InsertAsync(config);
             }
 
-            return config;
+            return await Task.FromResult(config);
         }
 
         /// <summary>
