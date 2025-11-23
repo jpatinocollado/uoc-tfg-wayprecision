@@ -11,8 +11,8 @@ namespace WayPrecision.Domain.Models
         public Track()
         {
             _isVisible = true;
-            ColorBorde = MapMarkerColorEnum.Green;
-            ColorRelleno = MapMarkerColorEnum.Green;
+            ColorBorde = MapMarkerColorEnum.Red;
+            ColorRelleno = MapMarkerColorEnum.Red;
         }
 
         public void SetConfiguration(Configuration configuration)
