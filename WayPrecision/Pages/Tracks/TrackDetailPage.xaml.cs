@@ -39,13 +39,13 @@ public partial class TrackDetailPage : ContentPage
     /// </summary>
     private async void OnDeleteClicked(object sender, EventArgs e)
     {
-        // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
-        bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este track?", "Sí", "No");
-        if (!confirm)
-            return;
-
         try
         {
+            // Aquí puedes agregar la lógica de eliminación, por ejemplo mostrar confirmación
+            bool confirm = await DisplayAlert("Confirmar", "¿Seguro que deseas eliminar este track?", "Sí", "No");
+            if (!confirm)
+                return;
+
             // Lógica para eliminar el track usando _unitOfWork, por ejemplo:
             Track track = (Track)BindingContext;
             await service.DeleteAsync(track.Guid);
@@ -55,9 +55,9 @@ public partial class TrackDetailPage : ContentPage
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
         }
-        catch (ControlledException ex)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", ex.Message, "OK");
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
@@ -67,16 +67,16 @@ public partial class TrackDetailPage : ContentPage
     /// </summary>
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        var track = (Track)BindingContext;
-
-        if (string.IsNullOrWhiteSpace(track.Name))
-        {
-            await DisplayAlert("Error", "El nombre es obligatorio.", "OK");
-            return;
-        }
-
         try
         {
+            var track = (Track)BindingContext;
+
+            if (string.IsNullOrWhiteSpace(track.Name))
+            {
+                await DisplayAlert("Error", "El nombre es obligatorio.", "OK");
+                return;
+            }
+
             if (PageMode == DetailPageMode.Created)
             {
                 await service.CreateAsync(track);
@@ -91,15 +91,22 @@ public partial class TrackDetailPage : ContentPage
             //Cerramos la pantalla actual sacandola de la pila de navegación
             await Navigation.PopAsync();
         }
-        catch (ControlledException ex)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", ex.Message, "OK");
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void ViewOnMapClicked(object sender, EventArgs e)
     {
-        Track track = (Track)BindingContext;
-        await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+        try
+        {
+            Track track = (Track)BindingContext;
+            await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 }

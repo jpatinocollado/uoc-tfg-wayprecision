@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -24,51 +25,84 @@ public partial class TracksPage : ContentPage
 
     protected override void OnAppearing()
     {
-        base.OnAppearing();
+        try
+        {
+            base.OnAppearing();
 
-        _ = LoadTracks();
+            _ = LoadTracks();
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 
     private async Task LoadTracks()
     {
-        var tracks = await _service.GetAllAsync();
+        try
+        {
+            var tracks = await _service.GetAllAsync();
 
-        Tracks.Clear();
-        foreach (var track in tracks)
-            Tracks.Add(track);
+            Tracks.Clear();
+            foreach (var track in tracks)
+                Tracks.Add(track);
 
-        Title = $"Tracks ({tracks.Count})";
+            Title = $"Tracks ({tracks.Count})";
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
+        }
     }
 
     private async void OnEditClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is Track track)
+        try
         {
-            await Navigation.PushAsync(new TrackDetailPage(track, DetailPageMode.Edited));
+            if (sender is Button button && button.CommandParameter is Track track)
+            {
+                await Navigation.PushAsync(new TrackDetailPage(track, DetailPageMode.Edited));
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void OnViewOnMapClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.CommandParameter is Track track)
+        try
         {
-            if (!track.IsVisible)
-                OnEyeClicked(sender, new EventArgs());
+            if (sender is Button btn && btn.CommandParameter is Track track)
+            {
+                if (!track.IsVisible)
+                    OnEyeClicked(sender, new EventArgs());
 
-            //Task.Delay(500).Wait();
-
-            //navega a la página del mapa y muestra el track
-            await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+                //navega a la página del mapa y muestra el track
+                await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 
     private async void OnEyeClicked(object sender, EventArgs e)
     {
-        if (sender is Button button && button.CommandParameter is Track track)
+        try
         {
-            track.IsVisible = !track.IsVisible;
+            if (sender is Button button && button.CommandParameter is Track track)
+            {
+                track.IsVisible = !track.IsVisible;
 
-            await _service.UpdateAsync(track);
+                await _service.UpdateAsync(track);
+            }
+        }
+        catch (Exception ex)
+        {
+            GlobalExceptionManager.HandleException(ex, this);
         }
     }
 }

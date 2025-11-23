@@ -1,7 +1,8 @@
-﻿using WayPrecision.Domain.Models;
+﻿using WayPrecision.Domain.Exceptions;
+using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
-using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Pages.Maps
 {
@@ -11,14 +12,16 @@ namespace WayPrecision.Pages.Maps
     public class MapStateDefault : MapState
     {
         private readonly IService<Track> _service;
+        private readonly IConfigurationService _configurationService;
 
         /// <summary>
         /// Inicializa una nueva instancia de <see cref="MapStateDefault"/>.
         /// </summary>
         /// <param name="service">Servicio para la gestión de tracks.</param>
-        public MapStateDefault(IService<Track> service)
+        public MapStateDefault(IService<Track> service, IConfigurationService configurationService)
         {
             _service = service;
+            _configurationService = configurationService;
         }
 
         /// <summary>
@@ -27,22 +30,22 @@ namespace WayPrecision.Pages.Maps
         public override void Init()
         {
             //desbloqueamos el menú
-            Shell.SetNavBarIsVisible(MapPage, false);
+            Shell.SetNavBarIsVisible(MapPage, true);
             Shell.SetFlyoutBehavior(MapPage, FlyoutBehavior.Flyout);
 
             //Ponemos visibles los botones del pie de pagina
-            MapPage.BtnStackLayoutDefaultPublic.IsVisible = true;
+            Context.BtnStackLayoutDefaultPublic.IsVisible = true;
             //Ocultamos botones de tracking
-            MapPage.BtnStackLayoutTrackingPublic.IsVisible = false;
-            MapPage.PnGpsDataPublic.IsVisible = false;
+            Context.BtnStackLayoutTrackingPublic.IsVisible = false;
+            Context.PnGpsDataPublic.IsVisible = false;
 
             //Registramos los eventos de los botones
-            MapPage.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
-            MapPage.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
-            MapPage.BtnCreateTrackPublic.Clicked += btnCreateTrackClicked;
+            Context.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
+            Context.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
+            Context.BtnCreateTrackPublic.Clicked += btnCreateTrackClicked;
 
             //dibujamos los elementos en el mapa
-            MapPage.PaintElements();
+            Context.PaintElements();
         }
 
         /// <summary>
@@ -51,9 +54,9 @@ namespace WayPrecision.Pages.Maps
         public override void Close()
         {
             //Unregister buttons events
-            MapPage.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
-            MapPage.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
-            MapPage.BtnCreateTrackPublic.Clicked -= btnCreateTrackClicked;
+            Context.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
+            Context.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
+            Context.BtnCreateTrackPublic.Clicked -= btnCreateTrackClicked;
         }
 
         /// <summary>
@@ -63,8 +66,15 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private void BtnGpsDataClicked(object? sender, EventArgs e)
         {
-            // Lógica para mostrar los datos de ubicación
-            MapPage.PnGpsDataPublic.IsVisible = !MapPage.PnGpsDataPublic.IsVisible;
+            try
+            {
+                // Lógica para mostrar los datos de ubicación
+                Context.PnGpsDataPublic.IsVisible = !Context.PnGpsDataPublic.IsVisible;
+            }
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
         }
 
         /// <summary>
@@ -74,31 +84,38 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private void btnCreateWaypointClicked(object? sender, EventArgs e)
         {
-            // Lógica para crear un waypoint
-            if (MapPage._locationEnable && MapPage._lastPosition != null)
+            try
             {
-                DateTime dateTime = DateTime.UtcNow;
-
-                Waypoint waypoint = new()
+                // Lógica para crear un waypoint
+                if (Context._locationEnable && Context._lastPosition != null)
                 {
-                    Name = "",
-                    Observation = "",
-                    Created = dateTime.ToString("o"),
-                    Position = new Position
-                    {
-                        Latitude = MapPage._lastPosition.Latitude,
-                        Longitude = MapPage._lastPosition.Longitude,
-                        Accuracy = MapPage._lastPosition.Accuracy,
-                        Altitude = MapPage._lastPosition.Altitude,
-                        Course = MapPage._lastPosition.Course,
-                        Timestamp = dateTime.ToString("o"),
-                    }
-                };
+                    DateTime dateTime = DateTime.UtcNow;
 
-                MapPage.Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Created));
+                    Waypoint waypoint = new()
+                    {
+                        Name = "",
+                        Observation = "",
+                        Created = dateTime.ToString("o"),
+                        Position = new Position
+                        {
+                            Latitude = Context._lastPosition.Latitude,
+                            Longitude = Context._lastPosition.Longitude,
+                            Accuracy = Context._lastPosition.Accuracy,
+                            Altitude = Context._lastPosition.Altitude,
+                            Course = Context._lastPosition.Course,
+                            Timestamp = dateTime
+                        }
+                    };
+
+                    Context.Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Created));
+                }
+                else
+                    Context.DisplayAlert("Crear Waypoint", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
             }
-            else
-                MapPage.DisplayAlert("Crear Waypoint", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
         }
 
         /// <summary>
@@ -108,13 +125,20 @@ namespace WayPrecision.Pages.Maps
         /// <param name="e">Argumentos del evento.</param>
         private void btnCreateTrackClicked(object? sender, EventArgs e)
         {
-            // Lógica para crear un track
-            if (MapPage._locationEnable && MapPage._lastPosition != null)
+            try
             {
-                MapPage.TransitionTo(new MapStateTracking(_service));
+                // Lógica para crear un track
+                if (Context._locationEnable && Context._lastPosition != null)
+                {
+                    Context.TransitionTo(new MapStateTracking(_service, _configurationService));
+                }
+                else
+                    Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
             }
-            else
-                MapPage.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+            catch (Exception ex)
+            {
+                GlobalExceptionManager.HandleException(ex, this.Context);
+            }
         }
 
         /// <summary>

@@ -9,7 +9,6 @@ namespace WayPrecision.Domain.Services.Location
         private CancellationTokenSource _cts;
         private bool _isListening;
         private TimeSpan GpsInterval;
-        private int GpsMinimalAccuracy;
 
         private int index = 0;
         private readonly List<LocationEventArgs> Locations = [];
@@ -58,10 +57,9 @@ namespace WayPrecision.Domain.Services.Location
             }));
         }
 
-        public async Task StartListeningAsync(TimeSpan gpsInterval, int gpsMinimalAccuracy)
+        public async Task StartListeningAsync(TimeSpan gpsInterval)
         {
             GpsInterval = gpsInterval;
-            GpsMinimalAccuracy = gpsMinimalAccuracy;
 
             if (_cts is null || _cts.IsCancellationRequested)
                 _cts = new CancellationTokenSource();
@@ -81,10 +79,9 @@ namespace WayPrecision.Domain.Services.Location
                     if (index >= Locations.Count)
                         index = 0;
 
-                    location.Position.Timestamp = DateTime.UtcNow.ToString("o");
+                    location.Position.Timestamp = DateTime.UtcNow;
 
-                    if (location.Position.Accuracy <= GpsMinimalAccuracy)
-                        PositionChanged?.Invoke(this, location);
+                    PositionChanged?.Invoke(this, location);
 
                     await Task.Delay((int)GpsInterval.TotalMilliseconds, _cts.Token);
                 }
@@ -107,12 +104,6 @@ namespace WayPrecision.Domain.Services.Location
         public Task ChangeGpsInterval(TimeSpan gpsInterval)
         {
             GpsInterval = gpsInterval;
-            return Task.CompletedTask;
-        }
-
-        public Task ChangeGpsMinimalAccuracy(int gpsMinimalAccuracy)
-        {
-            GpsMinimalAccuracy = gpsMinimalAccuracy;
             return Task.CompletedTask;
         }
     }

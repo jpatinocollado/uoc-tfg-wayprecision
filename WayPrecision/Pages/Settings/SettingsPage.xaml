@@ -1,44 +1,115 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="WayPrecision.SettingsPage"
              Title="Configuración">
-    <Grid RowDefinitions="*,Auto,Auto" Padding="20">
-        <ScrollView>
+
+    <ScrollView>
         <!-- Contenido principal en la parte superior -->
-        <VerticalStackLayout Grid.Row="0" Spacing="10">
+        <VerticalStackLayout Spacing="12" Padding="12">
 
-            <Label Text="Intervalo de posición GPS" FontAttributes="Bold" />
-            <Label Text="Rango: 1 – 15 segundos." FontAttributes="Italic" />
-            <Label Text="Intervalos más cortos mejoran la precisión pero consumen más batería." FontAttributes="Italic" />
-            <Entry x:Name="GpsIntervalEntry"
-               Keyboard="Numeric"
-               Placeholder="Introduce el intervalo en segundos" />
+            <!-- Sección: Localización GPS -->
 
-            <Label Text="Precisión mínima requerida" FontAttributes="Bold" />
-            <Label Text="Rango: 1 – 20 metros." FontAttributes="Italic" />
-            <Label Text="Mayor precisión mejora el cálculo geométrico pero rechaza más posiciones." FontAttributes="Italic" />
-            <Entry x:Name="GpsAccuracyEntry"
-               Keyboard="Numeric"
-               Placeholder="Introduce la precisión en metros" />
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Localización GPS" FontAttributes="Bold" FontSize="Medium" />
+                <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,4,0,8" />
 
-            <Label Text="Unidad de área" FontAttributes="Bold" Padding="0,10,0,0" />
-            <Picker x:Name="AreaUnitsPicker" />
+                <Label Text="Intervalo de posición GPS" FontAttributes="Bold" />
+                <Label Text="Rango: 1 – 15 segundos." FontAttributes="Italic" />
+                <Label Text="Intervalos más cortos mejoran la precisión pero consumen más batería." FontAttributes="Italic" />
+                <Entry x:Name="GpsIntervalEntry"
+                               Keyboard="Numeric"
+                               Placeholder="Introduce el intervalo en segundos" />
 
-            <Label Text="Unidad de longitud" FontAttributes="Bold" Padding="0,10,0,0" />
-            <Picker x:Name="LengthUnitsPicker" />
+                <Label Text="Precisión mínima requerida"  FontAttributes="Bold" />
+                <Label Text="Rango: 1 – 20 metros." FontAttributes="Italic" />
+                <Label Text="Mayor precisión mejora el cálculo geométrico pero rechaza más posiciones." FontAttributes="Italic" />
+                <Entry x:Name="GpsAccuracyEntry"
+                               Keyboard="Numeric"
+                               Placeholder="Introduce la precisión en metros" />
+            </VerticalStackLayout>
+
+            <!-- Sección: Cálculo Geométrico -->
+
+            <VerticalStackLayout Spacing="8" Padding="0,15,0,0">
+                <Label Text="Cálculo Geométrico" FontAttributes="Bold" FontSize="Medium" />
+                <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,4,0,8" />
+                <Label Text="Unidad de área"  FontAttributes="Bold" />
+                <Picker x:Name="AreaUnitsPicker" />
+
+                <Label Text="Unidad de longitud"  FontAttributes="Bold" />
+                <Picker x:Name="LengthUnitsPicker" />
+            </VerticalStackLayout>
+
+            <!-- Sección: Trazados -->
+            <VerticalStackLayout Spacing="8" Padding="0,15,0,0" HorizontalOptions="Fill">
+                <Label Text="Trazados" FontAttributes="Bold" FontSize="Medium" />
+                <BoxView HeightRequest="1" Color="LightGray" HorizontalOptions="Fill" Margin="0,4,0,8" />
+
+                <Label Text="Filtro de Outliers" FontAttributes="Bold" />
+                <Label Text="Aplica un filtro que elimina posiciones GPS erráticas que generan saltos improbables en la ruta para ofrecer trazados más fiables." FontAttributes="Italic" />
+
+                <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Switch x:Name="OutliersSwitch"
+                     IsToggled="False"
+                     Grid.Column="0"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                            OnColor="{StaticResource Primary300}"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar filtro de Outliers"
+                           Grid.Column="0"
+                           VerticalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <Label Text="Filtro de Kalman" FontAttributes="Bold" />
+                <Label Text="Aplica un filtro para reducir el ruido del GPS y suavizar la ruta haciendo que el recorrido se vea más natural, sin zigzags ni cambios bruscos." FontAttributes="Italic" />
+
+                <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Switch x:Name="KalmanSwitch"
+                     IsToggled="False"
+                     Grid.Column="0"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                            OnColor="{StaticResource Primary300}"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar filtro de Kalman"
+                           Grid.Column="0"
+                           VerticalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <Label Text="Filtro Moving Average" FontAttributes="Bold" />
+                <Label Text="Aplica un filtro que suaviza la trayectoria con el promedio de las últimas N posiciones para reducir el ruido y pequeños saltos, manteniendo la forma general del trazado." FontAttributes="Italic" />
+
+                <!-- Grid para alinear etiqueta a la izquierda y switch a la derecha (compatible con .NET 9) -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <Switch x:Name="MovingAvegareSwitch"
+                     IsToggled="False"
+                     Grid.Column="0"
+                     HorizontalOptions="End"
+                     VerticalOptions="Center"
+                            OnColor="{StaticResource Primary300}"
+                            ThumbColor="{StaticResource Primary500}" />
+                    <Label Text="Habilitar Moving Average"
+                           Grid.Column="0"
+                           VerticalTextAlignment="Center"
+                           VerticalOptions="Center" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <Button Text="Guardar"
+                     x:Name="SaveButton"
+                     Style="{StaticResource PrimaryButton}"
+                     Margin="0,24,0,0" />
+
+            <Button x:Name="CancelarButton"
+                     Text="Cancelar"
+                     Style="{StaticResource TertiaryButton}" />
         </VerticalStackLayout>
-
-            </ScrollView>
-        <!-- Botón anclado abajo -->
-        <Button Grid.Row="1"
-            Text="Guardar"
-            x:Name="SaveButton"
-            Style="{StaticResource PrimaryButton}"
-            Margin="0,24,0,0" />
-
-        <Button Grid.Row="2" x:Name="CancelarButton"
-             Text="Cancelar"
-             Style="{StaticResource TertiaryButton}" />
-    </Grid>
+    </ScrollView>
 </ContentPage>

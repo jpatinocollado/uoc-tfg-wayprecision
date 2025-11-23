@@ -25,38 +25,9 @@ namespace WayPrecision.Domain.Exceptions
         /// </summary>
         public bool IsControlled { get; } = true;
 
-        public ControlledException()
-        {
-        }
-
         public ControlledException(string message)
             : base(message)
         {
-        }
-
-        public ControlledException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        public ControlledException(string message, int errorCode)
-            : base(message)
-        {
-            ErrorCode = errorCode;
-        }
-
-        public ControlledException(string message, int errorCode, string reference)
-            : base(message)
-        {
-            ErrorCode = errorCode;
-            Reference = reference;
-        }
-
-        public ControlledException(string message, Exception innerException, int? errorCode = null, string? reference = null)
-            : base(message, innerException)
-        {
-            ErrorCode = errorCode;
-            Reference = reference;
         }
 
         public override string ToString()

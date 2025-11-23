@@ -32,7 +32,7 @@ namespace WayPrecision.Domain.Services.Configuracion
                 await _unitOfWork.Configurations.InsertAsync(config);
             }
 
-            return config;
+            return await Task.FromResult(config);
         }
 
         /// <summary>
@@ -59,7 +59,10 @@ namespace WayPrecision.Domain.Services.Configuracion
                 AreaUnits = UnitEnum.MetrosCuadrados.ToString(),
                 LengthUnits = UnitEnum.Metros.ToString(),
                 GpsInterval = 3,
-                GpsAccuracy = 10
+                GpsAccuracy = 10,
+                MovingAverageFilterEnabled = true,
+                OutliersFilterEnabled = true,
+                KalmanFilterEnabled = true
             };
         }
     }

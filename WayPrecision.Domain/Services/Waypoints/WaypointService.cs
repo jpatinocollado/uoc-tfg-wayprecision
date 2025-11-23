@@ -66,8 +66,9 @@ namespace WayPrecision.Domain.Services.Waypoints
 
             if (string.IsNullOrEmpty(waypoint.Position.Guid))
                 waypoint.Position.Guid = Guid.NewGuid().ToString();
-            if (string.IsNullOrEmpty(waypoint.Position.Timestamp))
-                waypoint.Position.Timestamp = utcNow.ToString("o");
+
+            //if (string.IsNullOrEmpty(waypoint.Position.Timestamp))
+            //    waypoint.Position.Timestamp = utcNow.ToString("o");
 
             _unitOfWork.Positions.AddDeferred(waypoint.Position);
 

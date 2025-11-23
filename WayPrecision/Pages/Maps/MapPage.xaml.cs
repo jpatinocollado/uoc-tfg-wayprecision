@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
-using System.Net.Http;
-using Microsoft.Maui.Networking;
+using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
@@ -21,7 +21,9 @@ namespace WayPrecision
         internal Position? _lastPosition = null;
 
         internal MapState State;
-        internal bool isWebViewReady = false;
+        internal bool isWebViewReady => (isWebViewNavigated && isWebViewLoaded);
+        internal bool isWebViewNavigated = false;
+        internal bool isWebViewLoaded = false;
         internal bool _locationEnable = false;
         internal bool _locationCenterEnable = false;
 
@@ -71,11 +73,11 @@ namespace WayPrecision
             // Subscribe connectivity changes
             Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
+            //Transition to initial state
+            TransitionTo(new MapStateDefault(_trackService, _configurationService));
+
             // Check initial connectivity
             CheckInitialConnectivity();
-
-            //Transition to initial state
-            TransitionTo(new MapStateDefault(_trackService));
         }
 
         #region MAP INITIALIZATION
@@ -188,8 +190,10 @@ namespace WayPrecision
             }
             else
             {
-                if (!_firstLoadExecuted && isWebViewReady)
+                if (!_firstLoadExecuted && isWebViewReady && isWebViewNavigated)
+                {
                     MapWebView.Reload();
+                }
             }
         }
 
@@ -213,12 +217,14 @@ namespace WayPrecision
 
         private void OnMapWebViewLoaded(object? sender, EventArgs e)
         {
-            isWebViewReady = true;
+            isWebViewLoaded = true;
+            //isWebViewReady = true;
         }
 
         private void OnMapWebViewNavigated(object? sender, WebNavigatedEventArgs e)
         {
-            isWebViewReady = true;
+            ///*isWebViewReady*/ = true;
+            isWebViewNavigated = true;
         }
 
         public void ExecuteJavaScript(string script)
@@ -348,7 +354,7 @@ namespace WayPrecision
             if (value)
             {
                 Configuration configuration = await _configurationService.GetOrCreateAsync();
-                _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval), configuration.GpsAccuracy);
+                _ = _gpsManager.StartListeningAsync(new TimeSpan(0, 0, configuration.GpsInterval));
             }
             else
             {
@@ -385,7 +391,7 @@ namespace WayPrecision
                     {
                         Latitude = lat,
                         Longitude = lng,
-                        Timestamp = dateTime.ToString("o"),
+                        Timestamp = dateTime
                     }
                 };
 
@@ -448,6 +454,9 @@ namespace WayPrecision
 
                 var waypoints = await _waypointService.GetAllAsync();
                 var tracks = await _trackService.GetAllAsync();
+                var configuration = await _configurationService.GetOrCreateAsync();
+
+                bool smoothTracks = configuration.KalmanFilterEnabled;
 
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
@@ -461,6 +470,33 @@ namespace WayPrecision
                 ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
+                    if (configuration.KalmanFilterEnabled)
+                    {
+                        var smoother = new GpsPathSmoother
+                        {
+                            MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
+                            MaxJumpMeters = 10,                    // saltos razonables
+                            MovingAverageWindow = 5,               // más estable
+                            ProcessNoiseVariance = 5e-4,           // movimiento suave real
+                            MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+                        };
+                        List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
+
+                        track.TrackPoints.Clear();
+                        foreach (var pos in positions)
+                        {
+                            pos.Guid = Guid.NewGuid().ToString();
+                            TrackPoint smoothedTrackPoint = new()
+                            {
+                                Guid = Guid.NewGuid().ToString(),
+                                TrackGuid = track.Guid,
+                                PositionGuid = pos.Guid,
+                                Position = pos,
+                            };
+                            track.TrackPoints.Add(smoothedTrackPoint);
+                        }
+                    }
+
                     ExecuteJavaScript(scTracks.GetTrack(track));
                 }
             });
