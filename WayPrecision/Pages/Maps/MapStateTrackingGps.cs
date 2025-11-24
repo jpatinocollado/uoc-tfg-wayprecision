@@ -11,7 +11,7 @@ using WayPrecision.Domain.Services.Configuracion;
 namespace WayPrecision.Pages.Maps
 {
     /// <summary>
-    /// Estado del mapa encargado de gestionar la grabación y seguimiento de un track GPS.
+    /// Estado del mapa encargado de gestionar la grabación y seguimiento de un Track GPS.
     /// </summary>
     public class MapStateTrackingGps : MapState
     {
@@ -38,7 +38,7 @@ namespace WayPrecision.Pages.Maps
         }
 
         /// <summary>
-        /// Inicializa el estado de seguimiento, crea el track y configura los controles y eventos.
+        /// Inicializa el estado de seguimiento, crea el Track y configura los controles y eventos.
         /// </summary>
         public override async void Init()
         {
@@ -107,7 +107,7 @@ namespace WayPrecision.Pages.Maps
         }
 
         /// <summary>
-        /// Evento que inicia la grabación del track y actualiza el estado de los controles.
+        /// Evento que inicia la grabación del Track y actualiza el estado de los controles.
         /// </summary>
         /// <param name="sender">Origen del evento.</param>
         /// <param name="e">Argumentos del evento.</param>
@@ -170,9 +170,9 @@ namespace WayPrecision.Pages.Maps
                 // Pregunta al usuario si quiere cerrar el track
                 bool cerrarTrack = await Context.DisplayAlert(
                         "Finalizar Track",
-                        "¿Quieres cerrar el track?",
-                        "Sí",
-                        "No"
+                        "¿Como quieres el Track?",
+                        "Cerrado",
+                        "Abierto"
                     );
 
                 if (cerrarTrack)
@@ -189,7 +189,7 @@ namespace WayPrecision.Pages.Maps
                 string nameTrack = string.Empty;
 
                 while (string.IsNullOrWhiteSpace(nameTrack))
-                    nameTrack = await Context.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
+                    nameTrack = await Context.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del Track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
 
                 CurrentTrack.Name = nameTrack;
                 CurrentTrack = await _trackService.CreateAsync(CurrentTrack);
@@ -216,7 +216,7 @@ namespace WayPrecision.Pages.Maps
         }
 
         /// <summary>
-        /// Evento que cancela la grabación del track actual, preguntando al usuario y gestionando la transición de estado.
+        /// Evento que cancela la grabación del Track actual, preguntando al usuario y gestionando la transición de estado.
         /// </summary>
         /// <param name="sender">Origen del evento.</param>
         /// <param name="e">Argumentos del evento.</param>
@@ -226,20 +226,20 @@ namespace WayPrecision.Pages.Maps
             {
                 bool reanudarTrack = IsListening;
 
-                //al cancelar el track, lo primero es ponerlo en pausa
+                //al cancelar el Track, lo primero es ponerlo en pausa
                 OnPauseClicked(null, new EventArgs());
 
                 //preguntamos si quiere cancelar el Track
                 bool cancelarTrack = await Context.DisplayAlert(
                     "Finalizar Track",
-                    "¿Quieres Cancelar el track?",
+                    "¿Quieres Cancelar el Track?",
                     "Sí",
                     "No"
                 );
 
                 if (cancelarTrack)
                 {
-                    //Hacemos la transición de estado sin guardar el track
+                    //Hacemos la transición de estado sin guardar el Track
                     Context.TransitionTo(new MapStateDefault(_trackService, _configurationService));
                 }
                 else
@@ -256,7 +256,7 @@ namespace WayPrecision.Pages.Maps
         }
 
         /// <summary>
-        /// Agrega una nueva posición GPS al track actual si la grabación está activa, actualiza el mapa y la interfaz.
+        /// Agrega una nueva posición GPS al Track actual si la grabación está activa, actualiza el mapa y la interfaz.
         /// </summary>
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public override async Task AddPosition(Position lastPosition)

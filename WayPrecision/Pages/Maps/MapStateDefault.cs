@@ -43,7 +43,7 @@ namespace WayPrecision.Pages.Maps
             //Registramos los eventos de los botones
             Context.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked += async (s, e) => await btnCreateTrackClicked(s, e);
+            Context.BtnCreateTrackPublic.Clicked += async (s, e) => await btnCreateTrackClicked();
 
             //dibujamos los elementos en el mapa
             Context.PaintElements();
@@ -57,7 +57,7 @@ namespace WayPrecision.Pages.Maps
             //Unregister buttons events
             Context.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked -= async (s, e) => await btnCreateTrackClicked(s, e);
+            Context.BtnCreateTrackPublic.Clicked -= async (s, e) => await btnCreateTrackClicked();
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         /// <param name="sender">Origen del evento.</param>
         /// <param name="e">Argumentos del evento.</param>
-        private async Task btnCreateTrackClicked(object? sender, EventArgs e)
+        private async Task btnCreateTrackClicked()
         {
             try
             {
@@ -133,11 +133,19 @@ namespace WayPrecision.Pages.Maps
                 if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString() &&
                     Context._locationEnable &&
                     Context._currentPosition != null)
+                {
+                    await Context.DisplayAlert("Crear Track", "Recuerda, si no ves la ruta, revisa los paraámetros de configuración", "Aceptar");
                     Context.TransitionTo(new MapStateTrackingGps(_service, _configurationService));
+                }
                 else if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString())
-                    Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+                {
+                    await Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+                }
                 else
+                {
+                    await Context.DisplayAlert("Crear Track", "El tracking está en modo Manual, para añadir puntos haz click en el mapa.", "Aceptar");
                     Context.TransitionTo(new MapStateTrackingManual(_service, _configurationService));
+                }
             }
             catch (Exception ex)
             {
