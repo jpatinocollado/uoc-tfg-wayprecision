@@ -60,7 +60,8 @@ namespace WayPrecision.Pages.Maps
                 TypeGeometry = TypeGeometry.LineString,
                 Created = DateTime.UtcNow.ToString("o"),
                 TrackPoints = new List<TrackPoint>(),
-                IsOpened = true
+                IsOpened = true,
+                IsManual = false,
             };
 
             //Mostramos el total de puntos
@@ -297,26 +298,13 @@ namespace WayPrecision.Pages.Maps
                     if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
                     {
                         var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
-
                         _gpsParameters.UpdateParameters(interval, position.Accuracy);
 
                         GpsPathSmoother _gpsPathSmoother = new GpsPathSmoother(_gpsParameters);
 
                         List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
 
-                        CurrentTrack.TrackPoints.Clear();
-                        foreach (var pos in positions)
-                        {
-                            pos.Guid = Guid.NewGuid().ToString();
-                            TrackPoint smoothedTrackPoint = new()
-                            {
-                                Guid = Guid.NewGuid().ToString(),
-                                TrackGuid = CurrentTrack.Guid,
-                                PositionGuid = pos.Guid,
-                                Position = pos,
-                            };
-                            CurrentTrack.TrackPoints.Add(smoothedTrackPoint);
-                        }
+                        CurrentTrack.ReplacePositions(positions);
                     }
 
                     //Pinta el Track en el mapa

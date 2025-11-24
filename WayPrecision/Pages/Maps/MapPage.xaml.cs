@@ -487,30 +487,20 @@ namespace WayPrecision
                 ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    GpsParameters gpsParameters = new GpsParameters
+                    if (!track.IsManual)
                     {
-                        KalmanEnabled = configuration.KalmanFilterEnabled,
-                        MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
-                        OutliersEnabled = configuration.OutliersFilterEnabled,
-                        MinAccuracyMeters = configuration.GpsAccuracy,
-                    };
-                    var smoother = new GpsPathSmoother(gpsParameters);
-                    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
-
-                    track.TrackPoints.Clear();
-                    foreach (var pos in positions)
-                    {
-                        pos.Guid = Guid.NewGuid().ToString();
-                        TrackPoint smoothedTrackPoint = new()
+                        GpsParameters gpsParameters = new GpsParameters
                         {
-                            Guid = Guid.NewGuid().ToString(),
-                            TrackGuid = track.Guid,
-                            PositionGuid = pos.Guid,
-                            Position = pos,
+                            KalmanEnabled = configuration.KalmanFilterEnabled,
+                            MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
+                            OutliersEnabled = configuration.OutliersFilterEnabled,
+                            MinAccuracyMeters = configuration.GpsAccuracy,
                         };
-                        track.TrackPoints.Add(smoothedTrackPoint);
-                    }
+                        var smoother = new GpsPathSmoother(gpsParameters);
+                        List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
 
+                        track.ReplacePositions(positions);
+                    }
                     ExecuteJavaScript(scTracks.GetTrack(track));
                 }
             });
