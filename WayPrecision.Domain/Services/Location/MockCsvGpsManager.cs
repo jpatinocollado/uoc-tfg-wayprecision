@@ -61,11 +61,13 @@ namespace WayPrecision.Domain.Services.Location
 
             _isListening = true;
 
+            await Task.Delay((int)new TimeSpan(0, 0, 2).TotalMilliseconds);
+
             await Task.Run(async () =>
             {
                 while (!_cts.Token.IsCancellationRequested)
                 {
-                    Task.Delay((int) new TimeSpan(0 ,0 ,5).TotalMilliseconds);
+                    
 
                     if (index < Locations.Count)
                     {

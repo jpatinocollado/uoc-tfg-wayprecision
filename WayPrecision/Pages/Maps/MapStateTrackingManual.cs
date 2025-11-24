@@ -227,49 +227,6 @@ namespace WayPrecision.Pages.Maps
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public override async Task AddPosition(Position lastPosition)
         {
-            try
-            {
-                if (IsListening)
-                {
-                    //Crea una nueva instancia de Position con los datos GPS
-                    Position position = new()
-                    {
-                        Guid = Guid.NewGuid().ToString(),
-                        Latitude = lastPosition.Latitude,
-                        Longitude = lastPosition.Longitude,
-                        Accuracy = lastPosition.Accuracy,
-                        Altitude = lastPosition.Altitude,
-                        Course = lastPosition.Course,
-                        Timestamp = lastPosition.Timestamp,
-                    };
-
-                    //Crea una asociación con el Track
-                    TrackPoint trackPoint = new()
-                    {
-                        Guid = Guid.NewGuid().ToString(),
-                        TrackGuid = CurrentTrack.Guid,
-                        PositionGuid = position.Guid,
-                        Position = position,
-                    };
-
-                    //Añade el punto al Track actual
-                    CurrentTrack.TrackPoints.Add(trackPoint);
-
-                    //Actualiza el total de puntos
-                    Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
-
-                    //Borra el dibujo anterior
-                    Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
-
-                    //Pinta el Track en el mapa
-                    Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
-                }
-            }
-            catch (Exception ex)
-            {
-                GlobalExceptionManager.HandleException(ex, this.Context);
-            }
-
             await Task.CompletedTask;
         }
 
@@ -290,20 +247,42 @@ namespace WayPrecision.Pages.Maps
                     if (double.TryParse(lng, NumberStyles.Float, CultureInfo.InvariantCulture, out double lngParsed))
                         lngDouble = lngParsed;
 
-                    Position position = new()
-                    {
-                        Guid = Guid.NewGuid().ToString(),
-                        Latitude = latDouble,
-                        Longitude = lngDouble,
-                        Accuracy = 0,
-                        Altitude = 0,
-                        Course = 0,
-                        Timestamp = DateTime.UtcNow,
-                    };
+                   
 
                     MainThread.BeginInvokeOnMainThread(async () =>
                     {
-                        await AddPosition(position);
+                        // crea la posición
+                        Position position = new()
+                        {
+                            Guid = Guid.NewGuid().ToString(),
+                            Latitude = latDouble,
+                            Longitude = lngDouble,
+                            Accuracy = 0,
+                            Altitude = 0,
+                            Course = 0,
+                            Timestamp = DateTime.UtcNow,
+                        };
+
+                        //Crea una asociación con el Track
+                        TrackPoint trackPoint = new()
+                        {
+                            Guid = Guid.NewGuid().ToString(),
+                            TrackGuid = CurrentTrack.Guid,
+                            PositionGuid = position.Guid,
+                            Position = position,
+                        };
+
+                        //Añade el punto al Track actual
+                        CurrentTrack.TrackPoints.Add(trackPoint);
+
+                        //Actualiza el total de puntos
+                        Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
+
+                        //Borra el dibujo anterior
+                        Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
+
+                        //Pinta el Track en el mapa
+                        Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
                     });
 
                     break;

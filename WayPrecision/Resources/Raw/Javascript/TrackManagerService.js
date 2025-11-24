@@ -38,8 +38,11 @@
 
             if (track.area)
                 alt += '<br /> Área: ' + track.area;
+
             if (track.length)
                 alt += '<br /> Perímetro: ' + track.length;
+            else
+                alt += '<br /> Longitud: ' + lineLength;
         }
 
         trackList[track.id] = L.geoJSON(type, {

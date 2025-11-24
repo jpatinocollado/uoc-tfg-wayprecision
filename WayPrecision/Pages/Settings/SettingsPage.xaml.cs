@@ -205,9 +205,9 @@ public partial class SettingsPage : ContentPage
                 KalmanSwitch.IsToggled = false;
                 MovingAvegareSwitch.IsToggled = false;
 
-                OutliersSwitch.IsEnabled = false;
-                KalmanSwitch.IsEnabled = false;
-                MovingAvegareSwitch.IsEnabled = false;
+                OutliersSwitch.IsEnabled = true;
+                KalmanSwitch.IsEnabled = true;
+                MovingAvegareSwitch.IsEnabled = true;
                 CsvEditor.IsVisible = true;
                 break;
             default:
