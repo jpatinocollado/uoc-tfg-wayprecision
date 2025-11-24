@@ -31,6 +31,8 @@
 
             if (track.length)
                 alt += '<br /> Longitud: ' + track.length;
+            else
+                alt += '<br /> Longitud: ' + lineLength;
         } else {
             type = track.polygon;
             polygonArea = turf.area(track.polygon);
@@ -41,8 +43,6 @@
 
             if (track.length)
                 alt += '<br /> Perímetro: ' + track.length;
-            else
-                alt += '<br /> Longitud: ' + lineLength;
         }
 
         trackList[track.id] = L.geoJSON(type, {
