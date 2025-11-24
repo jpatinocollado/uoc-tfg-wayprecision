@@ -20,14 +20,13 @@ namespace WayPrecision.Domain.Sensors.Location
 
         public async Task StartListeningAsync(TimeSpan gpsInterval)
         {
-            GpsInterval = gpsInterval;
-
             if (_cts is null || _cts.IsCancellationRequested)
                 _cts = new CancellationTokenSource();
 
             if (_isListening)
                 return;
 
+            GpsInterval = gpsInterval;
             _isListening = true;
 
             await Task.Run(async () =>
@@ -36,31 +35,14 @@ namespace WayPrecision.Domain.Sensors.Location
                 {
                     try
                     {
-                        // Comprueba y solicita permisos de ubicación si es necesario
-                        var permissionStatus = await EnsureLocationPermission();
-                        if (permissionStatus == PermissionStatus.Granted)
-                        {
-                            // Ejecutar la petición de ubicación en el hilo principal
-                            var location = await MainThread.InvokeOnMainThreadAsync(async () =>
-                            {
-                                return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts.Token);
-                            });
+                        //Obtiene la ubicación actual
+                        var location = await GetLocationAsync(_cts.Token);
 
-                            if (location != null)
-                            {
-                                //Crea una nueva Position en base a la ubicación
-                                // Dispara el evento PositionChanged
-                                PositionChanged?.Invoke(this, new LocationEventArgs(new Position()
-                                {
-                                    Guid = Guid.NewGuid().ToString(),
-                                    Latitude = location.Latitude,
-                                    Longitude = location.Longitude,
-                                    Altitude = location.Altitude,
-                                    Accuracy = location.Accuracy,
-                                    Course = location.Course,
-                                    Timestamp = location.Timestamp.UtcDateTime
-                                }));
-                            }
+                        // Si la ubicación es válida
+                        if (location != null)
+                        {
+                            // Dispara el evento PositionChanged
+                            PositionChanged?.Invoke(this, location);
                         }
                     }
                     catch (OperationCanceledException) { break; }
@@ -86,7 +68,41 @@ namespace WayPrecision.Domain.Sensors.Location
             return Task.CompletedTask;
         }
 
-        private async Task<PermissionStatus> EnsureLocationPermission()
+        private static async Task<LocationEventArgs?> GetLocationAsync(CancellationToken _cts)
+        {
+            // Comprueba y solicita permisos de ubicación si es necesario
+            var permissionStatus = await EnsureLocationPermission();
+            if (permissionStatus == PermissionStatus.Granted)
+            {
+                // Ejecutar la petición de ubicación en el hilo principal
+                var location = await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    return await Geolocation.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Best), _cts);
+                });
+
+                if (location != null)
+                {
+                    //Crea una nueva Position en base a la ubicación
+                    // Dispara el evento PositionChanged
+                    LocationEventArgs locationEventArgs = new LocationEventArgs(new Position()
+                    {
+                        Guid = Guid.NewGuid().ToString(),
+                        Latitude = location.Latitude,
+                        Longitude = location.Longitude,
+                        Altitude = location.Altitude,
+                        Accuracy = location.Accuracy,
+                        Course = location.Course,
+                        Timestamp = location.Timestamp.UtcDateTime
+                    });
+
+                    return await Task.FromResult<LocationEventArgs?>(locationEventArgs);
+                }
+            }
+
+            return await Task.FromResult<LocationEventArgs?>(null);
+        }
+
+        private static async Task<PermissionStatus> EnsureLocationPermission()
         {
             // Asegúrese de que las solicitudes de permiso se invoquen en el hilo principal
             var permissionStatus = await MainThread.InvokeOnMainThreadAsync(async () =>

@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using Microsoft.Maui.Devices.Sensors;
+using System.Globalization;
 using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Helpers.Gps;
+using WayPrecision.Domain.Helpers.Gps.Outliers;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
@@ -18,7 +21,8 @@ namespace WayPrecision
         private readonly IService<Waypoint> _waypointService;
 
         private readonly IGpsManager _gpsManager;
-        internal Position? _lastPosition = null;
+        internal Position? _currentPosition = null;
+        internal Position? _previusPosition = null;
 
         internal MapState State;
         internal bool isWebViewReady => (isWebViewNavigated && isWebViewLoaded);
@@ -284,19 +288,35 @@ namespace WayPrecision
 
         private void OnPositionChanged(object? sender, LocationEventArgs e)
         {
-            //get last position
-            _lastPosition = e.Position;
-
             MainThread.BeginInvokeOnMainThread(async () =>
             {
+                //Assign current position
+                _currentPosition = e.Position;
+
+                //Aplicamos el filtro de Outliers
+                Configuration configuration = await _configurationService.GetOrCreateAsync();
+                GpsParameters gpsParameters = new GpsParameters
+                {
+                    OutliersEnabled = configuration.OutliersFilterEnabled,
+                    MinAccuracyMeters = configuration.GpsAccuracy,
+                };
+                IGpsFilter outliersFilter = new OutliersFilter(gpsParameters);
+
                 //update GPS data panel
-                UpdatePanelDadesGps(_lastPosition);
+                UpdatePanelDadesGps(_currentPosition);
 
                 //update map location
-                await UpdateMapLocation(_lastPosition);
+                await UpdateMapLocation(_currentPosition);
 
-                //add position to current state
-                await State.AddPosition(_lastPosition);
+                // si la posición no es un outlier la procesamos
+                if (!outliersFilter.IsInvalid(_previusPosition, _currentPosition))
+                {
+                    //add position to current state
+                    await State.AddPosition(_currentPosition);
+
+                    //Assign previous position
+                    _previusPosition = e.Position;
+                }
             });
         }
 
@@ -329,7 +349,6 @@ namespace WayPrecision
             try
             {
                 string direction = "undefined";
-
                 if (gpsLocation.Course.HasValue)
                     direction = gpsLocation.Course.Value.ToString(CultureInfo.InvariantCulture);
 
@@ -456,8 +475,6 @@ namespace WayPrecision
                 var tracks = await _trackService.GetAllAsync();
                 var configuration = await _configurationService.GetOrCreateAsync();
 
-                bool smoothTracks = configuration.KalmanFilterEnabled;
-
                 TrackScriptBuilder scTracks = new();
                 WaypointScriptBuilder scWaypoints = new();
 
@@ -470,32 +487,29 @@ namespace WayPrecision
                 ExecuteJavaScript(scTracks.GetClearTracks());
                 foreach (var track in tracks)
                 {
-                    //if (configuration.KalmanFilterEnabled)
-                    //{
-                    //    var smoother = new GpsPathSmoother
-                    //    {
-                    //        MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                    //        MaxJumpMeters = 10,                    // saltos razonables
-                    //        MovingAverageWindow = 5,               // más estable
-                    //        ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                    //        MeasurementNoiseVariance = 8e-5        // ruido GPS realista
-                    //    };
-                    //    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
+                    GpsParameters gpsParameters = new GpsParameters
+                    {
+                        KalmanEnabled = configuration.KalmanFilterEnabled,
+                        MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
+                        OutliersEnabled = configuration.OutliersFilterEnabled,
+                        MinAccuracyMeters = configuration.GpsAccuracy,
+                    };
+                    var smoother = new GpsPathSmoother(gpsParameters);
+                    List<Position> positions = smoother.SmoothBatch(track.TrackPoints.Select(a => a.Position).ToList());
 
-                    //    track.TrackPoints.Clear();
-                    //    foreach (var pos in positions)
-                    //    {
-                    //        pos.Guid = Guid.NewGuid().ToString();
-                    //        TrackPoint smoothedTrackPoint = new()
-                    //        {
-                    //            Guid = Guid.NewGuid().ToString(),
-                    //            TrackGuid = track.Guid,
-                    //            PositionGuid = pos.Guid,
-                    //            Position = pos,
-                    //        };
-                    //        track.TrackPoints.Add(smoothedTrackPoint);
-                    //    }
-                    //}
+                    track.TrackPoints.Clear();
+                    foreach (var pos in positions)
+                    {
+                        pos.Guid = Guid.NewGuid().ToString();
+                        TrackPoint smoothedTrackPoint = new()
+                        {
+                            Guid = Guid.NewGuid().ToString(),
+                            TrackGuid = track.Guid,
+                            PositionGuid = pos.Guid,
+                            Position = pos,
+                        };
+                        track.TrackPoints.Add(smoothedTrackPoint);
+                    }
 
                     ExecuteJavaScript(scTracks.GetTrack(track));
                 }

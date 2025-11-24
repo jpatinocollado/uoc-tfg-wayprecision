@@ -2,8 +2,6 @@
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
-using Xunit;
-using System.Threading.Tasks;
 using WayPrecision.Domain.Services.Configuracion;
 using WayPrecision.Domain.Services.Tracks;
 using WayPrecision.Domain.Exceptions;
@@ -48,7 +46,7 @@ namespace WayPrecision.Test
                     Altitude = 100 + i,
                     Accuracy = 5.0,
                     Course = 90.0,
-                    Timestamp = DateTime.UtcNow.AddMinutes(i).ToString()
+                    Timestamp = DateTime.UtcNow.AddMinutes(i)
                 };
 
                 var trackPoint = new TrackPoint

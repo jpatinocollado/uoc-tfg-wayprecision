@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Threading.Tasks;
 using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
@@ -89,7 +88,7 @@ namespace WayPrecision.Pages.Maps
             try
             {
                 // Lógica para crear un waypoint
-                if (Context._locationEnable && Context._lastPosition != null)
+                if (Context._locationEnable && Context._currentPosition != null)
                 {
                     DateTime dateTime = DateTime.UtcNow;
 
@@ -100,11 +99,11 @@ namespace WayPrecision.Pages.Maps
                         Created = dateTime.ToString("o"),
                         Position = new Position
                         {
-                            Latitude = Context._lastPosition.Latitude,
-                            Longitude = Context._lastPosition.Longitude,
-                            Accuracy = Context._lastPosition.Accuracy,
-                            Altitude = Context._lastPosition.Altitude,
-                            Course = Context._lastPosition.Course,
+                            Latitude = Context._currentPosition.Latitude,
+                            Longitude = Context._currentPosition.Longitude,
+                            Accuracy = Context._currentPosition.Accuracy,
+                            Altitude = Context._currentPosition.Altitude,
+                            Course = Context._currentPosition.Course,
                             Timestamp = dateTime
                         }
                     };
@@ -133,7 +132,7 @@ namespace WayPrecision.Pages.Maps
 
                 if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString() &&
                     Context._locationEnable &&
-                    Context._lastPosition != null)
+                    Context._currentPosition != null)
                     Context.TransitionTo(new MapStateTrackingGps(_service, _configurationService));
                 else if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString())
                     Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
@@ -188,12 +187,12 @@ namespace WayPrecision.Pages.Maps
                     break;
 
                 case "updateTrack":
-                    string idUpdatedTrack = args.Length >0 ? args[0] : string.Empty;
+                    string idUpdatedTrack = args.Length > 0 ? args[0] : string.Empty;
                     double? trackLength = null;
                     double? trackArea = null;
                     double? trackPerimeter = null;
 
-                    if (args.Length >1 && double.TryParse(args[1],
+                    if (args.Length > 1 && double.TryParse(args[1],
                         NumberStyles.Float,
                         CultureInfo.InvariantCulture, out double lengthParsed))
                         trackLength = lengthParsed;

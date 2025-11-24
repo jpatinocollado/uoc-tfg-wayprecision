@@ -1,4 +1,7 @@
-﻿using WayPrecision.Domain.Exceptions;
+﻿using System.Security.Cryptography;
+using WayPrecision.Domain.Exceptions;
+using WayPrecision.Domain.Helpers.Gps;
+using WayPrecision.Domain.Helpers.Gps.Outliers;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
@@ -16,7 +19,7 @@ namespace WayPrecision.Pages.Maps
         private readonly IService<Track> _trackService;
         private readonly IConfigurationService _configurationService;
         private Configuration configuration;
-        private GpsPathSmoother _gpsPathSmoother;
+        private GpsParameters _gpsParameters;
 
         private Track CurrentTrack;
         private bool IsListening = false;
@@ -40,17 +43,14 @@ namespace WayPrecision.Pages.Maps
         public override async void Init()
         {
             configuration = await _configurationService.GetOrCreateAsync();
-            _gpsPathSmoother = new GpsPathSmoother
+
+            _gpsParameters = new GpsParameters
             {
-                OutliersEnabled = configuration.OutliersFilterEnabled,
-                MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
                 KalmanEnabled = configuration.KalmanFilterEnabled,
+                OutliersEnabled = configuration.OutliersFilterEnabled,
                 MinAccuracyMeters = configuration.GpsAccuracy,
-                MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                MaxJumpMeters = 10,                    // saltos razonables
-                MovingAverageWindow = 5,                // más estable
-                ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                MeasurementNoiseVariance = 8e-5        // ruido GPS realista
+                // no procesamos el moving average si estamos recolectando posiciones
+                MovingAverageEnabled = false,
             };
 
             //Crea una nueva instancia de Track
@@ -298,7 +298,9 @@ namespace WayPrecision.Pages.Maps
                     {
                         var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
 
-                        _gpsPathSmoother.UpdateParameters(interval, position.Accuracy);
+                        _gpsParameters.UpdateParameters(interval, position.Accuracy);
+
+                        GpsPathSmoother _gpsPathSmoother = new GpsPathSmoother(_gpsParameters);
 
                         List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
 

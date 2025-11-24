@@ -23,7 +23,7 @@
                                Placeholder="Introduce el intervalo en segundos" />
 
                 <Label Text="Precisión mínima requerida"  FontAttributes="Bold" />
-                <Label Text="Rango: 1 – 20 metros." FontAttributes="Italic" />
+                <Label Text="Rango: 0 – 20 metros. 0 desactiva el filtro." FontAttributes="Italic" />
                 <Label Text="Mayor precisión mejora el cálculo geométrico pero rechaza más posiciones." FontAttributes="Italic" />
                 <Entry x:Name="GpsAccuracyEntry"
                                Keyboard="Numeric"

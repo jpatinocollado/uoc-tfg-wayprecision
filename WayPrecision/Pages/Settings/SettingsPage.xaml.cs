@@ -109,9 +109,9 @@ public partial class SettingsPage : ContentPage
                 await DisplayAlert("Error", "La precisión mínima del GPS debe ser un número entero válido.", "OK");
                 return;
             }
-            if (gpsAccuracy <= 0 || gpsAccuracy > 20)
+            if (gpsAccuracy < 0 || gpsAccuracy > 20)
             {
-                await DisplayAlert("Error", "La precisión mínima del GPS debe ser mayor que 0 y menor o igual a 20 segundos.", "OK");
+                await DisplayAlert("Error", "La precisión mínima del GPS debe estar en el rango [0-20] metros.", "OK");
                 return;
             }
             _currentConfig.GpsAccuracy = gpsAccuracy;

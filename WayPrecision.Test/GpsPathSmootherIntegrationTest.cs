@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using WayPrecision.Domain.Helpers.Gps;
+using WayPrecision.Domain.Helpers.Gps.Outliers;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Models;
 
@@ -14,7 +11,7 @@ namespace WayPrecision.Test
         public void Smoothing_ShouldReduceNoise_AndPreserveTrackShape()
         {
             // Arrange
-            var smoother = new GpsPathSmoother
+            GpsParameters parameters = new GpsParameters()
             {
                 MaxAcceptableSpeedMetersPerSec = 3.0,
                 MaxJumpMeters = 20,
@@ -22,6 +19,8 @@ namespace WayPrecision.Test
                 ProcessNoiseVariance = 1e-5,
                 MeasurementNoiseVariance = 5e-3
             };
+
+            var smoother = new GpsPathSmoother(parameters, new OutliersFilter(parameters));
 
             var raw = SimulateNoisyTrack();
 
