@@ -3,6 +3,7 @@
         let map = MapManagerService.GetMap();
 
         //set events
+        map.on('click', onMapClick);
         map.on('dblclick', onMapDblClick);
         map.on('zoomstart', onMapZoomStart);
         map.on('zoomend', onMapZoomEnd);
@@ -30,7 +31,11 @@
     }
 
     let onMapDblClick = function (e) {
-        MapBackendManagerService.PostMessage('createWaypoint;' + e.latlng.lat + ';' + e.latlng.lng);
+        MapBackendManagerService.PostMessage('dblclick;' + e.latlng.lat + ';' + e.latlng.lng);
+    }
+
+    let onMapClick = function (e) {
+        MapBackendManagerService.PostMessage('click;' + e.latlng.lat + ';' + e.latlng.lng);
     }
 
     //return plublic methods of service

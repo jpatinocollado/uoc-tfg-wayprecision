@@ -165,7 +165,7 @@ namespace WayPrecision.Pages.Maps
                     Context.EditWaypoint(idWaypoint);
                     break;
 
-                case "createWaypoint":
+                case "dblclick":
                     string lat = args.Length > 0 ? args[0] : string.Empty;
                     string lng = args.Length > 1 ? args[1] : string.Empty;
 
