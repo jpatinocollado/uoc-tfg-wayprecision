@@ -295,6 +295,7 @@ namespace WayPrecision.Pages.Maps
                     //Borra el dibujo anterior
                     Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
+                    //Aplica filtros y suavizados
                     if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
                     {
                         var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;

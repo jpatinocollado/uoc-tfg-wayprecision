@@ -12,15 +12,15 @@ namespace WayPrecision.Pages.Maps
         /// <summary>
         /// Página principal asociada al estado del mapa.
         /// </summary>
-        protected MainPage? MapPage = null;
+        protected MapPage? MapPage = null;
 
-        internal MainPage Context => MapPage ?? throw new InvalidOperationException("El contexto del mapa no ha sido establecido.");
+        internal MapPage Context => MapPage ?? throw new InvalidOperationException("El contexto del mapa no ha sido establecido.");
 
         /// <summary>
         /// Asocia el contexto de la página principal al estado del mapa.
         /// </summary>
-        /// <param name="mapPage">Instancia de <see cref="MainPage"/> a asociar.</param>
-        public void SetContext(MainPage mapPage)
+        /// <param name="mapPage">Instancia de <see cref="MapPage"/> a asociar.</param>
+        public void SetContext(MapPage mapPage)
         {
             MapPage = mapPage;
         }

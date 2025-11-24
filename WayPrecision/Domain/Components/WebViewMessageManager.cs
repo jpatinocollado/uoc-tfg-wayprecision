@@ -11,7 +11,7 @@ namespace WayPrecision.Domain.Components
 
             if (Application.Current != null &&
                 Application.Current.Windows[0].Page is Shell shell &&
-                shell.CurrentPage is MainPage mainPage)
+                shell.CurrentPage is MapPage mainPage)
             {
                 switch (evento)
                 {

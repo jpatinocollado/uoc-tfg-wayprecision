@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.Devices.Sensors;
-using System.Globalization;
-using WayPrecision.Domain.Helpers.Colors;
+﻿using System.Globalization;
 using WayPrecision.Domain.Helpers.Gps;
 using WayPrecision.Domain.Helpers.Gps.Outliers;
 using WayPrecision.Domain.Helpers.Gps.Smoothing;
@@ -14,7 +12,7 @@ using WayPrecision.Pages.Maps;
 
 namespace WayPrecision
 {
-    public partial class MainPage : ContentPage, IQueryAttributable
+    public partial class MapPage : ContentPage, IQueryAttributable
     {
         private readonly IConfigurationService _configurationService;
         private readonly IService<Track> _trackService;
@@ -55,7 +53,7 @@ namespace WayPrecision
 
         public Border PnGpsDataPublic => pnGpsData;
 
-        public MainPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
+        public MapPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
         {
             InitializeComponent();
 
