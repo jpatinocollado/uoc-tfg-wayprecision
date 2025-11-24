@@ -19,7 +19,8 @@ namespace WayPrecision.Pages.Maps
             TypeGeometry = TypeGeometry.LineString,
             Created = DateTime.UtcNow.ToString("o"),
             TrackPoints = [],
-            IsOpened = true
+            IsOpened = true,
+            IsManual = true
         };
 
         private bool IsListening = false;
