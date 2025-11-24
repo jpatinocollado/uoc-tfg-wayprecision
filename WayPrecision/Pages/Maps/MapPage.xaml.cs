@@ -5,6 +5,7 @@ using WayPrecision.Domain.Helpers.Gps.Smoothing;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
+using WayPrecision.Domain.Sensors.Location;
 using WayPrecision.Domain.Services;
 using WayPrecision.Domain.Services.Configuracion;
 using WayPrecision.Domain.Services.Location;
@@ -18,7 +19,9 @@ namespace WayPrecision
         private readonly IService<Track> _trackService;
         private readonly IService<Waypoint> _waypointService;
 
-        private readonly IGpsManager _gpsManager;
+        private readonly GpsManagerFactory _gpsManagerFactory;
+        private IGpsManager _gpsManager;
+
         internal Position? _currentPosition = null;
         internal Position? _previusPosition = null;
 
@@ -53,7 +56,7 @@ namespace WayPrecision
 
         public Border PnGpsDataPublic => pnGpsData;
 
-        public MapPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, IGpsManager gpsManager)
+        public MapPage(IService<Waypoint> waypointService, IService<Track> trackService, IConfigurationService configurationService, GpsManagerFactory gpsManagerFactory)
         {
             InitializeComponent();
 
@@ -61,16 +64,13 @@ namespace WayPrecision
             _waypointService = waypointService;
             _trackService = trackService;
             _configurationService = configurationService;
+            _gpsManagerFactory = gpsManagerFactory;
 
             MapWebView.Navigated += OnMapWebViewNavigated;
             MapWebView.Loaded += OnMapWebViewLoaded;
 
             // Load initial map
             LoadOnlineOpenStreetMaps();
-
-            //GPS Management
-            _gpsManager = gpsManager;
-            _gpsManager.PositionChanged += OnPositionChanged;
 
             // Subscribe connectivity changes
             Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
@@ -81,6 +81,8 @@ namespace WayPrecision
             // Check initial connectivity
             CheckInitialConnectivity();
         }
+
+       
 
         #region MAP INITIALIZATION
 
@@ -111,8 +113,7 @@ namespace WayPrecision
                 await TryFitElement();
             }
 
-            Configuration configuration = await _configurationService.GetOrCreateAsync();
-            await _gpsManager.ChangeGpsInterval(new TimeSpan(0, 0, configuration.GpsInterval));
+            await InitializeGpsAsync();
         }
 
         private void LoadOnlineOpenStreetMaps()
@@ -283,6 +284,28 @@ namespace WayPrecision
         #endregion MAP EVENTS
 
         #region GPS MANAGEMENT
+
+        private async Task InitializeGpsAsync()
+        {
+            try
+            {
+                if (_gpsManager != null)
+                    _gpsManager.PositionChanged -= OnPositionChanged;
+
+                _gpsManager = await _gpsManagerFactory.Create();
+                _gpsManager.PositionChanged += OnPositionChanged;
+
+                if (this._locationEnable)
+                    await SetEnableLocation(true);
+
+                // cualquier otra inicialización asíncrona
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error inicializando MapPage: {ex}");
+                // tratar excepción / notificar UI
+            }
+        }
 
         private void OnPositionChanged(object? sender, LocationEventArgs e)
         {

@@ -52,7 +52,8 @@ public partial class SettingsPage : ContentPage
             var trackkingModel = new List<UnitOption>
             {
                 new (){ Key = TrackingModeEnum.GPS.ToString(), Display = "GPS" },
-                new (){ Key = TrackingModeEnum.Manual.ToString(), Display = "Manual" }
+                new (){ Key = TrackingModeEnum.Manual.ToString(), Display = "Manual" },
+                new (){ Key = TrackingModeEnum.CSV.ToString(), Display = "CSV" },
             };
 
             AreaUnitsPicker.ItemsSource = areaOptions;
@@ -76,6 +77,8 @@ public partial class SettingsPage : ContentPage
             OutliersSwitch.IsToggled = _currentConfig.OutliersFilterEnabled;
             KalmanSwitch.IsToggled = _currentConfig.KalmanFilterEnabled;
             MovingAvegareSwitch.IsToggled = _currentConfig.MovingAverageFilterEnabled;
+
+            CsvEditor.Text = _currentConfig.CsvPositions;
         }
         catch (Exception ex)
         {
@@ -133,6 +136,8 @@ public partial class SettingsPage : ContentPage
             _currentConfig.OutliersFilterEnabled = OutliersSwitch.IsToggled;
             _currentConfig.MovingAverageFilterEnabled = MovingAvegareSwitch.IsToggled;
 
+            _currentConfig.CsvPositions = CsvEditor.Text;
+
             // Guardar la configuración
             await _configurationService.SaveAsync(_currentConfig);
 
@@ -182,6 +187,7 @@ public partial class SettingsPage : ContentPage
                 OutliersSwitch.IsEnabled = true;
                 KalmanSwitch.IsEnabled = true;
                 MovingAvegareSwitch.IsEnabled = true;
+                CsvEditor.IsVisible = false;
                 break;
 
             case TrackingModeEnum.Manual:
@@ -192,8 +198,18 @@ public partial class SettingsPage : ContentPage
                 OutliersSwitch.IsEnabled = false;
                 KalmanSwitch.IsEnabled = false;
                 MovingAvegareSwitch.IsEnabled = false;
+                CsvEditor.IsVisible = false;
                 break;
+            case TrackingModeEnum.CSV:
+                OutliersSwitch.IsToggled = false;
+                KalmanSwitch.IsToggled = false;
+                MovingAvegareSwitch.IsToggled = false;
 
+                OutliersSwitch.IsEnabled = false;
+                KalmanSwitch.IsEnabled = false;
+                MovingAvegareSwitch.IsEnabled = false;
+                CsvEditor.IsVisible = true;
+                break;
             default:
                 break;
         }

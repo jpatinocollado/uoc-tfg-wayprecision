@@ -9,6 +9,7 @@ namespace WayPrecision.Domain.Models
     public enum TrackingModeEnum
     {
         GPS,
-        Manual
+        Manual,
+        CSV
     }
 }

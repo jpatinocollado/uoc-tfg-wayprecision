@@ -50,7 +50,18 @@
                 <Label Text="Modo de Tracking"  FontAttributes="Bold" />
                 <Label Text="GPS: el seguimiento del track se realiza en función de la señal GPS (Se recomienda activar todos los filtros)" FontAttributes="Italic" />
                 <Label Text="Manual: permite dibujar el track haciendo doble click en el mapa para añadir puntos (Se desactivan todos los filtros)" FontAttributes="Italic" />
+                <Label Text="CSV: permite dibujar el track añadiendo la lista de puntos en formato CSV (Se desactivan todos los filtros)" FontAttributes="Italic" />
                 <Picker x:Name="TrackingModePicker" />
+
+                <!-- Input de texto multilínea para pegar listas CSV o comentarios -->
+                <Label Text="Entrada CSV / Notas" FontAttributes="Bold" />
+                <Label Text="Pega aquí una lista de puntos en formato CSV (lat,long) por línea." FontAttributes="Italic" />
+                <Editor x:Name="CsvEditor"
+                     HeightRequest="140"
+                     AutoSize="TextChanges"
+                     Keyboard="Text"
+                     HorizontalOptions="Fill"
+                     VerticalOptions="Start" IsVisible="False" />
 
                 <Label Text="Filtro de Outliers" FontAttributes="Bold" />
                 <Label Text="Aplica un filtro que elimina posiciones GPS erráticas que generan saltos improbables en la ruta para ofrecer trazados más fiables." FontAttributes="Italic" />
