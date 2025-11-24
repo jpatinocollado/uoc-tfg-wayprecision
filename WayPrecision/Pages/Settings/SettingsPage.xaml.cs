@@ -178,12 +178,20 @@ public partial class SettingsPage : ContentPage
                 OutliersSwitch.IsToggled = true;
                 KalmanSwitch.IsToggled = true;
                 MovingAvegareSwitch.IsToggled = true;
+
+                OutliersSwitch.IsEnabled = true;
+                KalmanSwitch.IsEnabled = true;
+                MovingAvegareSwitch.IsEnabled = true;
                 break;
 
             case TrackingModeEnum.Manual:
                 OutliersSwitch.IsToggled = false;
                 KalmanSwitch.IsToggled = false;
                 MovingAvegareSwitch.IsToggled = false;
+
+                OutliersSwitch.IsEnabled = false;
+                KalmanSwitch.IsEnabled = false;
+                MovingAvegareSwitch.IsEnabled = false;
                 break;
 
             default:
