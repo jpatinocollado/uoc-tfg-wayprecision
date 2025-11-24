@@ -135,9 +135,9 @@ namespace WayPrecision.Pages.Maps
                 // Pregunta al usuario si quiere cerrar el track
                 bool cerrarTrack = await Context.DisplayAlert(
                         "Finalizar Track",
-                        "¿Quieres cerrar el track?",
-                        "Sí",
-                        "No"
+                        "¿Como quieres el Track?",
+                        "Cerrado",
+                        "Abierto"
                     );
 
                 if (cerrarTrack)
