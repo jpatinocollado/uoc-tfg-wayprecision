@@ -25,7 +25,7 @@
     </Shell.FlyoutHeader>
 
     <FlyoutItem Title="Mapa" Icon="mapa32x32.png">
-        <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent Route="MapPage" ContentTemplate="{DataTemplate local:MapPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Waypoints" Icon="waypoint32x32.png">

@@ -12,15 +12,15 @@ namespace WayPrecision.Pages.Maps
         /// <summary>
         /// Página principal asociada al estado del mapa.
         /// </summary>
-        protected MainPage? MapPage = null;
+        protected MapPage? MapPage = null;
 
-        internal MainPage Context => MapPage ?? throw new InvalidOperationException("El contexto del mapa no ha sido establecido.");
+        internal MapPage Context => MapPage ?? throw new InvalidOperationException("El contexto del mapa no ha sido establecido.");
 
         /// <summary>
         /// Asocia el contexto de la página principal al estado del mapa.
         /// </summary>
-        /// <param name="mapPage">Instancia de <see cref="MainPage"/> a asociar.</param>
-        public void SetContext(MainPage mapPage)
+        /// <param name="mapPage">Instancia de <see cref="MapPage"/> a asociar.</param>
+        public void SetContext(MapPage mapPage)
         {
             MapPage = mapPage;
         }
@@ -40,6 +40,17 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         /// <param name="lastPosition">Última posición GPS obtenida.</param>
         public abstract Task AddPosition(Position lastPosition);
+
+        public Task EvaluateJavascriptMessage(string message)
+        {
+            string[] messages = message.Split(';');
+            string evento = messages[0];
+            string[] args = [.. messages.Skip(1)];
+
+            return EvaluateJavascriptMessage(evento, args);
+        }
+
+        public abstract Task EvaluateJavascriptMessage(string evento, params string[] args);
 
         /// <summary>
         /// Libera los recursos utilizados por la instancia.

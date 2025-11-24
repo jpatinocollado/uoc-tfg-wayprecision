@@ -102,7 +102,7 @@ public partial class TrackDetailPage : ContentPage
         try
         {
             Track track = (Track)BindingContext;
-            await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+            await Shell.Current.GoToAsync($"//MapPage?trackGuid={track.Guid}");
         }
         catch (Exception ex)
         {

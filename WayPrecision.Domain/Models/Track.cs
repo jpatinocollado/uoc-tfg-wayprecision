@@ -29,6 +29,8 @@ namespace WayPrecision.Domain.Models
         public string Finalized { get; set; } = String.Empty;
         public bool IsOpened { get; set; }
 
+        public bool IsManual { get; set; } = false;
+
         private bool _isVisible;
 
         public bool IsVisible
@@ -178,6 +180,23 @@ namespace WayPrecision.Domain.Models
                 TypeGeometry = this.TypeGeometry,
                 TrackPoints = new List<TrackPoint>()
             };
+        }
+
+        public void ReplacePositions(List<Position> positions)
+        {
+            TrackPoints.Clear();
+            foreach (var pos in positions)
+            {
+                pos.Guid = System.Guid.NewGuid().ToString();
+                TrackPoint smoothedTrackPoint = new()
+                {
+                    Guid = System.Guid.NewGuid().ToString(),
+                    TrackGuid = this.Guid,
+                    PositionGuid = pos.Guid,
+                    Position = pos,
+                };
+                TrackPoints.Add(smoothedTrackPoint);
+            }
         }
     }
 }

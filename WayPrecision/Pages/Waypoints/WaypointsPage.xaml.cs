@@ -78,7 +78,7 @@ public partial class WaypointsPage : ContentPage
                     OnEyeClicked(sender, new EventArgs());
 
                 //navega a la página del mapa y muestra el waypoint
-                await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+                await Shell.Current.GoToAsync($"//MapPage?waypointGuid={waypoint.Guid}");
             }
         }
         catch (Exception ex)

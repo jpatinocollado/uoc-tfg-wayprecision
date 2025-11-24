@@ -1,5 +1,5 @@
-﻿using WayPrecision.Domain.Exceptions;
-using WayPrecision.Domain.Helpers.Gps.Smoothing;
+﻿using System.Globalization;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Map.Scripting;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services;
@@ -7,62 +7,29 @@ using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Pages.Maps
 {
-    /// <summary>
-    /// Estado del mapa encargado de gestionar la grabación y seguimiento de un track GPS.
-    /// </summary>
-    public class MapStateTracking : MapState
+    public class MapStateTrackingManual(IService<Track> trackService, IConfigurationService configurationService) : MapState
     {
-        private readonly TrackScriptBuilder _trackScriptBuilder;
-        private readonly IService<Track> _service;
-        private readonly IConfigurationService _configurationService;
-        private Configuration configuration;
-        private GpsPathSmoother _gpsPathSmoother;
+        private readonly TrackScriptBuilder _trackScriptBuilder = new();
+        private readonly IConfigurationService _configurationService = configurationService;
+        private readonly IService<Track> _trackService = trackService;
 
-        private Track CurrentTrack;
-        private bool IsListening = false;
-
-        private Position? LastPosition = null;
-
-        /// <summary>
-        /// Inicializa una nueva instancia de <see cref="MapStateTracking"/>.
-        /// </summary>
-        /// <param name="service">Servicio para la gestión de tracks.</param>
-        public MapStateTracking(IService<Track> service, IConfigurationService configurationService)
+        private Track CurrentTrack = new()
         {
-            _trackScriptBuilder = new TrackScriptBuilder();
-            _configurationService = configurationService;
-            _service = service;
-        }
+            Guid = Guid.NewGuid().ToString(),
+            TypeGeometry = TypeGeometry.LineString,
+            Created = DateTime.UtcNow.ToString("o"),
+            TrackPoints = [],
+            IsOpened = true,
+            IsManual = true
+        };
+
+        private bool IsListening = false;
 
         /// <summary>
         /// Inicializa el estado de seguimiento, crea el track y configura los controles y eventos.
         /// </summary>
         public override async void Init()
         {
-            configuration = await _configurationService.GetOrCreateAsync();
-            _gpsPathSmoother = new GpsPathSmoother
-            {
-                OutliersEnabled = configuration.OutliersFilterEnabled,
-                MovingAverageEnabled = configuration.MovingAverageFilterEnabled,
-                KalmanEnabled = configuration.KalmanFilterEnabled,
-                MinAccuracyMeters = configuration.GpsAccuracy,
-                MaxAcceptableSpeedMetersPerSec = 3.0,  // caminar
-                MaxJumpMeters = 10,                    // saltos razonables
-                MovingAverageWindow = 5,                // más estable
-                ProcessNoiseVariance = 5e-4,           // movimiento suave real
-                MeasurementNoiseVariance = 8e-5        // ruido GPS realista
-            };
-
-            //Crea una nueva instancia de Track
-            CurrentTrack = new()
-            {
-                Guid = Guid.NewGuid().ToString(),
-                TypeGeometry = TypeGeometry.LineString,
-                Created = DateTime.UtcNow.ToString("o"),
-                TrackPoints = new List<TrackPoint>(),
-                IsOpened = true
-            };
-
             //Mostramos el total de puntos
             Context.LbTotalPointsPublic.Text = "Puntos: 0";
 
@@ -169,9 +136,9 @@ namespace WayPrecision.Pages.Maps
                 // Pregunta al usuario si quiere cerrar el track
                 bool cerrarTrack = await Context.DisplayAlert(
                         "Finalizar Track",
-                        "¿Quieres cerrar el track?",
-                        "Sí",
-                        "No"
+                        "¿Como quieres el Track?",
+                        "Cerrado",
+                        "Abierto"
                     );
 
                 if (cerrarTrack)
@@ -191,11 +158,11 @@ namespace WayPrecision.Pages.Maps
                     nameTrack = await Context.DisplayPromptAsync("Nombre del Track", "Introduce el nombre del track:", accept: "Aceptar", cancel: "Cancelar", maxLength: 50);
 
                 CurrentTrack.Name = nameTrack;
-                CurrentTrack = await _service.CreateAsync(CurrentTrack);
+                CurrentTrack = await _trackService.CreateAsync(CurrentTrack);
 
                 await Context.ShowLoading("Calculando <br/> geometrías...");
 
-                Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                Context.TransitionTo(new MapStateDefault(_trackService, _configurationService));
 
                 // espera 10 segundos para que se calculen las medidas
                 await Task.Delay(4000);
@@ -239,7 +206,7 @@ namespace WayPrecision.Pages.Maps
                 if (cancelarTrack)
                 {
                     //Hacemos la transición de estado sin guardar el track
-                    Context.TransitionTo(new MapStateDefault(_service, _configurationService));
+                    Context.TransitionTo(new MapStateDefault(_trackService, _configurationService));
                 }
                 else
                 {
@@ -294,38 +261,52 @@ namespace WayPrecision.Pages.Maps
                     //Borra el dibujo anterior
                     Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
-                    if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
-                    {
-                        var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
-
-                        _gpsPathSmoother.UpdateParameters(interval, position.Accuracy);
-
-                        List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
-
-                        CurrentTrack.TrackPoints.Clear();
-                        foreach (var pos in positions)
-                        {
-                            pos.Guid = Guid.NewGuid().ToString();
-                            TrackPoint smoothedTrackPoint = new()
-                            {
-                                Guid = Guid.NewGuid().ToString(),
-                                TrackGuid = CurrentTrack.Guid,
-                                PositionGuid = pos.Guid,
-                                Position = pos,
-                            };
-                            CurrentTrack.TrackPoints.Add(smoothedTrackPoint);
-                        }
-                    }
-
                     //Pinta el Track en el mapa
                     Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
-
-                    LastPosition = position;
                 }
             }
             catch (Exception ex)
             {
                 GlobalExceptionManager.HandleException(ex, this.Context);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        public override async Task EvaluateJavascriptMessage(string evento, params string[] args)
+        {
+            switch (evento)
+            {
+                case "click":
+                    string lat = args.Length > 0 ? args[0] : string.Empty;
+                    string lng = args.Length > 1 ? args[1] : string.Empty;
+
+                    double latDouble = 0;
+                    double lngDouble = 0;
+
+                    if (double.TryParse(lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double latParsed))
+                        latDouble = latParsed;
+
+                    if (double.TryParse(lng, NumberStyles.Float, CultureInfo.InvariantCulture, out double lngParsed))
+                        lngDouble = lngParsed;
+
+                    Position position = new()
+                    {
+                        Guid = Guid.NewGuid().ToString(),
+                        Latitude = latDouble,
+                        Longitude = lngDouble,
+                        Accuracy = 0,
+                        Altitude = 0,
+                        Course = 0,
+                        Timestamp = DateTime.UtcNow,
+                    };
+
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        await AddPosition(position);
+                    });
+
+                    break;
             }
 
             await Task.CompletedTask;

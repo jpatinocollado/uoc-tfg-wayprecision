@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Exceptions;
+﻿using System.Globalization;
+using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
@@ -42,7 +43,7 @@ namespace WayPrecision.Pages.Maps
             //Registramos los eventos de los botones
             Context.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked += btnCreateTrackClicked;
+            Context.BtnCreateTrackPublic.Clicked += async (s, e) => await btnCreateTrackClicked();
 
             //dibujamos los elementos en el mapa
             Context.PaintElements();
@@ -56,7 +57,7 @@ namespace WayPrecision.Pages.Maps
             //Unregister buttons events
             Context.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked -= btnCreateTrackClicked;
+            Context.BtnCreateTrackPublic.Clicked -= async (s, e) => await btnCreateTrackClicked();
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace WayPrecision.Pages.Maps
             try
             {
                 // Lógica para crear un waypoint
-                if (Context._locationEnable && Context._lastPosition != null)
+                if (Context._locationEnable && Context._currentPosition != null)
                 {
                     DateTime dateTime = DateTime.UtcNow;
 
@@ -98,11 +99,11 @@ namespace WayPrecision.Pages.Maps
                         Created = dateTime.ToString("o"),
                         Position = new Position
                         {
-                            Latitude = Context._lastPosition.Latitude,
-                            Longitude = Context._lastPosition.Longitude,
-                            Accuracy = Context._lastPosition.Accuracy,
-                            Altitude = Context._lastPosition.Altitude,
-                            Course = Context._lastPosition.Course,
+                            Latitude = Context._currentPosition.Latitude,
+                            Longitude = Context._currentPosition.Longitude,
+                            Accuracy = Context._currentPosition.Accuracy,
+                            Altitude = Context._currentPosition.Altitude,
+                            Course = Context._currentPosition.Course,
                             Timestamp = dateTime
                         }
                     };
@@ -123,17 +124,28 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         /// <param name="sender">Origen del evento.</param>
         /// <param name="e">Argumentos del evento.</param>
-        private void btnCreateTrackClicked(object? sender, EventArgs e)
+        private async Task btnCreateTrackClicked()
         {
             try
             {
-                // Lógica para crear un track
-                if (Context._locationEnable && Context._lastPosition != null)
+                Configuration configuration = await _configurationService.GetOrCreateAsync();
+
+                if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString() &&
+                    Context._locationEnable &&
+                    Context._currentPosition != null)
                 {
-                    Context.TransitionTo(new MapStateTracking(_service, _configurationService));
+                    await Context.DisplayAlert("Crear Track", "Recuerda, si no ves la ruta, revisa los paraámetros de configuración", "Aceptar");
+                    Context.TransitionTo(new MapStateTrackingGps(_service, _configurationService));
+                }
+                else if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString())
+                {
+                    await Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
                 }
                 else
-                    Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+                {
+                    await Context.DisplayAlert("Crear Track", "El tracking está en modo Manual, para añadir puntos haz click en el mapa.", "Aceptar");
+                    Context.TransitionTo(new MapStateTrackingManual(_service, _configurationService));
+                }
             }
             catch (Exception ex)
             {
@@ -148,6 +160,64 @@ namespace WayPrecision.Pages.Maps
         public override async Task AddPosition(Position lastPosition)
         {
             //En el estado por defecto no se realiza ninguna acción al agregar una posición
+
+            await Task.CompletedTask;
+        }
+
+        public override async Task EvaluateJavascriptMessage(string evento, params string[] args)
+        {
+            switch (evento)
+            {
+                case "editWaypoint":
+                    string idWaypoint = args.Length > 0 ? args[0] : string.Empty;
+                    Context.EditWaypoint(idWaypoint);
+                    break;
+
+                case "dblclick":
+                    string lat = args.Length > 0 ? args[0] : string.Empty;
+                    string lng = args.Length > 1 ? args[1] : string.Empty;
+
+                    double latDouble = 0;
+                    double lngDouble = 0;
+
+                    if (double.TryParse(lat, NumberStyles.Float, CultureInfo.InvariantCulture, out double latParsed))
+                        latDouble = latParsed;
+
+                    if (double.TryParse(lng, NumberStyles.Float, CultureInfo.InvariantCulture, out double lngParsed))
+                        lngDouble = lngParsed;
+
+                    Context.CreateWaypoint(latDouble, lngDouble);
+                    break;
+
+                case "editTrack":
+                    string idTrack = args.Length > 0 ? args[0] : string.Empty;
+                    Context.EditTrack(idTrack);
+                    break;
+
+                case "updateTrack":
+                    string idUpdatedTrack = args.Length > 0 ? args[0] : string.Empty;
+                    double? trackLength = null;
+                    double? trackArea = null;
+                    double? trackPerimeter = null;
+
+                    if (args.Length > 1 && double.TryParse(args[1],
+                        NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double lengthParsed))
+                        trackLength = lengthParsed;
+
+                    if (args.Length > 2 && double.TryParse(args[2],
+                        NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double areaParsed))
+                        trackArea = areaParsed;
+
+                    if (args.Length > 3 && double.TryParse(args[3],
+                        NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out double perimeterParsed))
+                        trackPerimeter = perimeterParsed;
+
+                    await Context.UpdateTrackDataGeometry(idUpdatedTrack, trackLength, trackArea, trackPerimeter);
+                    break;
+            }
 
             await Task.CompletedTask;
         }

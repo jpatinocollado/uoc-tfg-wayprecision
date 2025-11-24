@@ -80,7 +80,7 @@ public partial class TracksPage : ContentPage
                     OnEyeClicked(sender, new EventArgs());
 
                 //navega a la página del mapa y muestra el track
-                await Shell.Current.GoToAsync($"//MainPage?trackGuid={track.Guid}");
+                await Shell.Current.GoToAsync($"//MapPage?trackGuid={track.Guid}");
             }
         }
         catch (Exception ex)

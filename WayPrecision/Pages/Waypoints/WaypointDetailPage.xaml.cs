@@ -112,7 +112,7 @@ public partial class WaypointDetailPage : ContentPage
         try
         {
             Waypoint waypoint = (Waypoint)BindingContext;
-            await Shell.Current.GoToAsync($"//MainPage?waypointGuid={waypoint.Guid}");
+            await Shell.Current.GoToAsync($"//MapPage?waypointGuid={waypoint.Guid}");
         }
         catch (Exception ex)
         {
