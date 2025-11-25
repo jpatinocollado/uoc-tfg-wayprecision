@@ -46,11 +46,11 @@ namespace WayPrecision.Pages.Maps
 
             _gpsParameters = new GpsParameters
             {
-                KalmanEnabled = configuration.KalmanFilterEnabled,
                 OutliersEnabled = configuration.OutliersFilterEnabled,
                 MinAccuracyMeters = configuration.GpsAccuracy,
                 // no procesamos el moving average si estamos recolectando posiciones
                 MovingAverageEnabled = false,
+                KalmanEnabled = false,
             };
 
             //Crea una nueva instancia de Track
