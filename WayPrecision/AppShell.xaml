@@ -25,7 +25,7 @@
     </Shell.FlyoutHeader>
 
     <FlyoutItem Title="Mapa" Icon="mapa32x32.png">
-        <ShellContent Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent Route="MapPage" ContentTemplate="{DataTemplate local:MapPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Waypoints" Icon="waypoint32x32.png">
@@ -36,9 +36,13 @@
         <ShellContent Route="TracksPage" ContentTemplate="{DataTemplate local:TracksPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Configuración" Icon="config32x32.png">
-        <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
-    </FlyoutItem>
+    <MenuItem Text="Configuración"
+          IconImageSource="config32x32.png"
+          Clicked="OnSettingsPageClicked" />
+
+    <MenuItem Text="Licencia"
+              IconImageSource="balance32x32.png"
+              Clicked="OnLicenseClicked" />
 
     <!-- Pie del menú lateral -->
     <Shell.FlyoutFooter>
@@ -60,7 +64,7 @@
                 </Image>
             </HorizontalStackLayout>
 
-            <Label Text="jpcollado@uoc.edu"
+            <Label Text="jpc_paty@hotmail.com"
            FontSize="14"
            Grid.Row="1"
            TextColor="CornflowerBlue">
@@ -77,13 +81,3 @@
         </Grid>
     </Shell.FlyoutFooter>
 </Shell>
-
-<!--<a href="https://www.flaticon.com/free-icons/stop-icon" title="stop icon icons">Stop icon icons created by Creative Squad - Flaticon</a>-->
-<!--<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by Debi Alpa Nugraha - Flaticon</a>-->
-<!--<a href="https://www.flaticon.com/free-icons/pause" title="pause icons">Pause icons created by IYAHICON - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/pin-de-ubicacion" title="pin de ubicación iconos">Pin de ubicación iconos creados por -Artist - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/mapas-y-ubicacion" title="mapas y ubicación iconos">Mapas y ubicación iconos creados por -Artist - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/pin-de-ubicacion" title="pin de ubicación iconos">Pin de ubicación iconos creados por -Artist - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/durable" title="durable iconos">Durable iconos creados por Icon Hubs - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/engranaje" title="engranaje iconos">Engranaje iconos creados por Freepik - Flaticon</a>-->
-<!--<a href="https://www.flaticon.es/iconos-gratis/turismo" title="turismo iconos">Turismo iconos creados por -Artist - Flaticon</a>-->

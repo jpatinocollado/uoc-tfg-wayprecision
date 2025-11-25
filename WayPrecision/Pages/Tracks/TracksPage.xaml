@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WayPrecision.TracksPage"
+             Title="Tracks">
+    <Grid RowDefinitions="Auto,*">
+        <CollectionView x:Name="WaypointsList"  Grid.Row="1"
+             ItemsSource="{Binding Tracks}"
+             SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame  BackgroundColor="{StaticResource White}" CornerRadius="8">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <!--<Label Text="{Binding FinalizedLocal, StringFormat='Finalizado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />-->
+                                <Label Text="{Binding Duration, StringFormat='Duración: {0:hh\\:mm\\:ss}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding TotalPoints, StringFormat='Posiciones GPS: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding AreaLocal, StringFormat='Área: {0}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray400}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsOpened}"
+                                                     Value="True">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Label Text="{Binding LengthLocal, StringFormat='Longitud: {0}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray400}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding IsOpened}"
+                                                     Value="True">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Label Text="{Binding Observation, StringFormat='Observaciones: {0}'}"
+                                   FontSize="12"
+                                   TextColor="{StaticResource Gray400}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                 Binding="{Binding Observation}"
+                                                 Value="">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label"
+                                                 Binding="{Binding Observation}"
+                                                 Value="{x:Null}">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="12" VerticalOptions="Center">
+                                <Button x:Name="btnEditar" Text=""
+                             Clicked="OnEditClicked"
+                             CommandParameter="{Binding .}"
+                             FontSize="12"
+                             Padding="4,0"
+                                        ImageSource="editing32x32.png"
+                             Style="{StaticResource SecondaryButton}" />
+
+                                <Button x:Name="btnBuscar" Text=""
+                                 Clicked="OnViewOnMapClicked"
+                                 CommandParameter="{Binding .}"
+                                 FontSize="12"
+                                 Padding="4,0"
+                                        ImageSource="binoculars32x32.png"
+                             Style="{StaticResource SecondaryButton}" />
+                                <Button x:Name="btnOcultar" Text=""
+                                   Clicked="OnEyeClicked"
+                                   CommandParameter="{Binding .}"
+                                   FontSize="12"
+                                   Padding="4,0"
+                                    ImageSource="{Binding GetEyeImage}"
+                                   Style="{StaticResource SecondaryButton}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

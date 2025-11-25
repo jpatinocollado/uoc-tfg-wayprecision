@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace WayPrecision.Domain.Data.Repositories
 {
@@ -17,6 +13,12 @@ namespace WayPrecision.Domain.Data.Repositories
         /// </summary>
         /// <returns>Una lista de todas las entidades.</returns>
         Task<List<T>> GetAllAsync();
+
+        /// <summary>
+        /// Obtiene todas las entidades de la tabla correspondiente que coinciden con el predicado.
+        /// </summary>
+        /// <returns>Una lista de todas las entidades.</returns>
+        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> predicate);
 
         /// <summary>
         /// Obtiene una entidad por su identificador único.

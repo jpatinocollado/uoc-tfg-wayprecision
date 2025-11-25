@@ -1,13 +1,13 @@
-﻿using WayPrecision.Domain.Services;
-using WayPrecision.Domain.Data;
+﻿using WayPrecision.Domain.Data;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Data.UnitOfWork;
+using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Test
 {
     public class ConfigurationServiceIntegrationTests
     {
-        private readonly ConfigurationService _service;
+        private readonly IConfigurationService _service;
         private readonly IUnitOfWork _unitOfWork;
 
         public ConfigurationServiceIntegrationTests()

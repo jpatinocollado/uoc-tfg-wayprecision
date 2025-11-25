@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Models;
+﻿using WayPrecision.Domain.Helpers.Colors;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Map.Scripting
 {
@@ -8,30 +9,14 @@ namespace WayPrecision.Domain.Map.Scripting
         {
         }
 
-        public TrackScriptBuilder ClearTracks()
-        {
-            Script.Append(GetClearTracks());
-            return this;
-        }
-
-        public MapScriptBuilder FitTrack(string id)
-        {
-            Script.Append($"TrackManagerService.FitTrack('{id}');");
-            return this;
-        }
-
-        public MapScriptBuilder UpdateTracks(List<Track> tracks)
-        {
-            tracks.ForEach(track =>
-            {
-                Script.Append(GetTrack(track));
-            });
-            return this;
-        }
-
         public string GetClearTracks()
         {
             return "TrackManagerService.ClearTracks();";
+        }
+
+        public string GetFitTrack(string id)
+        {
+            return $"TrackManagerService.FitTrack('{id}');";
         }
 
         public string GetTrack(Track track)
@@ -62,28 +47,33 @@ namespace WayPrecision.Domain.Map.Scripting
                 }
             });
 
+            int weight = track.IsOpened ? 5 : 2;
+
             return "TrackManagerService.AddTrack({ " +
-                               "id: '" + track.Guid + "', " +
-                               "name: '" + track.Name + "', " +
-                               "description: '" + track.Observation + "', " +
-                               "color: '#31882A', " +
-                               "fillColor: '#2AAD27', " +
+                               $"id: '{track.Guid}', " +
+                               $"name: '{track.Name}', " +
+                               $"description: '{track.Observation}', " +
+                               $"visible: {track.IsVisible.ToString().ToLower()}, " +
+                               $"length: '{track.LengthLocal}', " +
+                               $"area: '{track.AreaLocal}', " +
+                               $"color: '{MapColorConverter.GetOutsideHexadecimal(track.ColorBorde)}', " +
+                               $"fillColor: '{MapColorConverter.GetInsideHexadecimal(track.ColorRelleno)}', " +
                                "opacity: 1.0, " +
                                "fillopacity: 0.5, " +
-                               "weight: 2, " +
-                               "type: '" + track.TypeGeometry.ToString() + "', " +
+                               $"weight: {weight}, " +
+                               $"type: '{track.TypeGeometry.ToString()}', " +
                                "polygon: { " +
                                     "type: 'Feature'," +
                                     "geometry: {" +
                                         "type: 'Polygon'," +
-                                        "coordinates: [[" + coordsPolygon + "]]" +
+                                        $"coordinates: [[{coordsPolygon}]]" +
                                     "}" +
                                 "}," +
                                 "lineString: { " +
                                     "type: 'Feature'," +
                                     "geometry: {" +
                                         "type: 'LineString'," +
-                                        "coordinates: [" + coordsLinea + "]" +
+                                        $"coordinates: [{coordsLinea}]" +
                                     "}" +
                                 "}" +
                               " });";

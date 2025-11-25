@@ -10,6 +10,7 @@ namespace WayPrecision
         {
             base.ConnectHandler(platformView);
 
+            // Habilitar JavaScript
             platformView.Settings.JavaScriptEnabled = true;
 
             // Registrar JS Bridge
@@ -22,18 +23,12 @@ namespace WayPrecision
             [Java.Interop.Export("postMessage")]
             public void PostMessage(string message)
             {
-                // Ejecutar en hilo principal
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
+                    // enviamos el mensaje al gestor de mensajes
                     WebViewMessageManager.EvaluateMessage(message);
                 });
             }
-        }
-
-        // Método para enviar mensaje desde C# -> JS
-        public void SendMessageToJs(string msg)
-        {
-            PlatformView?.EvaluateJavascript($"showMessage('{msg}')", null);
         }
     }
 }

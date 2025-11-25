@@ -8,38 +8,16 @@ namespace WayPrecision.Domain.Map.Scripting
         {
         }
 
-        public WaypointScriptBuilder ClearWaypoints()
-        {
-            Script.Append(GetClearWaypoints());
-
-            return this;
-        }
-
-        public MapScriptBuilder FitWaypoint(string id)
-        {
-            Script.Append(GetFitWaypoint(id));
-
-            return this;
-        }
-
-        public MapScriptBuilder UpdateWaypoints(List<Waypoint> waypoints)
-        {
-            waypoints.ForEach(waypoint =>
-            {
-                Script.Append(GetWaypoint(waypoint));
-            });
-
-            return this;
-        }
-
         public string GetClearWaypoints()
         {
             return "WaypointManagerService.ClearWaypoints();";
         }
+
         public string GetFitWaypoint(string id)
         {
             return $"WaypointManagerService.FitWaypoint('{id}');";
         }
+
         public string GetWaypoint(Waypoint waypoint)
         {
             string lat = waypoint.Position.Latitude.ToString().Replace(',', '.');
@@ -49,6 +27,7 @@ namespace WayPrecision.Domain.Map.Scripting
                               $"id: '{waypoint.Guid}', " +
                               $"name: '{waypoint.Name}', " +
                               $"description: '{waypoint.Observation}', " +
+                              $"visible: {waypoint.IsVisible.ToString().ToLower()}, " +
                               $"lat: {lat}, " +
                               $"lng: {lng} " +
                               " });";
