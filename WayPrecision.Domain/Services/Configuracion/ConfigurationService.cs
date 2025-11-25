@@ -63,7 +63,8 @@ namespace WayPrecision.Domain.Services.Configuracion
                 MovingAverageFilterEnabled = true,
                 OutliersFilterEnabled = true,
                 KalmanFilterEnabled = true,
-                TrackingMode = TrackingModeEnum.GPS.ToString()
+                TrackingMode = TrackingModeEnum.GPS.ToString(),
+                CsvPositions = string.Empty,
             };
         }
     }

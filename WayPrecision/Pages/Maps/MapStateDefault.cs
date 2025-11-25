@@ -43,7 +43,7 @@ namespace WayPrecision.Pages.Maps
             //Registramos los eventos de los botones
             Context.BtnGpsDataPublic.Clicked += BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked += btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked += async (s, e) => await btnCreateTrackClicked();
+            Context.BtnCreateTrackPublic.Clicked += BtnCreateTrackClickedHandler;
 
             //dibujamos los elementos en el mapa
             Context.PaintElements();
@@ -57,7 +57,7 @@ namespace WayPrecision.Pages.Maps
             //Unregister buttons events
             Context.BtnGpsDataPublic.Clicked -= BtnGpsDataClicked;
             Context.BtnCreateWaypointPublic.Clicked -= btnCreateWaypointClicked;
-            Context.BtnCreateTrackPublic.Clicked -= async (s, e) => await btnCreateTrackClicked();
+            Context.BtnCreateTrackPublic.Clicked -= BtnCreateTrackClickedHandler;
         }
 
         /// <summary>
@@ -119,6 +119,12 @@ namespace WayPrecision.Pages.Maps
             }
         }
 
+        // Wrapper async void para usar como manejador de evento (permitido para eventos UI)
+        private async void BtnCreateTrackClickedHandler(object? sender, EventArgs e)
+        {
+            await btnCreateTrackClicked();
+        }
+
         /// <summary>
         /// Evento que gestiona la transición al estado de seguimiento de track si la ubicación está habilitada.
         /// </summary>
@@ -140,6 +146,11 @@ namespace WayPrecision.Pages.Maps
                 else if (configuration.TrackingMode == TrackingModeEnum.GPS.ToString())
                 {
                     await Context.DisplayAlert("Crear Track", "La ubicación no está habilitada o no se ha obtenido una ubicación válida.", "Aceptar");
+                }
+                else if (configuration.TrackingMode == TrackingModeEnum.CSV.ToString())
+                {
+                    await Context.DisplayAlert("Crear Track", "La ubicación está siendo simulada por CSV", "Aceptar");
+                    Context.TransitionTo(new MapStateTrackingGps(_service, _configurationService));
                 }
                 else
                 {

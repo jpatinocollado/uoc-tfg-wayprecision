@@ -39,6 +39,10 @@ namespace WayPrecision.Domain.Helpers.Gps.Outliers
 
         public bool IsInvalid(Position? last, Position current)
         {
+            //si el filtro está deshabilitado, ningún punto es outlier
+            if (!GpsParameters.OutliersEnabled)
+                return false;
+
             if (current.Accuracy.HasValue &&
                 current.Accuracy.Value > GpsParameters.MinAccuracyMeters &&
                 GpsParameters.MinAccuracyMeters > 0)

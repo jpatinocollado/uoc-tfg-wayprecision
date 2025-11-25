@@ -18,6 +18,8 @@ namespace WayPrecision.Domain.Models
         public bool KalmanFilterEnabled { get; set; } = true;
         public bool MovingAverageFilterEnabled { get; set; } = true;
         public bool OutliersFilterEnabled { get; set; } = true;
-        public string TrackingMode { get; set; }
+        public string TrackingMode { get; set; } = TrackingModeEnum.GPS.ToString();
+
+        public string CsvPositions { get; set; } = String.Empty;
     }
 }
