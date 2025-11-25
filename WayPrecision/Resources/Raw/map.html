@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset='utf-8' />
+    <title>GPS Map</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='https://unpkg.com/leaflet/dist/leaflet.css' />
+
+    <!--MarkerCluster-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <!--background-color: #333333;-->
+    <div id='map'></div>
+
+    <!--Jquery-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!--Turf-->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+
+    <!--leaflet-->
+    <script src='https://unpkg.com/leaflet/dist/leaflet.js'></script>
+
+    <!--MarkerCluster-->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
+
+    <!--L.easyButton`s-->
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/easy-button.js"></script>
+
+    <!--Leaflet Rotated Marker-->
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/leaflet.rotatedMarker.js"></script>
+
+    <!--Loading-->
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/jquery.loading.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/LoadingManagerService.js"></script>
+
+    <!--JS de Aplicación-->
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/MapBackendManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/MapGpsManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/MapEventsManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/WaypointManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/TrackManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/MapLayersManagerService.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jpatinocollado/uoc-tfg-wayprecision@0.0.13/WayPrecision/Resources/Raw/Javascript/MapManagerService.js"></script>
+
+    <!--Screen init-->
+    <script>
+        $(document).ready(function () {
+            LoadingManagerService.Show("Cargando mapa...");
+            MapManagerService.IniciarPantalla(1, true, 1);
+
+            replaceAttributionLink();
+        });
+
+        function replaceAttributionLink() {
+            var attribution = document.querySelector('.leaflet-control-attribution.leaflet-control');
+            if (!attribution) return;
+
+            var link = attribution.querySelector('a');
+            if (link) {
+                // Creamos un span para reemplazar el enlace
+                var span = document.createElement('span');
+                span.title = link.title;
+                span.innerHTML = link.innerHTML; // Conserva el SVG y el texto
+
+                // Reemplazamos el enlace por el span
+                attribution.replaceChild(span, link);
+            }
+        }
+    </script>
+</body>
+</html>
