@@ -17,6 +17,12 @@
         }
     }
 
+    // helper para formatear a 2 decimales
+    const fmt2 = (v) => {
+        if (v === null || v === undefined || isNaN(Number(v))) return '-';
+        return Number(v).toFixed(2);
+    };
+
     let addTrack = function (track) {
         console.log('Add Track', track);
 
@@ -32,7 +38,7 @@
             if (track.length)
                 alt += '<br /> Longitud: ' + track.length;
             else
-                alt += '<br /> Longitud: ' + lineLength;
+                alt += '<br /> Longitud: ' + fmt2(lineLength) + 'm';
         } else {
             type = track.polygon;
             polygonArea = turf.area(track.polygon);

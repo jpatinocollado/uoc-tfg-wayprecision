@@ -18,13 +18,13 @@ namespace WayPrecision.Pages.Maps
         private readonly TrackScriptBuilder _trackScriptBuilder;
         private readonly IService<Track> _trackService;
         private readonly IConfigurationService _configurationService;
-        private Configuration configuration;
-        private GpsParameters _gpsParameters;
+        //private Configuration configuration;
+        //private GpsParameters _gpsParameters;
 
         private Track CurrentTrack;
         private bool IsListening = false;
 
-        private Position? LastPosition = null;
+        //private Position? LastPosition = null;
 
         /// <summary>
         /// Inicializa una nueva instancia de <see cref="MapStateTrackingGps"/>.
@@ -42,16 +42,16 @@ namespace WayPrecision.Pages.Maps
         /// </summary>
         public override async void Init()
         {
-            configuration = await _configurationService.GetOrCreateAsync();
+            //configuration = await _configurationService.GetOrCreateAsync();
 
-            _gpsParameters = new GpsParameters
-            {
-                OutliersEnabled = configuration.OutliersFilterEnabled,
-                MinAccuracyMeters = configuration.GpsAccuracy,
-                // no procesamos el moving average si estamos recolectando posiciones
-                MovingAverageEnabled = false,
-                KalmanEnabled = false,
-            };
+            //_gpsParameters = new GpsParameters
+            //{
+            //    OutliersEnabled = configuration.OutliersFilterEnabled,
+            //    MinAccuracyMeters = configuration.GpsAccuracy,
+            //    // no procesamos el moving average si estamos recolectando posiciones
+            //    MovingAverageEnabled = false,
+            //    KalmanEnabled = false,
+            //};
 
             //Crea una nueva instancia de Track
             CurrentTrack = new()
@@ -292,26 +292,36 @@ namespace WayPrecision.Pages.Maps
                     //Actualiza el total de puntos
                     Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count}";
 
+                    if (CurrentTrack.TrackPoints.Count > 1)
+                    {
+                        double sum = 0;
+                        for (int i = 1; i < CurrentTrack.TrackPoints.Count; i++)
+                            sum += CurrentTrack.TrackPoints[i - 1].Position.DistanceTo(CurrentTrack.TrackPoints[i].Position);
+
+                        sum = Math.Round(sum, 2);
+                        Context.LbTotalPointsPublic.Text = $"Puntos: {CurrentTrack.TrackPoints.Count} / Longitud: {sum} m";
+                    }
+
                     //Borra el dibujo anterior
                     Context.ExecuteJavaScript(_trackScriptBuilder.GetClearTracks());
 
-                    //Aplica filtros y suavizados
-                    if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
-                    {
-                        var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
-                        _gpsParameters.UpdateParameters(interval, position.Accuracy);
+                    ////Aplica filtros y suavizados
+                    //if (LastPosition != null && CurrentTrack.TotalPoints >= 3 && configuration.KalmanFilterEnabled)
+                    //{
+                    //    var interval = (position.Timestamp - LastPosition.Timestamp).TotalSeconds;
+                    //    _gpsParameters.UpdateParameters(interval, position.Accuracy);
 
-                        GpsPathSmoother _gpsPathSmoother = new GpsPathSmoother(_gpsParameters);
+                    //    GpsPathSmoother _gpsPathSmoother = new GpsPathSmoother(_gpsParameters);
 
-                        List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
+                    //    List<Position> positions = _gpsPathSmoother.SmoothBatch(CurrentTrack.TrackPoints.Select(a => a.Position).ToList());
 
-                        CurrentTrack.ReplacePositions(positions);
-                    }
+                    //    CurrentTrack.ReplacePositions(positions);
+                    //}
 
                     //Pinta el Track en el mapa
                     Context.ExecuteJavaScript(_trackScriptBuilder.GetTrack(CurrentTrack));
 
-                    LastPosition = position;
+                    //LastPosition = position;
                 }
             }
             catch (Exception ex)
