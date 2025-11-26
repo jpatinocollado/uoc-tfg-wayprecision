@@ -105,7 +105,57 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\AppIcon\square150x150logo.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-400.png" />
 	  <None Remove="Resources\Splash\splashscreen.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-100.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-125.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-150.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-200.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-400.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -153,9 +203,159 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiAsset Include="Resources\Splash\splashscreen.png">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </MauiAsset>
+	  <Content Include="Resources\AppIcon\square150x150logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>
