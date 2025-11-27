@@ -73,7 +73,7 @@
                 </Label.GestureRecognizers>
             </Label>
 
-            <Label Text="Versión 0.0.1"
+            <Label x:Name="lbVersion" Text="Versión 0.0.1"
                FontSize="12"
                Grid.Row="2"
                TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />

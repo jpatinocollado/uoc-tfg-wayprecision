@@ -36,6 +36,8 @@ namespace WayPrecision
             });
 
             BindingContext = this;
+
+            lbVersion.Text = $"Versión: {App.AppVersion}";
         }
 
         /// <summary>
