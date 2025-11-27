@@ -11,3 +11,6 @@
 /WayPrecision.Domain/obj
 /WayPrecision.Test/bin/Debug/net9.0
 /WayPrecision.Test/obj
+/WayPrecision/bin/Release
+/WayPrecision.Domain/bin/Release
+/WayPrecision.Test/bin/Release/net9.0
