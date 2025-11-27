@@ -82,8 +82,6 @@ namespace WayPrecision
             CheckInitialConnectivity();
         }
 
-       
-
         #region MAP INITIALIZATION
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
