@@ -25,22 +25,7 @@ Este proyecto hace uso de las siguientes tecnologías y recursos de terceros:
 - **jQuery Loading**: [MIT License](https://github.com/CarlosBonetti/jquery-loading/blob/master/LICENSE) Plugin jQuery para mostrar indicadores de carga. Licencia MIT. [https://carlosbonetti.github.io/jquery-loading/](https://carlosbonetti.github.io/jquery-loading/)
 - **Turf.js**: [MIT License](https://github.com/Turfjs/turf/blob/master/LICENSE) Biblioteca JavaScript para operaciones geoespaciales. Licencia MIT. [https://turfjs.org](https://turfjs.org)
 - **jsdelivr**: [MIT License](https://github.com/jsdelivr/jsdelivr/blob/master/LICENSE.md) CDN gratuito y de código abierto para librerías JavaScript. Licencia MIT. [https://www.jsdelivr.com](https://www.jsdelivr.com)
-- **Iconos de la aplicación**: Los iconos utilizados en la aplicación han sido obtenidos de [Flaticon](https://www.flaticon.com/) y se reconocen según la política de atribución de Flaticon:
-  - [Law icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/law)
-  - [Stop icon icons created by Creative Squad - Flaticon](https://www.flaticon.com/free-icons/stop-icon)
-  - [Pause icons created by Debi Alpa Nugraha - Flaticon](https://www.flaticon.com/free-icons/pause)
-  - [Pin de ubicación icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/pin-de-ubicacion)
-  - [Mapas y ubicación icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/mapas-y-ubicacion)
-  - [Durable icons created by Icon Hubs - Flaticon](https://www.flaticon.es/iconos-gratis/durable)
-  - [Engranaje icons created by Freepik - Flaticon](https://www.flaticon.es/iconos-gratis/engranaje)
-  - [Turismo icons created by -Artist - Flaticon](https://www.flaticon.es/iconos-gratis/turismo)
-  - [Close icons created by Pixel perfect - Flaticon](https://www.flaticon.com/free-icons/close)
-  - [Satelite icons created by Muhammad Atif - Flaticon](https://www.flaticon.com/free-icons/satelite)
-  - [Location searching icons created by IconBaandar - Flaticon](https://www.flaticon.com/free-icons/location-searching)
-  - [Editing icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/editing)
-  - [Eye password icons created by sonnycandra - Flaticon](https://www.flaticon.com/free-icons/eye-password)
-  - [Looking icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/looking)
-
+- **Google Material Icons**: Los iconos de Google Material utilizados en la aplicación han sido obtenidos de [Google Fonts Icons](https://fonts.google.com/icons) y se distribuyen bajo la [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.html).
 
 Se reconoce y respeta la propiedad intelectual de estos proyectos y recursos, y se han utilizado conforme a sus respectivas licencias y políticas de atribución.
 
