@@ -76,12 +76,12 @@
     </Style>
 
     <Style TargetType="Button" x:Key="SecondaryButton">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource Primary500}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource Primary500}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource Gray100 }}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="BorderWidth" Value="2" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="14,10" />
         <Setter Property="MinimumHeightRequest" Value="44" />
@@ -93,7 +93,7 @@
                     <VisualState x:Name="Disabled">
                         <VisualState.Setters>
                             <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray200}}" />
-                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray400}}" />
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="PointerOver" />
@@ -103,7 +103,7 @@
     </Style>
 
     <Style TargetType="Button" x:Key="TertiaryButton">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource Primary500}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary500}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="FontSize" Value="14" />
