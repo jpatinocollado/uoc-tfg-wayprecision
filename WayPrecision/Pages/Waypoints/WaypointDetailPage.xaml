@@ -11,30 +11,39 @@
             <Label Text="Creado" FontAttributes="Bold" />
             <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                  IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
-                 BackgroundColor="{DynamicResource Gray200}" />
+                 TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
 
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="16" RowSpacing="8">
                 <!-- Primera fila: Latitud y Longitud -->
                 <VerticalStackLayout Grid.Column="0" Grid.Row="0">
                     <Label Text="Latitud" FontAttributes="Bold" />
-                    <Editor Text="{Binding Position.Latitude}" BackgroundColor="{DynamicResource Gray200}"
-             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding Position.Latitude}" 
+                    IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Grid.Row="0">
                     <Label Text="Longitud" FontAttributes="Bold" />
-                    <Editor Text="{Binding Position.Longitude}" BackgroundColor="{DynamicResource Gray200}"
-             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding Position.Longitude}" 
+                    IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}"/>
                 </VerticalStackLayout>
                 <!-- Segunda fila: Altitud y Precisión -->
                 <VerticalStackLayout Grid.Column="0" Grid.Row="1">
                     <Label Text="Altitud" FontAttributes="Bold" />
-                    <Editor Text="{Binding Position.Altitude}" BackgroundColor="{DynamicResource Gray200}"
-             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding Position.Altitude}" 
+                     IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" Grid.Row="1">
                     <Label Text="Precisión" FontAttributes="Bold" />
-                    <Editor Text="{Binding Position.Accuracy}" BackgroundColor="{DynamicResource Gray200}"
-             IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding Position.Accuracy}" 
+                     IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
             </Grid>
 

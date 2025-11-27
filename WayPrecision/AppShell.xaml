@@ -8,10 +8,9 @@
     Title="WayPrecision">
 
     <Shell.FlyoutHeader>
-        <Grid Padding="15"
-      BackgroundColor="{AppThemeBinding Light=#f5f5f5, Dark=#f5f5f5}">
+        <Grid Padding="15"  BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource MidnightBlack}}">
             <HorizontalStackLayout VerticalOptions="Center">
-                <Image Source="icon32x32.png"
+                <Image Source="icon150x150.png"
                HeightRequest="32"
                WidthRequest="32"
                Margin="0,0,10,0" />
@@ -24,37 +23,37 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Mapa" Icon="mapa32x32.png">
+    <FlyoutItem Title="Mapa" Icon="{AppThemeBinding Light=mapa32x32.png, Dark=mapa32x32dark.png}">
         <ShellContent Route="MapPage" ContentTemplate="{DataTemplate local:MapPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Waypoints" Icon="waypoint32x32.png">
+    <FlyoutItem Title="Waypoints" Icon="{AppThemeBinding Light=waypoint32x32.png, Dark=waypoint32x32dark.png}">
         <ShellContent Route="WaypointsPage" ContentTemplate="{DataTemplate local:WaypointsPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Tracks" Icon="track32x32.png">
+    <FlyoutItem Title="Tracks" Icon="{AppThemeBinding Light=track32x32.png, Dark=track32x32dark.png}">
         <ShellContent Route="TracksPage" ContentTemplate="{DataTemplate local:TracksPage}" />
     </FlyoutItem>
 
     <MenuItem Text="Configuración"
-          IconImageSource="config32x32.png"
+          IconImageSource="{AppThemeBinding Light=config32x32.png, Dark=config32x32dark.png}"
           Clicked="OnSettingsPageClicked" />
 
     <MenuItem Text="Licencia"
-              IconImageSource="balance32x32.png"
+              IconImageSource="{AppThemeBinding Light=balance32x32.png, Dark=balance32x32dark.png}"
               Clicked="OnLicenseClicked" />
 
     <!-- Pie del menú lateral -->
     <Shell.FlyoutFooter>
         <Grid Padding="15" RowDefinitions="Auto,Auto,Auto"
-          BackgroundColor="{AppThemeBinding Light=#f5f5f5, Dark=#222}">
+          BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource MidnightBlack}}">
             <HorizontalStackLayout Grid.Row="0" Spacing="8" VerticalOptions="Center">
                 <Label Text="Jesús Patiño Collado"
        FontSize="16"
        FontAttributes="Bold"
        TextColor="{AppThemeBinding Light=Black, Dark=White}" />
 
-                <Image Source="link32x32.png"
+                <Image Source="{AppThemeBinding Light=link32x32.png, Dark=link32x32dark.png}"
        HeightRequest="20"
        WidthRequest="20"
        VerticalOptions="Center">
@@ -74,7 +73,7 @@
                 </Label.GestureRecognizers>
             </Label>
 
-            <Label Text="Versión 0.0.1"
+            <Label x:Name="lbVersion" Text="Versión 0.0.1"
                FontSize="12"
                Grid.Row="2"
                TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />

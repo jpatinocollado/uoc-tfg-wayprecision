@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks>net9.0-maccatalyst;net9.0-android</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
 
@@ -31,7 +30,7 @@
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<WindowsPackageType>None</WindowsPackageType>
+		<WindowsPackageType>MSIX</WindowsPackageType>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
@@ -40,7 +39,17 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>es</DefaultLanguage>
-		<PackageIcon>designer.png</PackageIcon>
+		<PackageIcon>appicon.png</PackageIcon>
+		<AssemblyVersion>0.0.13.0</AssemblyVersion>
+		<FileVersion>0.0.13.0</FileVersion>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+		<PackageCertificateThumbprint>66B10900056D9AEB9AFEE2CADA1B83584E19BA43</PackageCertificateThumbprint>
+		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
@@ -75,6 +84,10 @@
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
 	</PropertyGroup>
 
+	<PropertyGroup>
+	  <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#dddddd" BaseSize="400,430" />
@@ -93,13 +106,63 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+	  <None Remove="Resources\AppIcon\square150x150logo.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square150x150logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square310x310logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-16.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-24.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-256.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-32.png" />
+	  <None Remove="Resources\AppIcon\square44x44logo.targetsize-48.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\square71x71logo.scale-400.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-100.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-125.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-150.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-200.png" />
+	  <None Remove="Resources\AppIcon\wide310x150logo.scale-400.png" />
+	  <None Remove="Resources\Splash\splashscreen.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-100.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-125.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-150.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-200.png" />
+	  <None Remove="Resources\Splash\splashscreen.scale-400.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\WayPrecision.Domain\WayPrecision.Domain.csproj" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -130,10 +193,174 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Resources\AppIcon\appicon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Update="Resources\AppIcon\designer.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Domain\Helpers\Gps\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\AppIcon\square150x150logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square150x150logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square310x310logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-lightunplated_targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.altform-unplated_targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-16.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-24.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-256.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-32.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square44x44logo.targetsize-48.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\square71x71logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\AppIcon\wide310x150logo.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-100.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-125.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-150.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-200.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.scale-400.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Splash\splashscreen.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>
