@@ -14,27 +14,32 @@
                     <Label Text="Creado" FontAttributes="Bold" />
                     <Editor Text="{Binding CreatedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                          IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
-                         BackgroundColor="{DynamicResource Gray200}" />
+                         TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Grid.Row="0">
                     <Label Text="Finalizado" FontAttributes="Bold" />
                     <Editor Text="{Binding FinalizedLocal, StringFormat='{0:dd/MM/yyyy HH:mm:ss}'}"
                      IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
-                     BackgroundColor="{DynamicResource Gray200}" />
+                     TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="0" Grid.Row="1">
                     <Label Text="Duración" FontAttributes="Bold" />
                     <Editor Text="{Binding Duration, StringFormat='{0:hh\\:mm\\:ss}'}"
                          IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
-                         BackgroundColor="{DynamicResource Gray200}" />
+                         TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Grid.Row="1">
                     <Label Text="Posiciones" FontAttributes="Bold" />
-                    <Editor Text="{Binding TotalPoints}" BackgroundColor="{DynamicResource Gray200}"
-                            IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding TotalPoints}" 
+                            IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                            TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout x:Name="AreaGroup" Grid.Column="0" Grid.Row="2">
@@ -44,13 +49,17 @@
                         </DataTrigger>
                     </VerticalStackLayout.Triggers>
                     <Label Text="Área" FontAttributes="Bold" />
-                    <Editor Text="{Binding AreaLocal}" BackgroundColor="{DynamicResource Gray200}"
-                        IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding AreaLocal}" 
+                        IsReadOnly="True" AutoSize="TextChanges" FontSize="16" 
+                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
                 <VerticalStackLayout x:Name="LengthGroup" Grid.Column="1" Grid.Row="2">
                     <Label Text="Longitud" FontAttributes="Bold" />
-                    <Editor Text="{Binding LengthLocal}" BackgroundColor="{DynamicResource Gray200}"
-                            IsReadOnly="True" AutoSize="TextChanges" FontSize="16" />
+                    <Editor Text="{Binding LengthLocal}" 
+                            IsReadOnly="True" AutoSize="TextChanges" FontSize="16"
+                            TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}}" />
                 </VerticalStackLayout>
             </Grid>
 

@@ -54,12 +54,6 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
-	  <AndroidKeyStore>True</AndroidKeyStore>
-	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-	  <AndroidSigningKeyStore>D:\GIT\PERSONAL\uoc-tfg-wayprecision-sign\wayprecision.keystore</AndroidSigningKeyStore>
-	  <AndroidSigningStorePass>Xojgaf-0xipgu-sapcyb</AndroidSigningStorePass>
-	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
-	  <AndroidSigningKeyPass>wayprecision</AndroidSigningKeyPass>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
@@ -76,12 +70,6 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
-	  <AndroidKeyStore>True</AndroidKeyStore>
-	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-	  <AndroidSigningKeyStore>D:\GIT\PERSONAL\uoc-tfg-wayprecision-sign\wayprecision.keystore</AndroidSigningKeyStore>
-	  <AndroidSigningStorePass>Xojgaf-0xipgu-sapcyb</AndroidSigningStorePass>
-	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
-	  <AndroidSigningKeyPass>Xojgaf-0xipgu-sapcyb</AndroidSigningKeyPass>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">

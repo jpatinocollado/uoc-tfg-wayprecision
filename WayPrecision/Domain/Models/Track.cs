@@ -47,7 +47,26 @@ namespace WayPrecision.Domain.Models
             }
         }
 
-        public string GetEyeImage => IsVisible ? "eyeopen32x32.png" : "eyeclose32x32.png";
+        public string GetEyeImage
+        {
+            get
+            {
+
+                string name = string.Empty;
+                string theme = string.Empty;
+
+                if (IsVisible)
+                    name = "eyeopen32x32";
+                else
+                    name = "eyeclose32x32";
+
+                if (Application.Current is not null &&
+                    Application.Current.RequestedTheme == AppTheme.Dark)
+                    theme = "dark";
+
+                return $"{name}{theme}.png";
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

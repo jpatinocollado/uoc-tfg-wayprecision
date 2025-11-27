@@ -35,30 +35,28 @@
                 <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>
             <VerticalStackLayout Spacing="5">
-                <Label x:Name="lbLatitud" Text="Lat: -" />
-                <Label x:Name="lbLongitud" Text="Lng: -" />
-                <Label x:Name="lbPrecision" Text="Precisión: -" />
-                <Label x:Name="lbZoom" Text="Zoom: -" />
+                <Label x:Name="lbLatitud" Text="Lat: -" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
+                <Label x:Name="lbLongitud" Text="Lng: -" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
+                <Label x:Name="lbPrecision" Text="Precisión: -" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
+                <Label x:Name="lbZoom" Text="Zoom: -" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
             </VerticalStackLayout>
         </Border>
 
-        <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center"
-        BackgroundColor="{StaticResource White}">
-            <Button x:Name="btnGpsData" Text="" ImageSource="satellite32x32.png" Style="{StaticResource SecondaryButton}" />
-            <Button x:Name="btnCreateWaypoint" Text="" ImageSource="waypoint32x32.png" Style="{StaticResource SecondaryButton}" />
-            <Button x:Name="btnCreateTrack" Text="" ImageSource="track32x32.png" Style="{StaticResource SecondaryButton}" />
+        <HorizontalStackLayout x:Name="BtnStackLayoutDefault" Grid.Row="1" Padding="12" Spacing="12" HorizontalOptions="Center">
+            <Button x:Name="btnGpsData" Text="" ImageSource="{AppThemeBinding Light=satellite32x32.png, Dark=satellite32x32dark.png}" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateWaypoint" Text="" ImageSource="{AppThemeBinding Light=waypoint32x32.png, Dark=waypoint32x32dark.png}" Style="{StaticResource SecondaryButton}" />
+            <Button x:Name="btnCreateTrack" Text="" ImageSource="{AppThemeBinding Light=track32x32.png, Dark=track32x32dark.png}" Style="{StaticResource SecondaryButton}" />
         </HorizontalStackLayout>
+
         <VerticalStackLayout  x:Name="BtnStackLayoutTracking" Grid.Row="1">
-            <HorizontalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center"
-        BackgroundColor="{StaticResource White}">
-                <Button x:Name="btnPlay" Text="" ImageSource="play32x32.png" Style="{StaticResource SecondaryButton}" />
-                <Button x:Name="btnPause" Text="" ImageSource="pause32x32.png" Style="{StaticResource SecondaryButton}" />
-                <Button x:Name="btnStop" Text="" ImageSource="stop32x32.png" Style="{StaticResource SecondaryButton}" />
+            <HorizontalStackLayout Padding="10" Spacing="10" HorizontalOptions="Center">
+                <Button x:Name="btnPlay" Text="" ImageSource="{AppThemeBinding Light=play32x32.png, Dark=play32x32dark.png}" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnPause" Text="" ImageSource="{AppThemeBinding Light=pause32x32.png, Dark=pause32x32dark.png}" Style="{StaticResource SecondaryButton}" />
+                <Button x:Name="btnStop" Text="" ImageSource="{AppThemeBinding Light=stop32x32.png, Dark= stop32x32dark.png}" Style="{StaticResource SecondaryButton}" />
                 <Button x:Name="btnCancel" Text="" ImageSource="close32x32.png" Style="{StaticResource SecondaryButton}" />
             </HorizontalStackLayout>
-            <HorizontalStackLayout Grid.Row="2" Padding="0,5,0,10" Spacing="10" HorizontalOptions="Center"
-                BackgroundColor="{StaticResource White}">
-                <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" />
+            <HorizontalStackLayout Grid.Row="2" Padding="0,5,0,10" Spacing="10" HorizontalOptions="Center">
+                <Label x:Name="lbTotalPoints" Text="Puntos: 0" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </Grid>
