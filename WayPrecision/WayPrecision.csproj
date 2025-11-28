@@ -39,9 +39,9 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>es</DefaultLanguage>
-		<PackageIcon>appicon.png</PackageIcon>
-		<AssemblyVersion>0.0.13.0</AssemblyVersion>
-		<FileVersion>0.0.13.0</FileVersion>
+		<PackageIcon>android1024.png</PackageIcon>
+		<AssemblyVersion>0.0.15.0</AssemblyVersion>
+		<FileVersion>0.0.15.0</FileVersion>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>66B10900056D9AEB9AFEE2CADA1B83584E19BA43</PackageCertificateThumbprint>
@@ -90,7 +90,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#dddddd" BaseSize="400,430" />
+		<MauiIcon Include="Resources\AppIcon\android1024.png" Color="#dddddd" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#dddddd" BaseSize="128,128" />
@@ -193,6 +193,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Resources\AppIcon\android1024.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Update="Resources\AppIcon\appicon.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
