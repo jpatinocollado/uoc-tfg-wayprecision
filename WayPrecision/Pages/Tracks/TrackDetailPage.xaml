@@ -72,16 +72,19 @@
             <Button x:Name="SaveButton"
         Text="Guardar"
         Style="{StaticResource PrimaryButton}"
+                    ImageSource="save32x32dark.png"
                 Clicked="OnSaveClicked" />
 
             <Button x:Name="ViewOnMapButton"
         Text="Ver en el Mapa"
         Style="{StaticResource SecondaryButton}"
+                    ImageSource="{AppThemeBinding Light= binoculars32x32red.png, Dark=binoculars32x32dark.png}"
                 Clicked="ViewOnMapClicked" />
 
             <Button x:Name="DeleteButton"
         Text="Eliminar Track"
         Style="{StaticResource TertiaryButton}"
+                    ImageSource="{AppThemeBinding Light= delete32x32red.png, Dark=delete32x32dark.png}"
         Clicked="OnDeleteClicked" />
         </VerticalStackLayout>
     </ScrollView>
