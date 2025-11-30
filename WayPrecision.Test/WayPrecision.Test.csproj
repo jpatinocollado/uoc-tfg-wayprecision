@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WayPrecision\WayPrecision.csproj" />
+    <ProjectReference Include="..\WayPrecision.Domain\WayPrecision.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

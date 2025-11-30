@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Data.Repositories;
+﻿using System.Threading.Tasks;
+using WayPrecision.Domain.Data.Repositories;
 using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Data.UnitOfWork
