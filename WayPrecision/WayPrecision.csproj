@@ -55,10 +55,6 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
 	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
-	  <AndroidKeyStore>True</AndroidKeyStore>
-	  <AndroidSigningStorePass>Xojgaf-0xipgu-sapcyb</AndroidSigningStorePass>
-	  <AndroidSigningKeyPass>Xojgaf-0xipgu-sapcyb</AndroidSigningKeyPass>
-	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
