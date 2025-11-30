@@ -40,8 +40,8 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>es</DefaultLanguage>
 		<PackageIcon>android1024.png</PackageIcon>
-		<AssemblyVersion>0.0.15.0</AssemblyVersion>
-		<FileVersion>0.0.15.0</FileVersion>
+		<AssemblyVersion>0.0.17.0</AssemblyVersion>
+		<FileVersion>0.0.17.0</FileVersion>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>66B10900056D9AEB9AFEE2CADA1B83584E19BA43</PackageCertificateThumbprint>
@@ -54,6 +54,11 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>Xojgaf-0xipgu-sapcyb</AndroidSigningStorePass>
+	  <AndroidSigningKeyPass>Xojgaf-0xipgu-sapcyb</AndroidSigningKeyPass>
+	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
@@ -62,14 +67,22 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningKeyStore>D:\GIT\PERSONAL\uoc-tfg-wayprecision-sign\wayprecision.keystore</AndroidSigningKeyStore>
+
+	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
@@ -78,10 +91,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
