@@ -1,4 +1,6 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System;
+using System.Collections.Generic;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Helpers.Gps.MovingAverage
 {

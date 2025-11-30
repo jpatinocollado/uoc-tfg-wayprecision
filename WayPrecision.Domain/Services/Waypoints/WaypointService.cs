@@ -2,6 +2,9 @@
 using System.Linq;
 using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Exceptions;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 
 namespace WayPrecision.Domain.Services.Waypoints
 {

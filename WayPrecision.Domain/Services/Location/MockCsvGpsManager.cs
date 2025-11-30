@@ -1,4 +1,8 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services.Configuracion;
 
 namespace WayPrecision.Domain.Services.Location
@@ -14,7 +18,7 @@ namespace WayPrecision.Domain.Services.Location
         private TimeSpan GpsInterval;
 
         private int index = 0;
-        private readonly List<LocationEventArgs> Locations = [];
+        private readonly List<LocationEventArgs> Locations = new List<LocationEventArgs>();
 
         public MockCsvGpsManager(IConfigurationService configurationService)
         {
@@ -28,7 +32,7 @@ namespace WayPrecision.Domain.Services.Location
         private async Task InitMock()
         {
             var configuration = await _configurationService.GetOrCreateAsync();
-            var csvLines = configuration.CsvPositions?.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            var csvLines = configuration.CsvPositions?.Split(new char[] { '\r', '\n' }, options: StringSplitOptions.RemoveEmptyEntries);
 
             if (csvLines is null)
                 return;
@@ -67,8 +71,6 @@ namespace WayPrecision.Domain.Services.Location
             {
                 while (!_cts.Token.IsCancellationRequested)
                 {
-                    
-
                     if (index < Locations.Count)
                     {
                         var location = Locations[index];

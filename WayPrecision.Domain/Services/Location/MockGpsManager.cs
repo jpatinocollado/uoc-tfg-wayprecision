@@ -1,4 +1,8 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services.Location
 {
@@ -11,7 +15,7 @@ namespace WayPrecision.Domain.Services.Location
         private TimeSpan GpsInterval;
 
         private int index = 0;
-        private readonly List<LocationEventArgs> Locations = [];
+        private readonly List<LocationEventArgs> Locations = new List<LocationEventArgs>();
 
         public MockGpsManager()
         {

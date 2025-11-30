@@ -1,16 +1,16 @@
 using System.Collections.ObjectModel;
-using WayPrecision.Domain.Data.UnitOfWork;
 using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
+using WayPrecision.Pages.Tracks;
 
 namespace WayPrecision;
 
 public partial class TracksPage : ContentPage
 {
     private readonly IService<Track> _service;
-    public ObservableCollection<Track> Tracks { get; set; } = [];
+    public ObservableCollection<TrackListItem> Tracks { get; set; } = [];
 
     public TracksPage(IService<Track> service)
     {
@@ -45,7 +45,7 @@ public partial class TracksPage : ContentPage
 
             Tracks.Clear();
             foreach (var track in tracks)
-                Tracks.Add(track);
+                Tracks.Add(new TrackListItem(track));
 
             Title = $"Tracks ({tracks.Count})";
         }
@@ -59,9 +59,9 @@ public partial class TracksPage : ContentPage
     {
         try
         {
-            if (sender is Button button && button.CommandParameter is Track track)
+            if (sender is Button button && button.CommandParameter is TrackListItem item)
             {
-                await Navigation.PushAsync(new TrackDetailPage(track, DetailPageMode.Edited));
+                await Navigation.PushAsync(new TrackDetailPage(item.Track, DetailPageMode.Edited));
             }
         }
         catch (Exception ex)
@@ -74,13 +74,13 @@ public partial class TracksPage : ContentPage
     {
         try
         {
-            if (sender is Button btn && btn.CommandParameter is Track track)
+            if (sender is Button btn && btn.CommandParameter is TrackListItem item)
             {
-                if (!track.IsVisible)
+                if (!item.Track.IsVisible)
                     OnEyeClicked(sender, new EventArgs());
 
                 //navega a la página del mapa y muestra el track
-                await Shell.Current.GoToAsync($"//MapPage?trackGuid={track.Guid}");
+                await Shell.Current.GoToAsync($"//MapPage?trackGuid={item.Track.Guid}");
             }
         }
         catch (Exception ex)
@@ -93,11 +93,11 @@ public partial class TracksPage : ContentPage
     {
         try
         {
-            if (sender is Button button && button.CommandParameter is Track track)
+            if (sender is Button button && button.CommandParameter is TrackListItem item)
             {
-                track.IsVisible = !track.IsVisible;
+                item.IsVisible = !item.IsVisible;
 
-                await _service.UpdateAsync(track);
+                await _service.UpdateAsync(item.Track);
             }
         }
         catch (Exception ex)

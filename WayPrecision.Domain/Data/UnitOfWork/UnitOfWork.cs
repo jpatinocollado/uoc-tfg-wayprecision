@@ -1,4 +1,6 @@
-﻿using SQLite;
+﻿using System;
+using System.Threading.Tasks;
+using SQLite;
 using WayPrecision.Domain.Data.Repositories;
 using WayPrecision.Domain.Models;
 

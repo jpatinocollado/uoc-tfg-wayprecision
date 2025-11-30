@@ -1,4 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Services.Configuracion;
 
@@ -7,7 +10,7 @@ namespace WayPrecision.Domain.Services.Tracks
     public class MockTrackService : IService<Track>
     {
         private readonly IConfigurationService _configurationService;
-        private ConcurrentBag<Track> Tracks = [];
+        private ConcurrentBag<Track> Tracks = new ConcurrentBag<Track>();
 
         public MockTrackService(IConfigurationService configurationService)
         {

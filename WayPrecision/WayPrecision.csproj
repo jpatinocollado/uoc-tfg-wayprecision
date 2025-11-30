@@ -208,10 +208,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Domain\Helpers\Gps\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Content Include="Resources\AppIcon\square150x150logo.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
@@ -365,6 +361,10 @@
 	  <Content Include="Resources\Splash\splashscreen.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\WayPrecision.Domain\WayPrecision.Domain.csproj" />
 	</ItemGroup>
 
 </Project>
