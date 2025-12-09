@@ -14,3 +14,6 @@
 /WayPrecision/bin/Release
 /WayPrecision.Domain/bin/Release
 /WayPrecision.Test/bin/Release/net9.0
+/WayPrecision/WayPrecision.csproj.user
+/WayPrecision.Domain/bin/Debug/netstandard2.1/WayPrecision.Domain.dll
+/WayPrecision.Domain/bin/Debug/netstandard2.1/WayPrecision.Domain.pdb

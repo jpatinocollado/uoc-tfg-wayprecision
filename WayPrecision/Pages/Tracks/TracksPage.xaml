@@ -12,43 +12,43 @@
                     <Frame  BackgroundColor="{StaticResource White}" CornerRadius="8">
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
                             <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
-                                <Label Text="{Binding CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding Duration, StringFormat='Duración: {0:hh\\:mm\\:ss}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding TotalPoints, StringFormat='Posiciones GPS: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding AreaLocal, StringFormat='Área: {0}'}"
+                                <Label Text="{Binding Track.Name}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
+                                <Label Text="{Binding Track.CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Track.Duration, StringFormat='Duración: {0:hh\\:mm\\:ss}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Track.TotalPoints, StringFormat='Posiciones GPS: {0}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Track.AreaLocal, StringFormat='Área: {0}'}"
                                        FontSize="12"
                                        TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding IsOpened}"
+                                                     Binding="{Binding Track.IsOpened}"
                                                      Value="True">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
-                                <Label Text="{Binding LengthLocal, StringFormat='Longitud: {0}'}"
+                                <Label Text="{Binding Track.LengthLocal, StringFormat='Longitud: {0}'}"
                                        FontSize="12"
                                        TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding IsOpened}"
+                                                     Binding="{Binding Track.IsOpened}"
                                                      Value="True">
                                             <Setter Property="IsVisible" Value="True" />
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
-                                <Label Text="{Binding Observation, StringFormat='Observaciones: {0}'}"
+                                <Label Text="{Binding Track.Observation, StringFormat='Observaciones: {0}'}"
                                    FontSize="12"
                                    TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                                 Binding="{Binding Observation}"
+                                                 Binding="{Binding Track.Observation}"
                                                  Value="">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Label"
-                                                 Binding="{Binding Observation}"
+                                                 Binding="{Binding Track.Observation}"
                                                  Value="{x:Null}">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>

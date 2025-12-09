@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Helpers.Gps.Kalman;
+﻿using System.Collections.Generic;
+using WayPrecision.Domain.Helpers.Gps.Kalman;
 using WayPrecision.Domain.Helpers.Gps.MovingAverage;
 using WayPrecision.Domain.Helpers.Gps.Outliers;
 using WayPrecision.Domain.Models;

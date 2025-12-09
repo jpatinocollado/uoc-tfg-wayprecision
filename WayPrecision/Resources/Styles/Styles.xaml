@@ -480,7 +480,7 @@
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
         <Setter Property="Shell.FlyoutBackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray700}}" />
         <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray700}, Dark={StaticResource Gray700}}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" />
         <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" />
         <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray200}}" />
         <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray200}}" />
