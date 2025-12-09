@@ -1,5 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using SQLite;
 
 namespace WayPrecision.Domain.Data.Repositories
@@ -18,7 +21,7 @@ namespace WayPrecision.Domain.Data.Repositories
         /// <summary>
         /// Cola de operaciones diferidas pendientes de ejecutar.
         /// </summary>
-        private readonly ConcurrentQueue<Func<Task<int>>> _pendingOperations = new();
+        private readonly ConcurrentQueue<Func<Task<int>>> _pendingOperations = new ConcurrentQueue<Func<Task<int>>>();
 
         /// <summary>
         /// Inicializa una nueva instancia del repositorio con la conexión especificada.

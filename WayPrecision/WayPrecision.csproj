@@ -39,9 +39,9 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 		<DefaultLanguage>es</DefaultLanguage>
-		<PackageIcon>appicon.png</PackageIcon>
-		<AssemblyVersion>0.0.13.0</AssemblyVersion>
-		<FileVersion>0.0.13.0</FileVersion>
+		<PackageIcon>android1024.png</PackageIcon>
+		<AssemblyVersion>0.0.17.0</AssemblyVersion>
+		<FileVersion>0.0.17.0</FileVersion>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>66B10900056D9AEB9AFEE2CADA1B83584E19BA43</PackageCertificateThumbprint>
@@ -54,6 +54,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-ios|AnyCPU'">
@@ -62,14 +63,22 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningKeyStore>D:\GIT\PERSONAL\uoc-tfg-wayprecision-sign\wayprecision.keystore</AndroidSigningKeyStore>
+
+	  <AndroidSigningKeyAlias>wayprecision</AndroidSigningKeyAlias>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-ios|AnyCPU'">
@@ -78,10 +87,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-maccatalyst|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-windows10.0.19041.0|AnyCPU'">
 	  <ApplicationId>com.jpatinoc.wayprecision</ApplicationId>
+	  <ApplicationDisplayVersion>0.0.17</ApplicationDisplayVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -90,7 +101,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="#dddddd" BaseSize="400,430" />
+		<MauiIcon Include="Resources\AppIcon\android1024.png" Color="#dddddd" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#dddddd" BaseSize="128,128" />
@@ -193,6 +204,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Resources\AppIcon\android1024.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Update="Resources\AppIcon\appicon.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
@@ -201,10 +216,6 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Domain\Helpers\Gps\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -361,6 +372,10 @@
 	  <Content Include="Resources\Splash\splashscreen.png">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\WayPrecision.Domain\WayPrecision.Domain.csproj" />
 	</ItemGroup>
 
 </Project>

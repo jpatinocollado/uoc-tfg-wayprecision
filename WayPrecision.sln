@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36603.0 d17.14
+VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WayPrecision", "WayPrecision\WayPrecision.csproj", "{9200E4BD-8ABB-F140-1AF4-896CA8F62901}"
 EndProject
@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución",
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WayPrecision.Domain", "WayPrecision.Domain\WayPrecision.Domain.csproj", "{1212304A-584A-4CF6-A524-A4C0595CFAB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{F0828D3A-4356-4C61-A48A-4E6218F98950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0828D3A-4356-4C61-A48A-4E6218F98950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0828D3A-4356-4C61-A48A-4E6218F98950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1212304A-584A-4CF6-A524-A4C0595CFAB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1212304A-584A-4CF6-A524-A4C0595CFAB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1212304A-584A-4CF6-A524-A4C0595CFAB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1212304A-584A-4CF6-A524-A4C0595CFAB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

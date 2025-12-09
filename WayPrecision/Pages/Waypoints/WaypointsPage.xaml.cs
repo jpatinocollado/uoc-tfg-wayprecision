@@ -3,13 +3,14 @@ using WayPrecision.Domain.Exceptions;
 using WayPrecision.Domain.Models;
 using WayPrecision.Domain.Pages;
 using WayPrecision.Domain.Services;
+using WayPrecision.Pages.Waypoints;
 
 namespace WayPrecision;
 
 public partial class WaypointsPage : ContentPage
 {
     private readonly IService<Waypoint> _service;
-    public ObservableCollection<Waypoint> Waypoints { get; set; } = [];
+    public ObservableCollection<WaypointListItem> Waypoints { get; set; } = [];
 
     public WaypointsPage(IService<Waypoint> service)
     {
@@ -43,7 +44,7 @@ public partial class WaypointsPage : ContentPage
             var waypoints = await _service.GetAllAsync();
             Waypoints.Clear();
             foreach (var waypoint in waypoints)
-                Waypoints.Add(waypoint);
+                Waypoints.Add(new WaypointListItem(waypoint));
 
             Title = $"Waypoints ({waypoints.Count})";
         }
@@ -57,9 +58,9 @@ public partial class WaypointsPage : ContentPage
     {
         try
         {
-            if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+            if (sender is Button button && button.CommandParameter is WaypointListItem item)
             {
-                await Navigation.PushAsync(new WaypointDetailPage(waypoint, DetailPageMode.Edited));
+                await Navigation.PushAsync(new WaypointDetailPage(item.Waypoint, DetailPageMode.Edited));
             }
         }
         catch (Exception ex)
@@ -72,13 +73,17 @@ public partial class WaypointsPage : ContentPage
     {
         try
         {
-            if (sender is Button btn && btn.CommandParameter is Waypoint waypoint)
+            if (sender is Button btn && btn.CommandParameter is WaypointListItem item)
             {
-                if (!waypoint.IsVisible)
+                if (!item.Waypoint.IsVisible)
+                {
                     OnEyeClicked(sender, new EventArgs());
 
+                    await Task.Delay(500);
+                }
+
                 //navega a la página del mapa y muestra el waypoint
-                await Shell.Current.GoToAsync($"//MapPage?waypointGuid={waypoint.Guid}");
+                await Shell.Current.GoToAsync($"//MapPage?waypointGuid={item.Waypoint.Guid}");
             }
         }
         catch (Exception ex)
@@ -91,10 +96,10 @@ public partial class WaypointsPage : ContentPage
     {
         try
         {
-            if (sender is Button button && button.CommandParameter is Waypoint waypoint)
+            if (sender is Button button && button.CommandParameter is WaypointListItem item)
             {
-                waypoint.IsVisible = !waypoint.IsVisible;
-                await _service.UpdateAsync(waypoint);
+                item.IsVisible = !item.IsVisible;
+                await _service.UpdateAsync(item.Waypoint);
             }
         }
         catch (Exception ex)

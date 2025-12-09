@@ -12,19 +12,19 @@
                     <Frame  BackgroundColor="{StaticResource White}" CornerRadius="8">
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
                             <VerticalStackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
-                                <Label Text="{Binding CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
-                                <Label Text="{Binding Observation, StringFormat='Observaciones: {0}'}"
+                                <Label Text="{Binding Waypoint.Name}" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}" />
+                                <Label Text="{Binding Waypoint.CreatedLocal, StringFormat='Creado: {0:dd/MM/yyyy HH:mm}'}" FontSize="12" TextColor="{StaticResource Gray400}" />
+                                <Label Text="{Binding Waypoint.Observation, StringFormat='Observaciones: {0}'}"
                                        FontSize="12"
                                        TextColor="{StaticResource Gray400}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding Observation}"
+                                                     Binding="{Binding Waypoint.Observation}"
                                                      Value="">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="Label"
-                                                     Binding="{Binding Observation}"
+                                                     Binding="{Binding Waypoint.Observation}"
                                                      Value="{x:Null}">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
@@ -52,7 +52,7 @@
                                    CommandParameter="{Binding .}"
                                    FontSize="12"
                                    Padding="4,0"
-                                    ImageSource="{Binding GetEyeImage}"
+                                   ImageSource="{Binding GetEyeImage}"
                                    Style="{StaticResource SecondaryButton}" />
                             </HorizontalStackLayout>
                         </Grid>

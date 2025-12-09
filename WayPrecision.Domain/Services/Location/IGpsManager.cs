@@ -1,4 +1,6 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System;
+using System.Threading.Tasks;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services.Location
 {

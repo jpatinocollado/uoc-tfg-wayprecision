@@ -1,4 +1,5 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System.Threading.Tasks;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Services.Configuracion
 {

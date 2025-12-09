@@ -1,4 +1,6 @@
-﻿using WayPrecision.Domain.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using WayPrecision.Domain.Models;
 
 namespace WayPrecision.Domain.Helpers.Gps.Outliers
 {
@@ -14,7 +16,7 @@ namespace WayPrecision.Domain.Helpers.Gps.Outliers
         public List<Position> AplyFilter(List<Position> positions)
         {
             if (positions == null || positions.Count == 0)
-                return [];
+                return new List<Position>();
 
             //Si esta deshabilitado, retornar la lista original
             if (!GpsParameters.OutliersEnabled)

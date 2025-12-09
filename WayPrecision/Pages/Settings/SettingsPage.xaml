@@ -120,11 +120,13 @@
 
             <Button Text="Guardar"
                      x:Name="SaveButton"
+                    ImageSource="save32x32dark.png"
                      Style="{StaticResource PrimaryButton}"
                      Margin="0,24,0,0" />
 
             <Button x:Name="CancelarButton"
                      Text="Cancelar"
+                    ImageSource="close32x32.png"
                      Style="{StaticResource TertiaryButton}" />
         </VerticalStackLayout>
     </ScrollView>

@@ -1,16 +1,16 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
 using SQLite;
 using WayPrecision.Domain.Helpers.Colors;
 
 namespace WayPrecision.Domain.Models
 {
-    public class Track : INotifyPropertyChanged
+    public class Track
     {
         private Configuration? _configuration;
 
         public Track()
         {
-            _isVisible = true;
             ColorBorde = MapMarkerColorEnum.Red;
             ColorRelleno = MapMarkerColorEnum.Red;
         }
@@ -31,28 +31,7 @@ namespace WayPrecision.Domain.Models
 
         public bool IsManual { get; set; } = false;
 
-        private bool _isVisible;
-
-        public bool IsVisible
-        {
-            get => _isVisible;
-            set
-            {
-                if (_isVisible != value)
-                {
-                    _isVisible = value;
-                    OnPropertyChanged(nameof(IsVisible));
-                    OnPropertyChanged(nameof(GetEyeImage));
-                }
-            }
-        }
-
-        public string GetEyeImage => IsVisible ? "eyeopen32x32.png" : "eyeclose32x32.png";
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public bool IsVisible { get; set; } = true;
 
         [Ignore]
         public int TotalPoints => TrackPoints.Count;
@@ -188,7 +167,7 @@ namespace WayPrecision.Domain.Models
             foreach (var pos in positions)
             {
                 pos.Guid = System.Guid.NewGuid().ToString();
-                TrackPoint smoothedTrackPoint = new()
+                TrackPoint smoothedTrackPoint = new TrackPoint()
                 {
                     Guid = System.Guid.NewGuid().ToString(),
                     TrackGuid = this.Guid,
